@@ -15,7 +15,7 @@
 
 /* Top Bar Styling */
 .top-bar {
-  background-color: #380000;
+  background-color: #FF0100;
   /* Deep Maroon */
   color: white;
   padding: 8px 0;
@@ -25,7 +25,7 @@
 .top-bar-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,13 +33,12 @@
 
 .language-list {
   display: flex;
-  gap: 15px;
+  gap: 20px;
   align-items: center;
   position: relative;
   z-index: 50;
-  /* Ensure it sits on top */
   flex-wrap: wrap;
-  /* Prevent cutoff */
+  height: 100%;
 }
 
 .lang-btn {
@@ -49,50 +48,74 @@
   font-size: 14px;
   cursor: pointer;
   padding: 4px 8px;
-  /* Added padding for better click target */
   font-family: inherit;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
   position: relative;
   z-index: 51;
-  /* Ensure button itself is clickable */
+  display: flex;
+  align-items: center;
+  /* Ensure text is vertically centered */
+  line-height: 1;
+  border-radius: 4px;
 }
 
 .lang-btn:hover,
 .lang-btn.active {
-  text-decoration: none;
-  color: #ffcc00;
+  color: #FFcc00;
   font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .top-right-section {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 .social-icons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  align-items: center;
 }
 
 .social-icon {
   background-color: white;
   color: #380000;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
   text-decoration: none;
   font-weight: bold;
+  /* Slightly larger font for icons */
+  font-size: 13px;
+  line-height: 1;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon:hover {
+  transform: translateY(-2px);
+  background-color: #FF0100;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .advertise-link {
   color: white;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.advertise-link:hover {
+  color: #FFcc00;
 }
 
 /* Main Navbar Styling */
@@ -108,7 +131,7 @@
 .main-navbar-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -118,15 +141,17 @@
 
 /* Logo */
 .logo-section {
+  
   display: flex;
   align-items: center;
   text-decoration: none;
   height: 100%;
-  position: absolute;
-  /* Take out of flow to allow overlap */
-  top: 0;
-  left: 16px;
+  position: relative;
+  /* Back in flow */
+  width: 140px;
+  /* Reserve space for logo */
   z-index: 20;
+
 }
 
 .navbar-logo-img {
@@ -134,8 +159,10 @@
   /* Increased size significantly */
   width: auto;
   object-fit: contain;
-  margin-top: 15px;
-  /* Push down more */
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
@@ -143,50 +170,46 @@
 .nav-menu {
   display: flex;
   gap: 0;
-  /* Removed fixed gap */
   align-items: center;
-  margin-left: 240px;
-  /* Keep logo space */
-  margin-right: 20px;
-  /* Spacing from search icon */
+  margin: 0;
   flex-grow: 1;
-  /* Take up all remaining space */
-  justify-content: space-between;
-  /* Distribute items equally */
+  justify-content: space-evenly;
+  /* Distribute space equally */
+  padding: 0 20px;
 }
 
 .nav-item {
   text-decoration: none;
   color: #333;
   font-weight: 600;
-  font-size: 14px;
-  /* Professional size */
+  font-size: 15px;
+  /* Slightly larger */
   transition: color 0.2s;
   white-space: nowrap;
 }
 
 .nav-item:hover,
 .nav-item.active {
-  color: #d80000;
+  color: #FF0100;
 }
 
 .more-dropdown {
-  color: #d80000;
+  color: #FF0100;
   display: flex;
   align-items: center;
   cursor: pointer;
   white-space: nowrap;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* Right Actions */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
-  min-width: 150px;
-  /* Ensure space for search expansion */
+  gap: 20px;
+  width: auto;
+  /* Remove min-width to fix right space */
   justify-content: flex-end;
 }
 
@@ -262,8 +285,8 @@
 
 .search-input-dropdown:focus {
   background-color: white;
-  border-color: #d80000;
-  box-shadow: 0 0 0 2px rgba(216, 0, 0, 0.1);
+  border-color: #FF0100;
+  box-shadow: 0 0 0 2px rgba(255, 1, 0, 0.1);
 }
 
 .close-search-dropdown {
@@ -278,7 +301,7 @@
 }
 
 .close-search-dropdown:hover {
-  color: #d80000;
+  color: #FF0100;
 }
 
 .premium-badge {

@@ -4,6 +4,9 @@ import { useLanguage } from '@/context/LanguageContext';
 import { translations } from '@/utils/translations';
 import './Footer.css';
 import { useState } from 'react';
+import { FaWhatsapp, FaTelegramPlane, FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
+import { BsChatDots } from 'react-icons/bs';
 
 export default function Footer() {
   const { language, setLanguage } = useLanguage();
@@ -36,7 +39,7 @@ export default function Footer() {
                  
                  <div className="lang-dropdown-wrapper">
                      <button className="lang-dropdown-btn" onClick={() => setIsLangOpen(!isLangOpen)}>
-                        {getCurrentLangLabel()} ▼
+                        {getCurrentLangLabel()} <FaChevronDown size={12} />
                      </button>
                      {isLangOpen && (
                          <div className="lang-dropdown-menu">
@@ -88,13 +91,13 @@ export default function Footer() {
             {/* Column 2 */}
             <div className="link-column">
                 <h3>{t.headers?.maharashtra}</h3>
-                <a href="#">{t.links?.sangli}</a>
                 <a href="#">{t.links?.pune}</a>
-                <a href="#">{t.links?.nashik}</a>
-                <a href="#">{t.links?.sindhudurg}</a>
-                <a href="#">{t.links?.aurangabad}</a>
                 <a href="#">{t.links?.mumbai}</a>
+                <a href="#">{t.links?.nashik}</a>
                 <a href="#">{t.links?.nagpur}</a>
+                <a href="#">{t.links?.chhatrapatisambhajinagar}</a>
+                <a href="#">{t.links?.ahilyanagar}</a>
+                <a href="#">{t.links?.nanded}</a>
             </div>
 
              {/* Column 3 */}
@@ -138,6 +141,29 @@ export default function Footer() {
       <div className="footer-brands">
           <div className="footer-container">
              <h4>{t.headers?.sites}</h4>
+             <div className="newsletter-section" style={{marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #333'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
+                   <div>
+                      <h4 style={{color: '#fff', marginBottom: '10px', fontSize: '16px'}}>{t.headers?.newsletter}</h4>
+                      <div style={{display: 'flex', gap: '10px'}}>
+                         <input type="email" placeholder={t.headers?.placeholderEmail} style={{padding: '8px 12px', borderRadius: '4px', border: 'none', width: '250px'}} />
+                         <button style={{backgroundColor: '#FF0100', color: 'white', border: 'none', padding: '8px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'}}>{t.headers?.subscribeBtn}</button>
+                      </div>
+                   </div>
+                   <div>
+                       <h4 style={{color: '#fff', marginBottom: '10px', fontSize: '16px'}}>{t.headers?.stayConnected}</h4>
+                       <div style={{display: 'flex', gap: '10px'}}>
+                           <button style={{backgroundColor: '#25D366', color: 'white', padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight:'bold'}}>
+                               <FaWhatsapp size={16} /> WhatsApp
+                           </button>
+                           <button style={{backgroundColor: '#0088cc', color: 'white', padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight:'bold'}}>
+                               <FaTelegramPlane size={16} /> Telegram
+                           </button>
+                       </div>
+                   </div>
+                </div>
+             </div>
+             <h4>{t.headers?.sites}</h4>
              <div className="brand-list">
                  <a href="#">ABP Network</a>
                  <a href="#">ABP Live</a>
@@ -161,13 +187,13 @@ export default function Footer() {
              </div>
              <div className="footer-socials">
                  <span className="follow-text">{t.headers?.follow}</span>
-                 <a href="#" className="social-circle">𝕏</a>
-                 <a href="#" className="social-circle">f</a>
-                 <a href="#" className="social-circle">@</a>
-                 <a href="#" className="social-circle">▶</a>
-                 <a href="#" className="social-circle">📷</a>
-                 <a href="#" className="social-circle">✈</a>
-                 <a href="#" className="social-circle">💬</a>
+                 <a href="#" className="social-circle" title="X (Twitter)"><FaXTwitter /></a>
+                 <a href="#" className="social-circle" title="Facebook"><FaFacebookF /></a>
+                 <a href="#" className="social-circle" title="Email"><FaAt /></a>
+                 <a href="#" className="social-circle" title="YouTube"><FaYoutube /></a>
+                 <a href="#" className="social-circle" title="Instagram"><FaInstagram /></a>
+                 <a href="#" className="social-circle" title="Telegram"><FaTelegramPlane /></a>
+                 <a href="#" className="social-circle" title="Chat"><BsChatDots /></a>
              </div>
              <div className="ad-box">
                 <a href="/advertise" className="footer-ad-btn">{t.headers?.advertise}</a>
