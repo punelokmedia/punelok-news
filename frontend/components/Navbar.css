@@ -1,0 +1,365 @@
+/* ... Previous CSS ... */
+
+/* Global Reset for Navbar */
+.navbar-wrapper {
+  font-family: 'Mukta', sans-serif;
+  /* Assuming a Marathi friendly font or defaulting */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Top Bar Styling */
+.top-bar {
+  background-color: #380000;
+  /* Deep Maroon */
+  color: white;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.top-bar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.language-list {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  position: relative;
+  z-index: 50;
+  /* Ensure it sits on top */
+  flex-wrap: wrap;
+  /* Prevent cutoff */
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  /* Added padding for better click target */
+  font-family: inherit;
+  transition: color 0.2s;
+  position: relative;
+  z-index: 51;
+  /* Ensure button itself is clickable */
+}
+
+.lang-btn:hover,
+.lang-btn.active {
+  text-decoration: none;
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+.top-right-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.social-icon {
+  background-color: white;
+  color: #380000;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.advertise-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Main Navbar Styling */
+.main-navbar {
+  background-color: white;
+  padding: 0;
+  height: 60px;
+  /* Fixed smaller height */
+  border-bottom: 1px solid #e0e0e0;
+  position: relative;
+}
+
+.main-navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+}
+
+/* Logo */
+.logo-section {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  height: 100%;
+  position: absolute;
+  /* Take out of flow to allow overlap */
+  top: 0;
+  left: 16px;
+  z-index: 20;
+}
+
+.navbar-logo-img {
+  height: 160px;
+  /* Increased size significantly */
+  width: auto;
+  object-fit: contain;
+  margin-top: 15px;
+  /* Push down more */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Nav Menu */
+.nav-menu {
+  display: flex;
+  gap: 0;
+  /* Removed fixed gap */
+  align-items: center;
+  margin-left: 240px;
+  /* Keep logo space */
+  margin-right: 20px;
+  /* Spacing from search icon */
+  flex-grow: 1;
+  /* Take up all remaining space */
+  justify-content: space-between;
+  /* Distribute items equally */
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+  /* Professional size */
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: #d80000;
+}
+
+.more-dropdown {
+  color: #d80000;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Right Actions */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 150px;
+  /* Ensure space for search expansion */
+  justify-content: flex-end;
+}
+
+.search-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #333;
+  transition: transform 0.2s;
+}
+
+.search-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Inline removed, replaced with overlay dropdown */
+.search-dropdown-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  padding: 15px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid #eee;
+  z-index: 50;
+  animation: slideDown 0.3s ease-out;
+  display: flex;
+  justify-content: center;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-dropdown-form {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  /* Wide search bar */
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.search-icon-input {
+  position: absolute;
+  left: 15px;
+  z-index: 2;
+}
+
+.search-input-dropdown {
+  width: 100%;
+  padding: 12px 45px;
+  /* Space for icon and close button */
+  border: 1px solid #ddd;
+  border-radius: 30px;
+  /* Pill shape like screenshot */
+  font-size: 16px;
+  outline: none;
+  background-color: #f9f9f9;
+  transition: all 0.2s;
+}
+
+.search-input-dropdown:focus {
+  background-color: white;
+  border-color: #d80000;
+  box-shadow: 0 0 0 2px rgba(216, 0, 0, 0.1);
+}
+
+.close-search-dropdown {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-search-dropdown:hover {
+  color: #d80000;
+}
+
+.premium-badge {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #5d3eff;
+  /* Purple color like in screenshot */
+  font-weight: 800;
+  font-size: 16px;
+  gap: 5px;
+}
+
+.profile-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .nav-menu {
+    gap: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-bar-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .language-list {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+
+  .mobile-toggle {
+    display: block;
+  }
+
+  .logo-text {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logo-majha {
+    margin-top: -5px;
+  }
+
+  .search-form-inline {
+    width: 180px;
+    /* Somewhat smaller on mobile/tablet */
+  }
+}
