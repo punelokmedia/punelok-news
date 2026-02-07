@@ -76,6 +76,18 @@ export const translations = {
         world: "जग",
         business: "व्यापार-उद्योग"
       },
+      brands: {
+        network: "पुणेलोक नेटवर्क",
+        live: "पुणेलोक लाईव्ह",
+        news: "पुणेलोक न्यूज",
+        ananda: "पुणेलोक आनंद",
+        majha: "पुणेलोक माझा",
+        asmita: "पुणेलोक अस्मिता",
+        ganga: "पुणेलोक गंगा",
+        sanjha: "पुणेलोक सांझा",
+        nadu: "पुणेलोक नाडू",
+        desham: "पुणेलोक देशम"
+      },
       copyright: "This website follows the DNPA Code of Ethics. Copyright@2026. All rights reserved."
     }
   },
@@ -127,7 +139,7 @@ export const translations = {
         privacy: "Privacy Policy",
         contact: "Contact Us",
         follow: "FOLLOW US",
-        sites: "ABP NEWS GROUP WEBSITES",
+        sites: "PUNELOK GROUP WEBSITES",
         newsletter: "SUBSCRIBE TO OUR NEWSLETTER",
         stayConnected: "STAY CONNECTED",
         placeholderEmail: "Enter your email",
@@ -155,6 +167,18 @@ export const translations = {
         india: "India News",
         world: "World",
         business: "Business"
+      },
+      brands: {
+        network: "Punelok Network",
+        live: "Punelok Live",
+        news: "Punelok News",
+        ananda: "Punelok Ananda",
+        majha: "Punelok Majha",
+        asmita: "Punelok Asmita",
+        ganga: "Punelok Ganga",
+        sanjha: "Punelok Sanjha",
+        nadu: "Punelok Nadu",
+        desham: "Punelok Desham"
       },
       copyright: "This website follows the DNPA Code of Ethics. Copyright@2026. All rights reserved."
     }
@@ -207,7 +231,7 @@ export const translations = {
         privacy: "गोपनीयता नीति",
         contact: "संपर्क करें",
         follow: "फॉलो करें",
-        sites: "ABP न्यूज़ ग्रुप वेबसाइट्स",
+        sites: "पुणेलोक ग्रुप वेबसाइट्स",
         newsletter: "हमारे न्यूज़लेटर की सदस्यता लें",
         stayConnected: "हमसे जुड़े रहें",
         placeholderEmail: "अपना ईमेल दर्ज करें",
@@ -236,6 +260,18 @@ export const translations = {
         world: "दुनिया",
         business: "व्यापार-उद्योग"
       },
+      brands: {
+        network: "पुणेलोक नेटवर्क",
+        live: "पुणेलोक लाइव",
+        news: "पुणेलोक न्यूज़",
+        ananda: "पुणेलोक आनंद",
+        majha: "पुणेलोक माझा",
+        asmita: "पुणेलोक अस्मिता",
+        ganga: "पुणेलोक गंगा",
+        sanjha: "पुणेलोक सांझा",
+        nadu: "पुणेलोक नाडू",
+        desham: "पुणेलोक देशम"
+      },
       copyright: "This website follows the DNPA Code of Ethics. Copyright@2026. All rights reserved."
     }
   },
@@ -257,7 +293,23 @@ export const translations = {
       login: "লগ ইন"
     },
     footerTop: { games: "গেমস", liveTv: "লাইভ টিভি", video: "ভিডিও", photoGallery: "ফটো গ্যালারি", podcast: "পডকাস্ট", shortVideo: "ছোট ভিডিও" },
-    footer: { headers: { trending: "ট্রেন্ডিং", photoGallery: "ফটো গ্যালারি", about: "আমাদের সম্পর্কে" }, links: { pune: "পুনে" }, copyright: "Copyright@2026. All rights reserved." }
+    footer: { 
+      headers: { trending: "ট্রেন্ডিং", photoGallery: "ফটো গ্যালারি", about: "আমাদের সম্পর্কে", sites: "পুনেলোক ওয়েবসাইট" }, 
+      links: { pune: "পুনে" }, 
+      copyright: "Copyright@2026. All rights reserved.",
+      brands: {
+        network: "পুনেলোক নেটওয়ার্ক",
+        live: "পুনেলোক লাইভ",
+        news: "পুনেলোক নিউজ",
+        ananda: "পুনেলোক আনন্দ",
+        majha: "পুনেলোক ঝা",
+        asmita: "পুনেলোক অস্মিতা",
+        ganga: "পুনেলোক গঙ্গা",
+        sanjha: "পুনেলোক সাঁঝা",
+        nadu: "পুনেলোক নাড়ু",
+        desham: "পুনেলোক দেশম"
+      }
+    }
   },
   punjabi: {
     nav: {
@@ -277,7 +329,23 @@ export const translations = {
       login: "ਲੌਗ ਇਨ"
     },
     footerTop: { games: "ਗੇਮਾਂ", liveTv: "ਲਾਈਵ ਟੀਵੀ", video: "ਵੀਡੀਓ", photoGallery: "ਫੋਟੋ ਗੈਲਰੀ", podcast: "ਪੋਡਕਾਸਟ", shortVideo: "ਛੋਟੇ ਵੀਡੀਓ" },
-    footer: { headers: { trending: "ਟ੍ਰੈਂਡਿੰਗ", photoGallery: "ਫੋਟੋ ਗੈਲਰੀ", about: "ਸਾਡੇ ਬਾਰੇ" }, links: { pune: "ਪੁਣੇ" }, copyright: "Copyright@2026. All rights reserved." }
+    footer: { 
+      headers: { trending: "ਟ੍ਰੈਂਡਿੰਗ", photoGallery: "ਫੋਟੋ ਗੈਲਰੀ", about: "ਸਾਡੇ ਬਾਰੇ", sites: "ਪੁਣੇਲੋਕ ਵੈੱਬਸਾਈਟਾਂ" }, 
+      links: { pune: "ਪੁਣੇ" }, 
+      copyright: "Copyright@2026. All rights reserved.",
+      brands: {
+        network: "ਪੁਣੇਲੋਕ ਨੈੱਟਵਰਕ",
+        live: "ਪੁਣੇਲੋਕ ਲਾਈਵ",
+        news: "ਪੁਣੇਲੋਕ ਨਿਊਜ਼",
+        ananda: "ਪੁਣੇਲੋਕ ਆਨੰਦ",
+        majha: "ਪੁਣੇਲੋਕ ਮਾਝਾ",
+        asmita: "ਪੁਣੇਲੋਕ ਅਸਮਿਤਾ",
+        ganga: "ਪੁਣੇਲੋਕ ਗੰਗਾ",
+        sanjha: "ਪੁਣੇਲੋਕ ਸਾਂਝਾ",
+        nadu: "ਪੁਣੇਲੋਕ ਨਾਡੂ",
+        desham: "ਪੁਣੇਲੋਕ ਦੇਸ਼ਮ"
+      } 
+    }
   },
   gujarati: {
     nav: {
@@ -297,7 +365,23 @@ export const translations = {
       login: "લોગ ઇન"
     },
     footerTop: { games: "ગેમ્સ", liveTv: "લાઇવ ટીવી", video: "વિડિઓ", photoGallery: "ફોટો ગેલેરી", podcast: "પોડકાસ્ટ", shortVideo: "શોર્ટ વિડિઓ" },
-    footer: { headers: { trending: "ટ્રેન્ડિંગ", photoGallery: "ફોટો ગેલેરી", about: "અમારા વિશે" }, links: { pune: "પુણે" }, copyright: "Copyright@2026. All rights reserved." }
+    footer: { 
+      headers: { trending: "ટ્રેન્ડિંગ", photoGallery: "ફોટો ગેલેરી", about: "અમારા વિશે", sites: "પુણેલોક વેબસાઇટ્સ" }, 
+      links: { pune: "પુણે" }, 
+      copyright: "Copyright@2026. All rights reserved.",
+      brands: {
+        network: "પુણેલોક નેટવર્ક",
+        live: "પુણેલોક લાઇવ",
+        news: "પુણેલોક ન્યૂઝ",
+        ananda: "પુણેલોક આનંદ",
+        majha: "પુણેલોક માઝા",
+        asmita: "પુણેલોક અસ્મિતા",
+        ganga: "પુણેલોક ગંગા",
+        sanjha: "પુણેલોક સાંઝા",
+        nadu: "પુણેલોક નાડુ",
+        desham: "પુણેલોક દેશમ"
+      } 
+    }
   },
   tamil: {
     nav: {
@@ -317,7 +401,23 @@ export const translations = {
       login: "உள்நுழை"
     },
     footerTop: { games: "விளையாட்டுகள்", liveTv: "நேரலை", video: "வீடியோ", photoGallery: "புகைப்படங்கள்", podcast: "பாட்காஸ்ட்", shortVideo: "குறும்படம்" },
-    footer: { headers: { trending: "டிரெண்டிங்", photoGallery: "புகைப்படங்கள்", about: "எங்களை பற்றி" }, links: { pune: "புனே" }, copyright: "Copyright@2026. All rights reserved." }
+    footer: { 
+      headers: { trending: "டிரெண்டிங்", photoGallery: "புகைப்படங்கள்", about: "எங்களை பற்றி", sites: "புனேலோக் இணையதளங்கள்" }, 
+      links: { pune: "புனே" }, 
+      copyright: "Copyright@2026. All rights reserved.",
+      brands: {
+        network: "புனேலோக் நெட்வொர்க்",
+        live: "புனேலோக் லைவ்",
+        news: "புனேலோக் நியூஸ்",
+        ananda: "புனேலோக் ஆனந்தா",
+        majha: "புனேலோக் மஜா",
+        asmita: "புனேலோக் அஸ்மிதா",
+        ganga: "புனேலோக் கங்கா",
+        sanjha: "புனேலோக் சஞ்சா",
+        nadu: "புனேலோக் நாடு",
+        desham: "புனேலோக் தேசம்"
+      }
+    }
   },
   telugu: {
     nav: {
@@ -337,6 +437,22 @@ export const translations = {
       login: "లాగిన్"
     },
     footerTop: { games: "గేమ్స్", liveTv: "లైవ్ టీవీ", video: "వీడియో", photoGallery: "ఫోటోలు", podcast: "పాడ్‌కాస్ట్", shortVideo: "షార్ట్ వీడియో" },
-    footer: { headers: { trending: "ట్రెండింగ్", photoGallery: "ఫోటోలు", about: "మా గురించి" }, links: { pune: "పూణే" }, copyright: "Copyright@2026. All rights reserved." }
+    footer: { 
+      headers: { trending: "ట్రెండింగ్", photoGallery: "ఫోటోలు", about: "మా గురించి", sites: "పుణెలోక్ వెబ్‌సైట్లు" }, 
+      links: { pune: "పూణే" }, 
+      copyright: "Copyright@2026. All rights reserved.",
+      brands: {
+        network: "పుణెలోక్ నెట్‌వర్క్",
+        live: "పుణెలోక్ లైవ్",
+        news: "పుణెలోక్ న్యూస్",
+        ananda: "పుణెలోక్ ఆనందా",
+        majha: "పుణెలోక్ మాజా",
+        asmita: "పుణెలోక్ అస్మితా",
+        ganga: "పుణెలోక్ గంగా",
+        sanjha: "పుణెలోక్ సాంఝా",
+        nadu: "పుణెలోక్ నాడు",
+        desham: "పుణెలోక్ దేశం"
+      }
+    }
   }
 };

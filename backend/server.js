@@ -24,6 +24,14 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/punelok_d
     .catch(err => console.error('MongoDB Connection Error:', err));
 
 // Routes
+const authRoutes = require('./routes/auth');
+const newsRoutes = require('./routes/news');
+const translateRoutes = require('./routes/translate');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/translate', translateRoutes);
+
 app.get('/', (req, res) => {
     res.send('API is running...');
 });

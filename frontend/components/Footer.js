@@ -165,16 +165,16 @@ export default function Footer() {
              </div>
              <h4>{t.headers?.sites}</h4>
              <div className="brand-list">
-                 <a href="#">ABP Network</a>
-                 <a href="#">ABP Live</a>
-                 <a href="#">ABP न्यूज़</a>
-                 <a href="#">ABP আনন্দ</a>
-                 <a href="#">ABP माझा</a>
-                 <a href="#">ABP અસ્મિતા</a>
-                 <a href="#">ABP Ganga</a>
-                 <a href="#">ABP ਸਾਂਝਾ</a>
-                 <a href="#">ABP நாடு</a>
-                 <a href="#">ABP దేశం</a>
+                 <a href="#">{t.brands?.network || "Punelok Network"}</a>
+                 <a href="#">{t.brands?.live || "Punelok Live"}</a>
+                 <a href="#">{t.brands?.news || "Punelok News"}</a>
+                 <a href="#">{t.brands?.ananda || "Punelok Ananda"}</a>
+                 <a href="#">{t.brands?.majha || "Punelok Majha"}</a>
+                 <a href="#">{t.brands?.asmita || "Punelok Asmita"}</a>
+                 <a href="#">{t.brands?.ganga || "Punelok Ganga"}</a>
+                 <a href="#">{t.brands?.sanjha || "Punelok Sanjha"}</a>
+                 <a href="#">{t.brands?.nadu || "Punelok Nadu"}</a>
+                 <a href="#">{t.brands?.desham || "Punelok Desham"}</a>
              </div>
           </div>
       </div>

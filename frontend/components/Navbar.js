@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { translations } from '@/utils/translations';
+import LoginModal from './LoginModal';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -11,6 +12,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const t = translations[language];
 
   // Fallback if translation is missing
@@ -32,6 +34,8 @@ export default function Navbar() {
 
   return (
     <header className="navbar-wrapper">
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+
       {/* Top Bar */}
       <div className="top-bar">
         <div className="top-bar-container">
@@ -99,6 +103,15 @@ export default function Navbar() {
                   </svg>
                 )}
               </button>
+            
+            <button 
+              onClick={() => setIsLoginModalOpen(true)}
+              className="login-btn-nav" 
+              style={{ marginRight: '10px', textDecoration: 'none', color: 'inherit', fontWeight: 'bold', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
+            >
+              Login
+            </button>
+
             <button 
               className="mobile-toggle"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
