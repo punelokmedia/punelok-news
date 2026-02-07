@@ -66,15 +66,18 @@ export default function Home() {
 
   const getLocalizedUpdates = (item) => {
       if (!item || !item.topUpdates) return [];
-      if (Array.isArray(item.topUpdates) && typeof item.topUpdates[0] === 'string') {
-          // Backward compatibility if it was just array of strings (unlikely now)
-          return item.topUpdates;
-      }
-      // New object structure
-      if (item.topUpdates[language]) {
-          return item.topUpdates[language];
-      }
-      return item.topUpdates.english || [];
+      
+      // If it's an old array structure (legacy), return it
+      if (Array.isArray(item.topUpdates)) return item.topUpdates;
+
+      // New object structure: try current language, then fallbacks
+      const updates = item.topUpdates;
+      if (updates[language] && updates[language].length > 0) return updates[language];
+      if (updates.english && updates.english.length > 0) return updates.english;
+      if (updates.marathi && updates.marathi.length > 0) return updates.marathi;
+      if (updates.hindi && updates.hindi.length > 0) return updates.hindi;
+      
+      return [];
   };
 
   return (

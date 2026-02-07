@@ -61,38 +61,24 @@ const seedDB = async () => {
         const crypto = require('crypto');
 
         for (const news of sampleNews) {
-            const groupId = crypto.randomUUID();
-            
-            // Create for Marathi
             await News.create({
-                title: news.title.marathi,
-                content: news.content.marathi,
+                title: {
+                    marathi: news.title.marathi,
+                    hindi: news.title.hindi,
+                    english: news.title.english
+                },
+                content: {
+                    marathi: news.content.marathi,
+                    hindi: news.content.hindi,
+                    english: news.content.english
+                },
+                topUpdates: {
+                    marathi: [news.title.marathi], // Just a placeholder
+                    hindi: [news.title.hindi],
+                    english: [news.title.english]
+                },
                 category: news.category,
-                language: 'marathi',
                 image: news.image,
-                groupId: groupId,
-                createdAt: new Date()
-            });
-
-            // Create for Hindi
-            await News.create({
-                title: news.title.hindi,
-                content: news.content.hindi,
-                category: news.category,
-                language: 'hindi',
-                image: news.image,
-                groupId: groupId,
-                createdAt: new Date()
-            });
-
-            // Create for English
-            await News.create({
-                title: news.title.english,
-                content: news.content.english,
-                category: news.category,
-                language: 'english',
-                image: news.image,
-                groupId: groupId,
                 createdAt: new Date()
             });
         }

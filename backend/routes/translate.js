@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const translate = require('@vitalets/google-translate-api');
+const { translate } = require('@vitalets/google-translate-api');
 
 router.post('/', async (req, res) => {
   try {
