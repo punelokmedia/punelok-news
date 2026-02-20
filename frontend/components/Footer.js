@@ -27,7 +27,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="footer-wrapper">
+    <footer className="footer-wrapper overflow-x-hidden w-full max-w-full">
       
       {/* Footer Top Bar (Red Background) */}
       <div className="footer-red-bar">
@@ -140,41 +140,49 @@ export default function Footer() {
       {/* Brand Sites Section */}
       <div className="footer-brands">
           <div className="footer-container">
-             <h4>{t.headers?.sites}</h4>
-             <div className="newsletter-section" style={{marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #333'}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
-                   <div>
-                      <h4 style={{color: '#fff', marginBottom: '10px', fontSize: '16px'}}>{t.headers?.newsletter}</h4>
-                      <div style={{display: 'flex', gap: '10px'}}>
-                         <input type="email" placeholder={t.headers?.placeholderEmail} style={{padding: '8px 12px', borderRadius: '4px', border: 'none', width: '250px'}} />
-                         <button style={{backgroundColor: '#FF0100', color: 'white', border: 'none', padding: '8px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'}}>{t.headers?.subscribeBtn}</button>
+             
+             {/* Newsletter & Connect */}
+             <div className="newsletter-section">
+                <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}> {/* Reduced gap */}
+                   
+                   {/* Row 1: Newsletter */}
+                   <div className="newsletter-box">
+                      <h4>{t.headers?.newsletter}</h4>
+                      <div className="newsletter-input-group">
+                         <input type="email" placeholder={t.headers?.placeholderEmail} className="newsletter-input" />
+                         <button className="subscribe-btn">{t.headers?.subscribeBtn}</button>
                       </div>
                    </div>
-                   <div>
-                       <h4 style={{color: '#fff', marginBottom: '10px', fontSize: '16px'}}>{t.headers?.stayConnected}</h4>
-                       <div style={{display: 'flex', gap: '10px'}}>
-                           <button style={{backgroundColor: '#25D366', color: 'white', padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight:'bold'}}>
-                               <FaWhatsapp size={16} /> WhatsApp
+
+                   {/* Row 2: Social Connect */}
+                   <div style={{borderTop: '1px solid #333', paddingTop: '15px'}}> {/* Reduced padding */}
+                       <h4 style={{color: '#fff', marginBottom: '10px', fontSize: '14px'}}>{t.headers?.stayConnected}</h4>
+                       <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+                           <button className="social-connect-btn btn-whatsapp">
+                               <FaWhatsapp size={16} /> Join WhatsApp
                            </button>
-                           <button style={{backgroundColor: '#0088cc', color: 'white', padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight:'bold'}}>
-                               <FaTelegramPlane size={16} /> Telegram
+                           <button className="social-connect-btn btn-telegram">
+                               <FaTelegramPlane size={16} /> Join Telegram
                            </button>
                        </div>
                    </div>
                 </div>
              </div>
-             <h4>{t.headers?.sites}</h4>
-             <div className="brand-list">
-                 <a href="#">{t.brands?.network || "Punelok Network"}</a>
-                 <a href="#">{t.brands?.live || "Punelok Live"}</a>
-                 <a href="#">{t.brands?.news || "Punelok News"}</a>
-                 <a href="#">{t.brands?.ananda || "Punelok Ananda"}</a>
-                 <a href="#">{t.brands?.majha || "Punelok Majha"}</a>
-                 <a href="#">{t.brands?.asmita || "Punelok Asmita"}</a>
-                 <a href="#">{t.brands?.ganga || "Punelok Ganga"}</a>
-                 <a href="#">{t.brands?.sanjha || "Punelok Sanjha"}</a>
-                 <a href="#">{t.brands?.nadu || "Punelok Nadu"}</a>
-                 <a href="#">{t.brands?.desham || "Punelok Desham"}</a>
+
+
+             <div className="brand-wrapper">
+                <div className="brand-list">
+                    <a href="#">{t.brands?.network || "Punelok Network"}</a>
+                    <a href="#">{t.brands?.live || "Punelok Live"}</a>
+                    <a href="#">{t.brands?.news || "Punelok News"}</a>
+                    <a href="#">{t.brands?.ananda || "Punelok Ananda"}</a>
+                    <a href="#">{t.brands?.majha || "Punelok Majha"}</a>
+                    <a href="#">{t.brands?.asmita || "Punelok Asmita"}</a>
+                    <a href="#">{t.brands?.ganga || "Punelok Ganga"}</a>
+                    <a href="#">{t.brands?.sanjha || "Punelok Sanjha"}</a>
+                    <a href="#">{t.brands?.nadu || "Punelok Nadu"}</a>
+                    <a href="#">{t.brands?.desham || "Punelok Desham"}</a>
+                </div>
              </div>
           </div>
       </div>

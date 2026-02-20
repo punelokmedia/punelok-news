@@ -12,6 +12,14 @@ const seedUsers = async () => {
         await User.deleteMany({});
         console.log('Cleared existing users');
 
+        // Drop legacy email index if it exists (fix for E11000 duplicate key error)
+        try {
+            await mongoose.connection.collection('users').dropIndex('email_1');
+            console.log('Dropped legacy email index');
+        } catch (e) {
+            // Index might not exist, which is fine
+        }
+
         // Create Admin
         const hashedPasswordAdmin = await bcrypt.hash('admin123', 10);
         const adminUser = new User({

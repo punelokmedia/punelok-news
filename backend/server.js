@@ -27,10 +27,13 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/punelok_d
 const authRoutes = require('./routes/auth');
 const newsRoutes = require('./routes/news');
 const translateRoutes = require('./routes/translate');
+const cricketRoutes = require('./routes/cricket');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/translate', translateRoutes);
+app.use('/api/cricket', cricketRoutes);
+
 
 app.get('/', (req, res) => {
     res.send('API is running...');

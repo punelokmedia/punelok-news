@@ -26,8 +26,25 @@ const newsSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['maharashtra', 'politics', 'entertainment', 'sports', 'business', 'astro', 'lifestyle', 'technology', 'world', 'india']
+    enum: ['maharashtra', 'politics', 'entertainment', 'sports', 'business', 'astro', 'lifestyle', 'technology', 'world', 'india', 'crime']
   },
+  isLive: {
+    type: Boolean,
+    default: false
+  },
+  views: {
+    type: Number,
+    default: 0
+  },
+  likes: {
+    type: Number,
+    default: 0
+  },
+  comments: [{
+    user: { type: String, default: 'Reader' },
+    content: { type: String, required: true },
+    date: { type: Date, default: Date.now }
+  }],
   createdAt: {
     type: Date,
     default: Date.now

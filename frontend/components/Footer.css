@@ -1,24 +1,28 @@
-/* Footer Wrapper */
+/* Global Footer Wrapper */
 .footer-wrapper {
   font-family: 'Mukta', sans-serif;
-  color: white;
+  color: #e0e0e0;
   width: 100%;
-  margin-top: auto;
+  max-width: 100%;
+  margin-top: 3rem;
+  position: relative;
+  z-index: 150;
+  flex-shrink: 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  overflow-x: hidden;
 }
 
 .footer-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 20px;
 }
 
-/* -- NEW RED TOP BAR -- */
+/* -- TOP BRAND BAR -- */
 .footer-red-bar {
-  background-color: white;
-  /* White Theme */
+  background-color: #ffffff;
   padding: 15px 0;
-  border-bottom: 1px solid #e0e0e0;
-  border-radius: 0cap;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .red-bar-flex {
@@ -32,226 +36,351 @@
 .red-bar-left {
   display: flex;
   align-items: center;
-  gap: 20px;
-}
-
-.footer-logo {
-  display: flex;
-  align-items: center;
+  gap: 24px;
 }
 
 .footer-logo-img {
-  height: 160px;
+  height: 48px;
+  /* Refined height */
   width: auto;
   object-fit: contain;
-  background: white;
-  /* Optional: if transparent SVG needs bg, but SVG handles it */
-  padding: 5px;
-  border-radius: 4px;
 }
 
-/* Language Dropdown */
+/* Language Pill */
 .lang-dropdown-wrapper {
   position: relative;
-  z-index: 200;
 }
 
 .lang-dropdown-btn {
-  background: linear-gradient(135deg, #FF0100 0%, #d60000 100%);
-  color: white;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 50px;
-  /* Pill shape */
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  border-radius: 20px;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 6px rgba(255, 1, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .lang-dropdown-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(255, 1, 0, 0.3);
+  background: #fff;
+  border-color: #FF0100;
+  color: #FF0100;
+  box-shadow: 0 2px 8px rgba(255, 1, 0, 0.1);
 }
 
 .lang-dropdown-menu {
   position: absolute;
-  top: calc(100% + 10px);
-  /* Slight gap */
+  top: calc(100% + 8px);
   left: 0;
-  background-color: white;
-  color: #333;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: white;
+  border: 1px solid #eee;
   border-radius: 12px;
-  padding: 8px;
+  padding: 6px;
   z-index: 100;
-  width: 160px;
-  /* Slightly wider */
-  min-width: 120px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  animation: dropdownFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-origin: top center;
+  min-width: 140px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: slideFade 0.2s ease-out;
 }
 
-@keyframes dropdownFadeIn {
+@keyframes slideFade {
   from {
     opacity: 0;
-    transform: translateY(-10px) scale(0.98);
+    transform: translateY(-5px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 .lang-option {
-  padding: 10px 16px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  padding: 10px 14px;
+  font-size: 14px;
   color: #444;
-  margin-bottom: 2px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .lang-option:hover {
-  background-color: rgba(255, 1, 0, 0.08);
-  /* Very light red tint */
+  background: #fff0f0;
   color: #FF0100;
-  padding-left: 20px;
-  /* Subtle slide right */
 }
 
-/* Right Side Pill Buttons */
+/* Right Quick Links */
 .red-bar-right {
   display: flex;
+  gap: 12px;
   flex-wrap: wrap;
-  gap: 10px;
 }
 
 .red-pill-btn {
-  background-color: #FF0100;
-  color: white;
-  padding: 6px 15px;
+  background-color: transparent;
+  color: #555;
+  border: 1px solid #eee;
+  padding: 6px 16px;
   border-radius: 20px;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
-  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .red-pill-btn:hover {
-  background-color: #ff1a1a;
+  background-color: #FF0100;
+  color: white;
+  border-color: #FF0100;
 }
 
-
-
-/* -- EXISTING SECTIONS (Refined) -- */
-
-/* Link Section (Red Gradient for Depth) */
+/* -- MAIN FOOTER CONTENT -- */
 .footer-link-section {
-  background: linear-gradient(180deg, #FF0100 0%, #d80000 100%);
-  padding: 50px 0;
-  border-bottom: 1px solid #b30000;
+  background-color: #FF0100;
+  /* Primary Red */
+  padding: 60px 0 40px;
+  border-top: 1px solid #cc0000;
 }
 
 .link-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
 }
 
 .link-column h3 {
-  color: #FFcc00;
-  /* Yellow Headers */
-  font-size: 16px;
+  color: #fff;
+  font-size: 18px;
   font-weight: 800;
-  margin-bottom: 20px;
+  /* Bolder for white on red */
+  margin-bottom: 24px;
+  position: relative;
+  display: inline-block;
   text-transform: uppercase;
-  letter-spacing: 1px;
+}
+
+.link-column h3::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 30px;
+  height: 3px;
+  background-color: #fff;
+  /* White accent on red */
+  border-radius: 2px;
 }
 
 .link-column a {
   display: block;
   color: rgba(255, 255, 255, 0.9);
+  /* High contrast white */
   text-decoration: none;
   font-size: 15px;
-  margin-bottom: 10px;
-  transition: all 0.3s ease;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+  font-weight: 500;
 }
 
 .link-column a:hover {
-  color: #fff;
-  transform: translateX(5px);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #FFcc00;
+  /* Yellow highlight on red */
+  transform: translateX(4px);
 }
 
-/* Middle Section Links (Black) */
+/* -- MIDDLE & BRANDS -- */
 .footer-middle {
-  background-color: #111;
-  padding: 15px 0;
-  border-bottom: 1px solid #222;
+  background-color: #d60000;
+  /* Slightly darker red */
+  padding: 20px 0;
+  border-bottom: 1px solid #b30000;
 }
 
 .middle-links {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: 25px;
 }
 
 .middle-links a {
   color: #fff;
-  text-decoration: none;
   font-size: 14px;
-  font-weight: 500;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
 }
 
 .middle-links a:hover {
+  color: #FFcc00;
   text-decoration: underline;
 }
 
-/* Brand Sites (Black) */
+
 .footer-brands {
   background-color: #111;
-  padding: 15px 0;
+  /* Back to Black */
+  padding: 40px 0;
   border-bottom: 1px solid #222;
 }
 
-.footer-brands h4 {
-  color: #ffcc00;
-  font-size: 14px;
-  margin-bottom: 10px;
-  text-transform: uppercase;
+/* Newsletter Section */
+/* Newsletter Section */
+.newsletter-section {
+  background: #1a1a1a;
+  /* Dark Grey box */
+  border: 1px solid #333;
+  border-radius: 8px;
+  /* Slightly smaller radius */
+  padding: 15px 20px;
+  /* Reduced padding */
+  margin-bottom: 30px;
+  /* Reduced margin */
+  max-width: 900px;
+  /* Limit width */
+  margin-left: auto;
+  margin-right: auto;
 }
 
+.newsletter-box h4 {
+  color: #FF0100;
+  /* Red Header */
+  margin-bottom: 10px;
+  /* Reduced margin */
+  font-size: 16px;
+  /* Smaller font */
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.newsletter-input-group {
+  display: flex;
+  gap: 8px;
+  /* Reduced gap */
+  flex-wrap: wrap;
+}
+
+.newsletter-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  /* Smaller padding */
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #000;
+  color: white;
+  outline: none;
+  transition: border 0.2s;
+  font-size: 14px;
+  /* Smaller font */
+}
+
+.newsletter-input:focus {
+  border-color: #FF0100;
+  box-shadow: none;
+}
+
+.subscribe-btn {
+  background-color: #FF0100;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  /* Smaller padding */
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  /* Smaller font */
+  transition: background 0.2s;
+}
+
+.subscribe-btn:hover {
+  background-color: #cc0000;
+}
+
+/* Social Buttons */
+.social-connect-btn {
+  padding: 8px 16px;
+  /* Smaller padding */
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  /* Smaller font */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: white;
+  transition: transform 0.2s;
+}
+
+.social-connect-btn:hover {
+  transform: translateY(-2px);
+}
+
+
+.brand-wrapper {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 20px;
+  overflow-x: auto;
+  /* Allow horizontal scroll if needed on small screens */
+  padding-bottom: 5px;
+  /* Spacing for scrollbar */
+}
+
+.footer-brand-header {
+  color: #FF0100;
+  /* Red Header */
+  font-size: 14px;
+  margin-bottom: 0;
+  /* Remove bottom margin for inline layout */
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  /* Prevent header wrapping */
+}
+
+/* Brand List */
 .brand-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+  flex-wrap: nowrap;
+  /* Prevent wrapping */
+  gap: 20px;
+  white-space: nowrap;
+  /* Keep links on one line */
 }
 
 .brand-list a {
-  color: #ccc;
-  text-decoration: none;
+  color: #ff3333;
+
+  /* Lighter Red for readability on black */
   font-size: 13px;
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
 }
 
 .brand-list a:hover {
-  color: white;
+  color: #fff;
 }
 
-/* Bottom Section (Black) */
+/* -- BOTTOM SECTION -- */
 .footer-bottom {
   background-color: #000;
-  padding: 20px 0;
+  /* Pure Black */
+  padding: 25px 0;
+  border-top: 1px solid #222;
 }
 
 .bottom-flex {
@@ -263,51 +392,63 @@
 }
 
 .copyright-text {
-  font-size: 12px;
-  color: #aaa;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
   max-width: 600px;
 }
 
 .footer-socials {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .follow-text {
-  color: #ffcc00;
-  font-size: 14px;
-  font-weight: bold;
+  color: #888;
+  font-size: 12px;
+  margin-right: 8px;
   text-transform: uppercase;
-  margin-right: 5px;
+  font-weight: 700;
 }
 
 .social-circle {
-  background-color: white;
-  color: black;
-  width: 24px;
-  height: 24px;
+  background-color: #222;
+  color: #fff;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   text-decoration: none;
-  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.social-circle:hover {
+  background-color: #FF0100;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(255, 1, 0, 0.3);
 }
 
 .footer-ad-btn {
-  background-color: #FF0100;
-  color: white;
-  padding: 5px 10px;
+  background-color: #333;
+  color: #aaa;
+  padding: 6px 12px;
+  border-radius: 4px;
   text-decoration: none;
   font-size: 12px;
-  font-weight: bold;
-  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
+.footer-ad-btn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* -- RESPONSIVE -- */
+@media (max-width: 900px) {
   .link-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -316,17 +457,24 @@
 @media (max-width: 768px) {
   .red-bar-flex {
     flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .link-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .middle-links {
-    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+  }
+
+  .red-bar-right {
+    justify-content: center;
+  }
+
+  .newsletter-input-group {
+    flex-direction: column;
+  }
+
+  .newsletter-input {
+    width: 100%;
+  }
+
+  .subscribe-btn {
+    width: 100%;
   }
 
   .bottom-flex {
@@ -336,5 +484,17 @@
 
   .footer-socials {
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .link-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .link-column h3::after {
+    left: 50%;
+    transform: translateX(-50%);
   }
 }

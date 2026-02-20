@@ -1,14 +1,15 @@
 /* ... Previous CSS ... */
 
-/* Global Reset for Navbar */
+/* Global Reset for Navbar – fixed at top, no up/down on scroll */
 .navbar-wrapper {
   font-family: 'Mukta', sans-serif;
-  /* Assuming a Marathi friendly font or defaulting */
   display: flex;
   flex-direction: column;
   width: 100%;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -141,7 +142,7 @@
 
 /* Logo */
 .logo-section {
-  
+
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -384,5 +385,144 @@
   .search-form-inline {
     width: 180px;
     /* Somewhat smaller on mobile/tablet */
+  }
+}
+
+/* Latest News Mega Menu Dropdown */
+.nav-item-wrapper {
+  position: static;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.mega-menu-dropdown {
+  position: fixed;
+  top: 98px;
+  /* Adjust based on your header height */
+  left: 0;
+  transform: none;
+  width: 100%;
+  max-width: 100%;
+  background-color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-top: 4px solid #FF0100;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-radius: 0 0 8px 8px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.mega-menu-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  padding: 30px 40px;
+  background: white;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.mega-menu-item {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.2s;
+}
+
+.mega-menu-item:hover {
+  transform: translateY(-5px);
+}
+
+.mega-menu-item:hover .mega-menu-title {
+  color: #FF0100;
+}
+
+.mega-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.mega-menu-category {
+  color: #FF0100;
+}
+
+.mega-menu-image-container {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  background-color: #f0f0f0;
+}
+
+.mega-menu-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.mega-menu-item:hover .mega-menu-image {
+  transform: scale(1.05);
+}
+
+.mega-menu-title {
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+  font-weight: 700;
+  color: #333;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dropdown-footer {
+  text-align: center;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+  border-radius: 0 0 8px 8px;
+}
+
+.view-all-link {
+  color: #FF0100;
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+}
+
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .mega-menu-dropdown {
+    display: none !important;
   }
 }

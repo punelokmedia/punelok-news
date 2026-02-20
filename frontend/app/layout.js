@@ -20,8 +20,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className="overflow-x-hidden">
+      <body className={`${geistSans.variable} ${geistMono.variable} overflow-x-hidden max-w-full w-full`}>
         <LanguageProvider>
           <LayoutWrapper>
             {children}

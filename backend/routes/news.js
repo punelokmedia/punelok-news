@@ -20,7 +20,7 @@ const upload = multer({ storage: storage });
 // Create News (Admin Only - Auto Translated)
 router.post('/create', authenticateToken, isAdmin, upload.single('image'), async (req, res) => {
   try {
-    const { title, content, category, language, videoUrl } = req.body;
+    const { title, content, category, language, videoUrl, isLive } = req.body;
     let topUpdates = [];
     try {
         topUpdates = JSON.parse(req.body.topUpdates || '[]');
@@ -72,6 +72,7 @@ router.post('/create', authenticateToken, isAdmin, upload.single('image'), async
             titles[targetLang] = title;
             contents[targetLang] = content;
             updates[targetLang] = topUpdates;
+            
         } else {
             try {
                  console.log(`Translating new post to ${targetLang}...`);
@@ -111,7 +112,8 @@ router.post('/create', authenticateToken, isAdmin, upload.single('image'), async
         topUpdates: updates,
         category,
         image: imageUrl,
-        videoUrl
+        videoUrl,
+        isLive: isLive === 'true' || isLive === true
     });
     
     await newsItem.save();
@@ -142,7 +144,7 @@ router.get('/', async (req, res) => {
 // Update News (Admin Only)
 router.put('/update/:id', authenticateToken, isAdmin, upload.single('image'), async (req, res) => {
   try {
-    const { title, content, category, language, videoUrl } = req.body;
+    const { title, content, category, language, videoUrl, isLive } = req.body;
     let topUpdates = [];
     try {
         topUpdates = JSON.parse(req.body.topUpdates || '[]');
@@ -249,6 +251,9 @@ router.put('/update/:id', authenticateToken, isAdmin, upload.single('image'), as
     news.category = category;
     news.image = imageUrl;
     news.videoUrl = videoUrl;
+    if (isLive !== undefined) {
+        news.isLive = isLive === 'true' || isLive === true;
+    }
 
     await news.save();
 
@@ -281,6 +286,55 @@ router.delete('/delete/:id', authenticateToken, isAdmin, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+});
+
+// Get Single News by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const news = await News.findById(req.params.id);
+    if (!news) return res.status(404).json({ message: 'News not found' });
+    res.json(news);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Increment View Count
+router.patch('/:id/view', async (req, res) => {
+    try {
+        const news = await News.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } }, { new: true });
+        res.json({ views: news?.views });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Increment Like Count
+router.patch('/:id/like', async (req, res) => {
+    try {
+        const news = await News.findByIdAndUpdate(req.params.id, { $inc: { likes: 1 } }, { new: true });
+        res.json({ likes: news?.likes });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Add Comment
+router.post('/:id/comment', async (req, res) => {
+    try {
+        const { user, content } = req.body;
+        const news = await News.findById(req.params.id);
+        if (!news) return res.status(404).json({ message: 'News not found' });
+        
+        // Sorting comments helps show latest on top if handled here, but usually array.push and frontend sort is standard.
+        // Let's just push.
+        news.comments.push({ user: user || 'Punelok Reader', content });
+        await news.save();
+        
+        res.json(news.comments);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
 module.exports = router;

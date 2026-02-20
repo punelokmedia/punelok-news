@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt } from 'react-icons/fa';
+import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt, FaBolt, FaGavel } from 'react-icons/fa';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -15,6 +15,7 @@ export default function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
+  const [formType, setFormType] = useState('live'); // 'live' or 'latest'
   
   // News Management State
   const [newsList, setNewsList] = useState([]);
@@ -28,11 +29,17 @@ export default function AdminDashboard() {
   
   // News Form State
   // We keep track of the *previous* language to know what to translate FROM
-  const [newsData, setNewsData] = useState({ title: '', content: '', category: 'maharashtra', language: 'marathi', image: null, videoUrl: '', topUpdates: [] });
+  const [newsData, setNewsData] = useState({ title: '', content: '', category: 'maharashtra', language: 'marathi', image: null, videoUrl: '', topUpdates: [], isLive: false });
   const [newsError, setNewsError] = useState('');
   const [newsSuccess, setNewsSuccess] = useState('');
+
+  // Logo Overlay State
+  const [logo, setLogo] = useState(null);
+  const [logoSettings, setLogoSettings] = useState({ x: 5, y: 5, size: 15 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
-  // Ref to store previous language to detect changes
+  const containerRef = useRef(null);
   const prevLanguageRef = useRef('marathi');
 
 
@@ -153,6 +160,113 @@ export default function AdminDashboard() {
       prevLanguageRef.current = newLang;
   };
 
+  // Drag and Drop Handlers for Logo
+  const handleMouseDown = (e) => {
+      e.preventDefault(); // Prevent default browser drag
+      e.stopPropagation();
+      
+      if (!containerRef.current) return;
+      
+      const logoRect = e.target.getBoundingClientRect();
+      const offsetX = e.clientX - logoRect.left;
+      const offsetY = e.clientY - logoRect.top;
+      
+      setDragOffset({ x: offsetX, y: offsetY });
+      setIsDragging(true);
+  };
+
+  const handleMouseMove = (e) => {
+      if (!isDragging || !containerRef.current) return;
+      e.preventDefault();
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      
+      // Calculate new position relative to container, accounting for the initial click offset
+      let newXPixels = e.clientX - containerRect.left - dragOffset.x;
+      let newYPixels = e.clientY - containerRect.top - dragOffset.y;
+
+      // Convert to percentages
+      let newX = (newXPixels / containerRect.width) * 100;
+      let newY = (newYPixels / containerRect.height) * 100;
+
+      // Clamp values (keeping it roughly within bounds, allowing slight overhang)
+      newX = Math.max(-10, Math.min(100, newX)); 
+      newY = Math.max(-10, Math.min(100, newY));
+
+      setLogoSettings(prev => ({ ...prev, x: newX, y: newY }));
+  };
+
+  const handleMouseUp = () => {
+      setIsDragging(false);
+  };
+
+  // Attach global mouse listeners when dragging
+  useEffect(() => {
+      if (isDragging) {
+          window.addEventListener('mousemove', handleMouseMove);
+          window.addEventListener('mouseup', handleMouseUp);
+      } else {
+          window.removeEventListener('mousemove', handleMouseMove);
+          window.removeEventListener('mouseup', handleMouseUp);
+      }
+      return () => {
+          window.removeEventListener('mousemove', handleMouseMove);
+          window.removeEventListener('mouseup', handleMouseUp);
+      };
+  }, [isDragging, dragOffset]); // Re-bind if offset changes (though offset shouldn't change during drag)
+
+
+
+  const mergeImages = async (mainImgSource, logoFile, settings) => {
+    return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const mainImg = new Image();
+        
+        mainImg.crossOrigin = "Anonymous"; // Handle CORS for existing URLs
+
+        mainImg.onload = () => {
+             canvas.width = mainImg.width;
+             canvas.height = mainImg.height;
+             
+             // Draw Main Image
+             ctx.drawImage(mainImg, 0, 0);
+
+             if (logoFile) {
+                 const logoImg = new Image();
+                 logoImg.onload = () => {
+                     // Calculate position and size based on percentages
+                     const logoWidth = (mainImg.width * settings.size) / 100;
+                     const logoAspectRatio = logoImg.width / logoImg.height;
+                     const logoHeight = logoWidth / logoAspectRatio;
+                     
+                     const x = (mainImg.width * settings.x) / 100;
+                     const y = (mainImg.height * settings.y) / 100;
+                     
+                     ctx.drawImage(logoImg, x, y, logoWidth, logoHeight);
+                     
+                     canvas.toBlob((blob) => {
+                         resolve(blob);
+                     }, 'image/jpeg', 0.90);
+                 };
+                 logoImg.src = URL.createObjectURL(logoFile);
+             } else {
+                 resolve(null);
+             }
+        };
+        
+        mainImg.onerror = (err) => {
+            console.error("Error loading main image for merge", err);
+            reject(err);
+        };
+
+        if (mainImgSource instanceof File) {
+             mainImg.src = URL.createObjectURL(mainImgSource);
+        } else {
+             mainImg.src = mainImgSource; // URL
+        }
+    });
+  };
 
   const handleNewsSubmit = async (e) => {
       e.preventDefault();
@@ -167,14 +281,35 @@ export default function AdminDashboard() {
           formData.append('category', newsData.category);
           formData.append('language', newsData.language);
           formData.append('topUpdates', JSON.stringify(newsData.topUpdates)); // Send as JSON string
+          
+          // Set isLive based on form type (if create) or preserve state (if edit)
+          const isLiveValue = isEditing ? newsData.isLive : (formType === 'live');
+          formData.append('isLive', isLiveValue);
+          
           if (newsData.videoUrl) formData.append('videoUrl', newsData.videoUrl);
           
-          if (newsData.image instanceof File) {
-              formData.append('image', newsData.image);
-          } else if (newsData.image && isEditing) {
+          let imageToUpload = newsData.image;
+
+          // If Logo is present, merge it
+          if (logo && newsData.image) {
+             try {
+                const mergedBlob = await mergeImages(newsData.image, logo, logoSettings);
+                if (mergedBlob) {
+                    imageToUpload = new File([mergedBlob], "news-image-merged.jpg", { type: "image/jpeg" });
+                }
+             } catch (mergeErr) {
+                 console.error("Merge failed", mergeErr);
+                 // Fallback to original image if merge fails, or alert user?
+                 // For now, proceed with original, but maybe warn?
+             }
+          }
+
+          if (imageToUpload instanceof File) {
+              formData.append('image', imageToUpload);
+          } else if (imageToUpload && isEditing) {
               // Should pass existing image URL if not changed? 
               // Backend logic handles "existingImage" if needed, or we just don't send "image" field to keep old one
-              formData.append('existingImage', newsData.image);
+              formData.append('existingImage', imageToUpload);
           }
 
           if (isEditing) {
@@ -206,6 +341,8 @@ export default function AdminDashboard() {
 
   const resetNewsForm = () => {
       setNewsData({ title: '', content: '', category: 'maharashtra', language: 'marathi', image: null, videoUrl: '', topUpdates: [] });
+      setLogo(null);
+      setLogoSettings({ x: 5, y: 5, size: 15 });
       setIsEditing(false);
       setCurrentNewsId(null);
       setNewsError('');
@@ -242,6 +379,8 @@ export default function AdminDashboard() {
           videoUrl: item.videoUrl || '',
           topUpdates: getUpdates(item.topUpdates, currentLang)
       });
+      setLogo(null); // Reset logo on edit init
+      setLogoSettings({ x: 5, y: 5, size: 15 });
       setCurrentNewsId(item._id);
       setIsEditing(true);
       setIsNewsModalOpen(true);
@@ -287,11 +426,30 @@ export default function AdminDashboard() {
              <span>Dashboard</span>
           </button>
           <button 
-             onClick={() => { resetNewsForm(); setIsNewsModalOpen(true); }}
+             onClick={() => { resetNewsForm(); setFormType('live'); setIsNewsModalOpen(true); }}
              className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
           >
              <FaNewspaper />
              <span>Add Live News</span>
+          </button>
+          <button 
+             onClick={() => { resetNewsForm(); setFormType('latest'); setIsNewsModalOpen(true); }}
+             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
+          >
+             <FaBolt />
+             <span>Add Latest News</span>
+          </button>
+          <button 
+             onClick={() => { 
+                resetNewsForm(); 
+                setNewsData(prev => ({ ...prev, category: 'crime' }));
+                setFormType('latest'); 
+                setIsNewsModalOpen(true); 
+             }}
+             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
+          >
+             <FaGavel />
+             <span>Add Crime News</span>
           </button>
         </nav>
         <div className="p-4 border-t border-gray-800">
@@ -493,7 +651,8 @@ export default function AdminDashboard() {
                 {/* Drawer Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white shadow-sm">
                     <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                      <FaNewspaper className="mr-3 text-red-600"/> {isEditing ? 'Edit News' : 'Add Live News'}
+                      {formType === 'latest' ? <FaBolt className="mr-3 text-red-600"/> : <FaNewspaper className="mr-3 text-red-600"/>}
+                      {isEditing ? 'Edit News' : (formType === 'latest' ? 'Add Latest News' : 'Add Live News')}
                     </h2>
                     <button 
                         onClick={() => setIsNewsModalOpen(false)}
@@ -550,6 +709,7 @@ export default function AdminDashboard() {
                                         className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-colors capitalize text-sm appearance-none"
                                     >
                                         <option value="maharashtra">Maharashtra</option>
+                                        <option value="crime">Crime</option>
                                         <option value="politics">Politics</option>
                                         <option value="entertainment">Entertainment</option>
                                         <option value="sports">Sports</option>
@@ -606,7 +766,8 @@ export default function AdminDashboard() {
                             />
                         </div>
 
-                        {/* Top Updates Section */}
+                        {/* Top Updates Section - Only for Live News */}
+                        {formType === 'live' && (
                         <div>
                             <label className="block text-gray-700 text-xs font-bold mb-2 uppercase tracking-wide">
                                 {newsData.language === 'marathi' ? 'महत्वाचे अपडेट्स (Top Updates)' : newsData.language === 'hindi' ? 'मुख्य अपडेट्स' : 'Top Updates ( Bullet Points )'}
@@ -651,6 +812,7 @@ export default function AdminDashboard() {
                                 <span className="text-lg leading-none">+</span> {newsData.language === 'marathi' ? 'नवीन मुद्दा जोडा' : 'Add New Point'}
                             </button>
                         </div>
+                        )}
 
                         <div>
                             <label className="block text-gray-700 text-xs font-bold mb-1.5 uppercase tracking-wide">
@@ -671,6 +833,109 @@ export default function AdminDashboard() {
                                     <p className="text-[10px] text-gray-400 mt-1">MAX 800x400px</p>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Logo Overlay Section */}
+                        <div className="bg-gray-100 p-4 rounded-lg border border-gray-200">
+                             <label className="block text-gray-700 text-xs font-bold mb-3 uppercase tracking-wide">
+                                {newsData.language === 'marathi' ? 'लोगो किंवा स्टिकर जोडा (Optional)' : 'Add Logo / Sticker Overlay'}
+                             </label>
+                             
+                             <div className="flex gap-4 mb-4">
+                                <div className="flex-1">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*"
+                                        onChange={(e) => setLogo(e.target.files[0])}
+                                        className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer"
+                                    />
+                                </div>
+                                {logo && (
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setLogo(null)}
+                                        className="text-red-600 text-xs font-bold hover:underline"
+                                    >
+                                        Remove Logo
+                                    </button>
+                                )}
+                             </div>
+
+                             {/* Preview Area */}
+                             {(newsData.image || logo) && (
+                                 <div className="space-y-4">
+                                     <div 
+                                        ref={containerRef}
+                                        className="relative w-full h-48 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-gray-300 cursor-crosshair select-none"
+                                     >
+                                         {/* Main Image Layer */}
+                                         {newsData.image ? (
+                                             <img 
+                                                src={newsData.image instanceof File ? URL.createObjectURL(newsData.image) : newsData.image} 
+                                                className="absolute inset-0 w-full h-full object-contain pointer-events-none" 
+                                                alt="Main Preview"
+                                             />
+                                         ) : (
+                                             <div className="text-gray-500 text-xs text-center p-4">
+                                                No Main Image Selected.<br/> 
+                                                <span className="text-[10px] opacity-70">Upload one to see the preview.</span>
+                                             </div>
+                                         )}
+
+                                         {/* Logo Layer */}
+                                         {logo && (
+                                             <img 
+                                                src={URL.createObjectURL(logo)}
+                                                draggable={false}
+                                                onMouseDown={handleMouseDown}
+                                                className={`absolute object-contain transition-none shadow-sm hover:shadow-lg hover:ring-2 ring-red-400 rounded-sm cursor-move ${isDragging ? 'opacity-80' : ''}`}
+                                                style={{
+                                                    left: `${logoSettings.x}%`,
+                                                    top: `${logoSettings.y}%`,
+                                                    width: `${logoSettings.size}%`,
+                                                    maxWidth: '50%',
+                                                    maxHeight: '50%',
+                                                    zIndex: 10
+                                                }}
+                                                alt="Logo Preview"
+                                             />
+                                         )}
+                                     </div>
+                                     
+                                     {/* Controls */}
+                                     {logo && (
+                                         <div className="grid grid-cols-3 gap-3">
+                                             <div>
+                                                 <label className="text-[10px] text-gray-500 font-bold uppercase block mb-1">X Position ({logoSettings.x}%)</label>
+                                                 <input 
+                                                    type="range" min="0" max="95" 
+                                                    value={logoSettings.x} 
+                                                    onChange={(e) => setLogoSettings({...logoSettings, x: Number(e.target.value)})}
+                                                    className="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                                                 />
+                                             </div>
+                                             <div>
+                                                 <label className="text-[10px] text-gray-500 font-bold uppercase block mb-1">Y Position ({logoSettings.y}%)</label>
+                                                 <input 
+                                                    type="range" min="0" max="95" 
+                                                    value={logoSettings.y} 
+                                                    onChange={(e) => setLogoSettings({...logoSettings, y: Number(e.target.value)})}
+                                                    className="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                                                 />
+                                             </div>
+                                             <div>
+                                                 <label className="text-[10px] text-gray-500 font-bold uppercase block mb-1">Size ({logoSettings.size}%)</label>
+                                                 <input 
+                                                    type="range" min="1" max="50" 
+                                                    value={logoSettings.size} 
+                                                    onChange={(e) => setLogoSettings({...logoSettings, size: Number(e.target.value)})}
+                                                    className="w-full h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                                                 />
+                                             </div>
+                                         </div>
+                                     )}
+                                 </div>
+                             )}
                         </div>
                     </form>
                 </div>

@@ -6,39 +6,221 @@
   --foreground-rgb: 0, 0, 0;
 }
 
+html {
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100%;
+  overflow-y: auto;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: white;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  overflow-y: auto;
 }
+
+/* Global Professional Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #C40B0B;
+  /* Punelok Red */
+  border-radius: 4px;
+  border: 2px solid #f1f1f1;
+  /* Adds a bit of padding effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a00000;
+}
+
+/* Main content padding when navbar + explorer bar fixed */
+.main-with-fixed-nav {
+  padding-top: 100px;
+  position: relative;
+  z-index: 30;
+}
+
 
 @layer utilities {
   .animate-fade-in-up {
     animation: fadeInUp 0.8s ease-out forwards;
   }
-  
+
   @keyframes fadeInUp {
     from {
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
 
+  /* Marquee Animation */
+  .animate-marquee {
+    animation: marquee 60s linear infinite;
+  }
+
+  .mask-marquee-fade {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+
+  .group:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Fade mask for vertical list */
+  .mask-linear-fade {
+    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: #f1f1f1;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #ccbea8; 
+    background: #ccbea8;
     border-radius: 3px;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #b52b2b;
+  }
+
+  /* Explorer sidebar – navbar se sata; height = jitna content (एक्स्प्लोर, लाईव्ह टीव्ही, ...) utna hi */
+  .explorer-sidebar {
+    position: fixed;
+    left: 0;
+    top: 100px;
+    width: 120px;
+    height: auto;
+    min-height: 0;
+    max-height: calc(100vh - 100px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Enable scrolling */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0;
+    padding-bottom: 0.5rem;
+    gap: 0.75rem;
+    /* Removed hidden scrollbar properties to use global style */
+    background: #C40B0B;
+    border-right: 1px solid #990000;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+  }
+
+  /* Removed .explorer-sidebar::-webkit-scrollbar { display: none; } so it uses global style */
+
+  @media (min-width: 1024px) {
+    .explorer-sidebar {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .explorer-sidebar {
+      display: none;
+    }
+  }
+
+  /* Hero title – multi-line, natural word wrap (no "t oday" break) */
+  .hero-title-wrap {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    box-sizing: border-box;
+  }
+
+  /* Hero bullet text – wrap at words, no cut */
+  .hero-bullet-text {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    box-sizing: border-box;
+  }
+
+  /* Cricket Center – horizontal scrollbar visible, red */
+  .cricket-cards-scroll {
+    scrollbar-gutter: stable;
+  }
+
+  .cricket-cards-scroll::-webkit-scrollbar {
+    height: 10px;
+  }
+
+  .cricket-cards-scroll::-webkit-scrollbar-track {
+    background: #1f2937;
+    border-radius: 5px;
+  }
+
+  .cricket-cards-scroll::-webkit-scrollbar-thumb {
+    background: #c40404;
+    border-radius: 5px;
+  }
+
+  .cricket-cards-scroll::-webkit-scrollbar-thumb:hover {
+    background: #990000;
+  }
+
+  /* Cricket Center – light theme horizontal scrollbar */
+  .cricket-cards-scroll-light::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .cricket-cards-scroll-light::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+
+  .cricket-cards-scroll-light::-webkit-scrollbar-thumb {
+    background: #c40404;
+    border-radius: 4px;
+  }
+
+  .cricket-cards-scroll-light::-webkit-scrollbar-thumb:hover {
+    background: #990000;
   }
 }
