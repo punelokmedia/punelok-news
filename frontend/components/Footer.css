@@ -40,10 +40,15 @@
 }
 
 .footer-logo-img {
-  height: 48px;
-  /* Refined height */
+  height: 140px;
+  /* Oversized for extra impact */
   width: auto;
   object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.footer-logo-img:hover {
+  transform: scale(1.05);
 }
 
 /* Language Pill */

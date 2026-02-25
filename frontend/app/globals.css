@@ -47,7 +47,7 @@ body {
 
 /* Main content padding when navbar + explorer bar fixed */
 .main-with-fixed-nav {
-  padding-top: 100px;
+  padding-top: 140px;
   position: relative;
   z-index: 30;
 }
@@ -117,15 +117,16 @@ body {
     background: #b52b2b;
   }
 
-  /* Explorer sidebar – navbar se sata; height = jitna content (एक्स्प्लोर, लाईव्ह टीव्ही, ...) utna hi */
+  /* Explorer sidebar – adjusted top to clear the taller navbar */
   .explorer-sidebar {
     position: fixed;
     left: 0;
-    top: 100px;
+    top: 135px;
+    /* Clear total header height (~45px top bar + 90px main nav) */
     width: 120px;
     height: auto;
     min-height: 0;
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 135px);
     overflow-x: hidden;
     overflow-y: auto;
     /* Enable scrolling */

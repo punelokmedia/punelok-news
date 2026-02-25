@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { FaChevronRight, FaBolt, FaCaretRight, FaClock, FaFire, FaRegNewspaper, FaHeadphones, FaThLarge, FaTrophy, FaGraduationCap, FaBriefcase, FaChartLine } from 'react-icons/fa';
 import HorizontalTicker from '@/components/HorizontalTicker';
 import CricketDashboard from '@/components/CricketDashboard';
+import MarketTrends from '@/components/MarketTrends';
 
 // ... (NewsTicker component remains unchanged) ...
 const NewsTicker = ({ items, getLocalizedContent }) => {
@@ -46,6 +47,7 @@ const NewsTicker = ({ items, getLocalizedContent }) => {
 export default function Home() {
   const { language } = useLanguage();
   const [news, setNews] = useState([]);
+  const [marketTrends, setMarketTrends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const router = useRouter();
@@ -66,10 +68,14 @@ export default function Home() {
     const fetchNews = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/news?language=${language}`);
-        setNews(res.data);
+        const [newsRes, marketRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/news?language=${language}`),
+          axios.get(`http://localhost:5000/api/market`)
+        ]);
+        setNews(newsRes.data);
+        setMarketTrends(marketRes.data);
       } catch (error) {
-        console.error("Failed to fetch news", error);
+        console.error("Failed to fetch data", error);
       } finally {
         setLoading(false);
       }
@@ -832,6 +838,9 @@ export default function Home() {
 
         </div>
         {/* lg:flex row ends – iske niche ab cricket full width */}
+
+        {/* Market Trends Center */}
+        <MarketTrends data={marketTrends} />
 
         {/* Cricket Center – sabse niche, footer se pehle; sidebar ke andar nahi */}
         <div className="mt-12 w-full">

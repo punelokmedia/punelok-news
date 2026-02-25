@@ -24,59 +24,61 @@
 }
 
 .top-bar-container {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 12px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
-.language-list {
+.top-left-section {
   display: flex;
-  gap: 20px;
   align-items: center;
-  position: relative;
-  z-index: 50;
-  flex-wrap: wrap;
-  height: 100%;
+  gap: 15px;
+  flex-shrink: 0;
 }
 
-.lang-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 4px 8px;
-  font-family: inherit;
-  transition: all 0.2s ease;
-  position: relative;
-  z-index: 51;
+.language-compact-list {
   display: flex;
   align-items: center;
-  /* Ensure text is vertically centered */
-  line-height: 1;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 12px;
   border-radius: 4px;
 }
 
-.lang-btn:hover,
-.lang-btn.active {
-  color: #FFcc00;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.1);
+.lang-btn-minimal {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: all 0.2s;
+  font-family: 'Mukta', sans-serif;
 }
 
-.top-right-section {
-  display: flex;
-  align-items: center;
-  gap: 25px;
+.lang-btn-minimal:hover,
+.lang-btn-minimal.active {
+  color: #FFcc00;
+  font-weight: 700;
 }
+
+.lang-separator {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+}
+
+
 
 .social-icons {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
+  flex-shrink: 0;
+  /* Prevent icons from being squashed */
 }
 
 .social-icon {
@@ -104,35 +106,176 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.advertise-link {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
+.live-market-label {
   display: flex;
   align-items: center;
-  transition: color 0.2s;
-  letter-spacing: 0.5px;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  color: #fff;
+  margin-right: 5px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
-.advertise-link:hover {
-  color: #FFcc00;
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #fff;
+  animation: pulseLive 1.5s infinite;
+}
+
+@keyframes pulseLive {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.4);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.market-ticker-container {
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+  margin: 0 10px;
+  position: relative;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  padding: 0;
+  min-width: 0;
+  /* Important for flex-grow to work without pushing siblings */
+}
+
+.market-ticker-track {
+  display: inline-flex;
+  animation: tickerScroll 40s linear infinite;
+  gap: 12px;
+  padding: 0 12px;
+}
+
+.market-ticker-container:hover .market-ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-item-square {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 15px;
+  border-radius: 4px;
+  min-width: 180px;
+  height: 38px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ticker-item-square:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+}
+
+.ticker-icon-box {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ticker-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ticker-label-small {
+  font-size: 9px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.5px;
+  line-height: 1;
+  margin-bottom: 2px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ticker-value-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.ticker-value-bold {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ticker-trend-box {
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.ticker-trend-box.up {
+  color: #44ff44;
+}
+
+.ticker-trend-box.down {
+  color: #ffbbbb;
+}
+
+.ticker-trend-box.neutral {
+  color: #aaa;
 }
 
 /* Main Navbar Styling */
 .main-navbar {
   background-color: white;
   padding: 0;
-  height: 60px;
-  /* Fixed smaller height */
-  border-bottom: 1px solid #e0e0e0;
+  height: 90px;
+  /* Slightly taller for a more solid feel */
+  border-bottom: 2px solid #f0f0f0;
   position: relative;
+  z-index: 900;
+  overflow: visible;
+  /* Let the logo pop out */
 }
 
 .main-navbar-container {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -142,49 +285,60 @@
 
 /* Logo */
 .logo-section {
-
   display: flex;
   align-items: center;
   text-decoration: none;
   height: 100%;
   position: relative;
-  /* Back in flow */
-  width: 140px;
-  /* Reserve space for logo */
+  width: auto;
+  min-width: 180px;
+  flex-shrink: 0;
   z-index: 20;
-
+  padding: 5px 0;
 }
 
 .navbar-logo-img {
-  height: 160px;
-  /* Increased size significantly */
+  height: 120px;
+  /* Strong visibility but within bounds */
   width: auto;
   object-fit: contain;
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+}
+
+.navbar-logo-img:hover {
+  transform: scale(1.05);
 }
 
 /* Nav Menu */
 .nav-menu {
   display: flex;
-  gap: 0;
+  gap: 30px;
   align-items: center;
-  margin: 0;
+  margin: 0 40px;
   flex-grow: 1;
   justify-content: space-evenly;
-  /* Distribute space equally */
-  padding: 0 20px;
+  padding: 0;
+}
+
+@media (min-width: 1440px) {
+  .nav-menu {
+    gap: 60px;
+    /* Increased gap for monitors */
+    justify-content: space-between;
+    /* Takes full available space on large monitors */
+    margin: 0 100px;
+    /* Increased margin to push items away from edges */
+  }
 }
 
 .nav-item {
   text-decoration: none;
   color: #333;
-  font-weight: 600;
-  font-size: 15px;
-  /* Slightly larger */
+  font-weight: 700;
+  font-size: 19px;
+  /* Increased from 17px to 19px */
+  /* Larger font */
   transition: color 0.2s;
   white-space: nowrap;
 }
@@ -200,8 +354,9 @@
   align-items: center;
   cursor: pointer;
   white-space: nowrap;
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 800;
+  font-size: 19px;
+  /* Increased to match others */
 }
 
 /* Right Actions */
@@ -343,6 +498,18 @@
 
 @media (max-width: 768px) {
   .top-bar-container {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .market-ticker-container {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .top-right-section {
+    width: 100%;
     flex-direction: column;
     gap: 10px;
   }
@@ -524,5 +691,21 @@
 @media (max-width: 768px) {
   .mega-menu-dropdown {
     display: none !important;
+  }
+
+  .logo-section {
+    width: auto;
+    min-width: 140px;
+    height: 70px;
+    padding: 0;
+  }
+
+  .navbar-logo-img {
+    height: 100px !important;
+    /* Ensure visibility on mobile */
+    position: relative;
+    top: auto;
+    transform: none;
+    left: 0;
   }
 }

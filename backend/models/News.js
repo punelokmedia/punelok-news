@@ -26,7 +26,7 @@ const newsSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['maharashtra', 'politics', 'entertainment', 'sports', 'business', 'astro', 'lifestyle', 'technology', 'world', 'india', 'crime']
+    enum: ['maharashtra', 'politics', 'entertainment', 'sports', 'business', 'astro', 'lifestyle', 'technology', 'world', 'india', 'crime', 'jobs', 'education']
   },
   isLive: {
     type: Boolean,

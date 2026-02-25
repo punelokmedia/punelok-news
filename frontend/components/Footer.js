@@ -143,7 +143,7 @@ export default function Footer() {
              
              {/* Newsletter & Connect */}
              <div className="newsletter-section">
-                <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}> {/* Reduced gap */}
+                <div style={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
                    
                    {/* Row 1: Newsletter */}
                    <div className="newsletter-box">
@@ -155,7 +155,7 @@ export default function Footer() {
                    </div>
 
                    {/* Row 2: Social Connect */}
-                   <div style={{borderTop: '1px solid #333', paddingTop: '15px'}}> {/* Reduced padding */}
+                   <div style={{borderTop: '1px solid #333', paddingTop: '15px'}}>
                        <h4 style={{color: '#fff', marginBottom: '10px', fontSize: '14px'}}>{t.headers?.stayConnected}</h4>
                        <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
                            <button className="social-connect-btn btn-whatsapp">
@@ -166,22 +166,6 @@ export default function Footer() {
                            </button>
                        </div>
                    </div>
-                </div>
-             </div>
-
-
-             <div className="brand-wrapper">
-                <div className="brand-list">
-                    <a href="#">{t.brands?.network || "Punelok Network"}</a>
-                    <a href="#">{t.brands?.live || "Punelok Live"}</a>
-                    <a href="#">{t.brands?.news || "Punelok News"}</a>
-                    <a href="#">{t.brands?.ananda || "Punelok Ananda"}</a>
-                    <a href="#">{t.brands?.majha || "Punelok Majha"}</a>
-                    <a href="#">{t.brands?.asmita || "Punelok Asmita"}</a>
-                    <a href="#">{t.brands?.ganga || "Punelok Ganga"}</a>
-                    <a href="#">{t.brands?.sanjha || "Punelok Sanjha"}</a>
-                    <a href="#">{t.brands?.nadu || "Punelok Nadu"}</a>
-                    <a href="#">{t.brands?.desham || "Punelok Desham"}</a>
                 </div>
              </div>
           </div>

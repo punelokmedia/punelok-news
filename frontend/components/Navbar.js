@@ -1,11 +1,20 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { useLanguage } from '@/context/LanguageContext';
 import { translations } from '@/utils/translations';
 import LoginModal from './LoginModal';
+import { 
+  FaXTwitter, 
+  FaFacebookF, 
+  FaAt, 
+  FaYoutube, 
+  FaInstagram, 
+  FaTelegram, 
+  FaWhatsapp 
+} from 'react-icons/fa6';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -69,6 +78,9 @@ export default function Navbar() {
   const [moreNews, setMoreNews] = useState([]);
   const [isMoreHovered, setIsMoreHovered] = useState(false);
   const moreHoverTimeoutRef = useRef(null);
+  
+  // Market Trends State
+  const [marketTrends, setMarketTrends] = useState([]);
 
   // Fetch news for dropdowns
   useEffect(() => {
@@ -143,6 +155,15 @@ export default function Navbar() {
         } catch (err) { console.error("Failed to fetch lifestyle news", err); }
     }
 
+    const fetchMarket = async () => {
+        try {
+            const res = await axios.get('http://localhost:5000/api/market');
+            setMarketTrends(res.data);
+        } catch (err) {
+            console.error("Failed to fetch market trends for ticker", err);
+        }
+    };
+
     fetchLatest();
     fetchPolitics();
     fetchMaharashtra();
@@ -151,6 +172,7 @@ export default function Navbar() {
     fetchBusiness();
     fetchAstro();
     fetchLifestyle();
+    fetchMarket();
   }, [language]);
 
   const getLocalizedTitle = (item) => {
@@ -261,30 +283,81 @@ export default function Navbar() {
       {/* Top Bar */}
       <div className="top-bar">
         <div className="top-bar-container">
-          <div className="language-list">
-            {languages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => setLanguage(lang.code)}
-                className={`lang-btn ${language === lang.code ? 'active' : ''}`}
-              >
-                {lang.label}
-              </button>
-            ))}
-          </div>
-          <div className="top-right-section">
-            <div className="social-icons">
-               <a href="#" className="social-icon">𝕏</a>
-               <a href="#" className="social-icon">f</a>
-               <a href="#" className="social-icon">@</a>
-               <a href="#" className="social-icon">▶</a>
-               <a href="#" className="social-icon">📷</a>
-               <a href="#" className="social-icon">✈</a>
-               <a href="#" className="social-icon">💬</a>
+          <div className="top-left-section">
+            <div className="language-compact-list">
+              {languages.map((lang, index) => (
+                <React.Fragment key={lang.code}>
+                  <button
+                    onClick={() => setLanguage(lang.code)}
+                    className={`lang-btn-minimal ${language === lang.code ? 'active' : ''}`}
+                  >
+                    {lang.label}
+                  </button>
+                  {index < languages.length - 1 && <span className="lang-separator">|</span>}
+                </React.Fragment>
+              ))}
             </div>
-            <a href="/advertise" className="advertise-link">
-              {safeT.advertise}
-            </a>
+            
+            <div className="live-market-label">
+              <span className="live-dot"></span>
+              LIVE
+            </div>
+          </div>
+          {marketTrends.length > 0 && (
+            <div className="market-ticker-container">
+              <div className="market-ticker-track">
+                {[...marketTrends, ...marketTrends].map((item, index) => {
+                  const getBg = (cat) => {
+                    switch(cat) {
+                      case 'gold': 
+                        return 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600&auto=format&fit=crop';
+                      case 'silver': 
+                        return 'https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=600&auto=format&fit=crop';
+                      case 'crypto': 
+                        return 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=600&auto=format&fit=crop';
+                      case 'nft': 
+                        return 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop';
+                      default: 
+                        return 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=600&auto=format&fit=crop';
+                    }
+                  };
+                  return (
+                    <div 
+                      key={index} 
+                      className="ticker-item-square"
+                      style={{
+                        backgroundImage: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url(${getBg(item.category)})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        borderLeft: item.category === 'gold' ? '3px solid #FFd700' : item.category === 'silver' ? '3px solid #C0C0C0' : '3px solid #ddd'
+                      }}
+                    >
+                      <div className="ticker-icon-box">
+                        {item.category === 'gold' ? '🏆' : item.category === 'silver' ? '🥈' : item.category === 'crypto' ? '₿' : item.category === 'nft' ? '🖼️' : '📈'}
+                      </div>
+                      <div className="ticker-info">
+                        <span className="ticker-label-small">{item.title[language] || item.title.english}</span>
+                        <div className="ticker-value-row">
+                          <span className="ticker-value-bold">{item.value[language] || item.value.english}</span>
+                          <span className={`ticker-trend-box ${item.trend}`}>
+                            {item.trend === 'up' ? '▲' : item.trend === 'down' ? '▼' : '●'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          <div className="social-icons">
+             <a href="#" className="social-icon"><FaXTwitter size={14} /></a>
+             <a href="#" className="social-icon"><FaFacebookF size={14} /></a>
+             <a href="#" className="social-icon"><FaAt size={14} /></a>
+             <a href="#" className="social-icon"><FaYoutube size={14} /></a>
+             <a href="#" className="social-icon"><FaInstagram size={14} /></a>
+             <a href="#" className="social-icon"><FaTelegram size={14} /></a>
+             <a href="#" className="social-icon"><FaWhatsapp size={14} /></a>
           </div>
         </div>
       </div>
@@ -594,7 +667,7 @@ export default function Navbar() {
             <button 
               onClick={() => setIsLoginModalOpen(true)}
               className="login-btn-nav" 
-              style={{ marginRight: '10px', textDecoration: 'none', color: 'inherit', fontWeight: 'bold', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
+              style={{ textDecoration: 'none', color: 'inherit', fontWeight: 'bold', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
             >
               Login
             </button>

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt, FaBolt, FaGavel } from 'react-icons/fa';
+import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt, FaBolt, FaGavel, FaChartLine, FaBriefcase, FaGraduationCap, FaTrophy } from 'react-icons/fa';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -16,6 +16,14 @@ export default function AdminDashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
   const [formType, setFormType] = useState('live'); // 'live' or 'latest'
+  const [isMarketModalOpen, setIsMarketModalOpen] = useState(false);
+  const [marketList, setMarketList] = useState([]);
+  const [marketData, setMarketData] = useState({
+    title: { marathi: '', hindi: '', english: '' },
+    value: { marathi: '', hindi: '', english: '' },
+    category: 'other',
+    trend: 'neutral'
+  });
   
   // News Management State
   const [newsList, setNewsList] = useState([]);
@@ -65,15 +73,17 @@ export default function AdminDashboard() {
   const fetchData = async (token) => {
     try {
       setLoading(true);
-      const [pendingRes, statsRes, newsRes] = await Promise.all([
+      const [pendingRes, statsRes, newsRes, marketRes] = await Promise.all([
         axios.get('http://localhost:5000/api/auth/pending-users', { headers: { Authorization: `Bearer ${token}` } }),
         axios.get('http://localhost:5000/api/auth/stats', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://localhost:5000/api/news?limit=50') // Get latest 50 news
+        axios.get('http://localhost:5000/api/news?limit=50'),
+        axios.get('http://localhost:5000/api/market')
       ]);
       
       setUsers(pendingRes.data);
       setStats(statsRes.data);
       setNewsList(newsRes.data);
+      setMarketList(marketRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -400,6 +410,39 @@ export default function AdminDashboard() {
       }
   };
 
+  const handleMarketSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = Cookies.get('token');
+      await axios.post('http://localhost:5000/api/market/create', marketData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsMarketModalOpen(false);
+      setMarketData({
+        title: { marathi: '', hindi: '', english: '' },
+        value: { marathi: '', hindi: '', english: '' },
+        category: 'other',
+        trend: 'neutral'
+      });
+      fetchData(token);
+    } catch (error) {
+      alert('Failed to add market update');
+    }
+  };
+
+  const handleDeleteMarket = async (id) => {
+    if(!confirm('Delete this market update?')) return;
+    try {
+      const token = Cookies.get('token');
+      await axios.delete(`http://localhost:5000/api/market/delete/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchData(token);
+    } catch (error) {
+      alert('Failed to delete market update');
+    }
+  };
+
 
   const handleLogout = () => {
     Cookies.remove('token');
@@ -446,10 +489,55 @@ export default function AdminDashboard() {
                 setFormType('latest'); 
                 setIsNewsModalOpen(true); 
              }}
-             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
+             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
           >
              <FaGavel />
              <span>Add Crime News</span>
+          </button>
+          <button 
+             onClick={() => { 
+                resetNewsForm(); 
+                setNewsData(prev => ({ ...prev, category: 'jobs' }));
+                setFormType('latest'); 
+                setIsNewsModalOpen(true); 
+             }}
+             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
+          >
+             <FaBriefcase />
+             <span>Add Job News</span>
+          </button>
+          <button 
+             onClick={() => { 
+                resetNewsForm(); 
+                setNewsData(prev => ({ ...prev, category: 'education' }));
+                setFormType('latest'); 
+                setIsNewsModalOpen(true); 
+             }}
+             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
+          >
+             <FaGraduationCap />
+             <span>Add Education News</span>
+          </button>
+          <button 
+             onClick={() => { 
+                resetNewsForm(); 
+                setNewsData(prev => ({ ...prev, category: 'sports' }));
+                setFormType('latest'); 
+                setIsNewsModalOpen(true); 
+             }}
+             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
+          >
+             <FaTrophy />
+             <span>Add Sports News</span>
+          </button>
+          <button 
+             onClick={() => { 
+                setIsMarketModalOpen(true);
+             }}
+             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
+          >
+             <FaChartLine />
+             <span>Market Trends</span>
           </button>
         </nav>
         <div className="p-4 border-t border-gray-800">
@@ -630,6 +718,47 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
             </div>
+            {/* Manage Market Trends */}
+            <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-6">Market Trends (NFT, Gold, etc.)</h2>
+            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100 mb-10">
+              <table className="min-w-max w-full table-auto">
+                <thead className="bg-gray-50">
+                  <tr className="text-gray-600 uppercase text-xs leading-normal font-semibold tracking-wider">
+                    <th className="py-4 px-6 text-left">Category</th>
+                    <th className="py-4 px-6 text-left">Label (Marathi)</th>
+                    <th className="py-4 px-6 text-right">Value</th>
+                    <th className="py-4 px-6 text-center">Trend</th>
+                    <th className="py-4 px-6 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600 text-sm font-light">
+                    {marketList.length === 0 ? (
+                        <tr><td colSpan="5" className="py-8 text-center bg-gray-50 italic">No market trends added.</td></tr>
+                    ) : (
+                        marketList.map((item) => (
+                            <tr key={item._id} className="border-b border-gray-100 hover:bg-gray-50">
+                                <td className="py-3 px-6 text-left capitalize font-bold text-blue-600">{item.category}</td>
+                                <td className="py-3 px-6 text-left">{item.title.marathi}</td>
+                                <td className="py-3 px-6 text-right font-black text-gray-900">{item.value.marathi}</td>
+                                <td className="py-3 px-6 text-center">
+                                  <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${
+                                    item.trend === 'up' ? 'bg-green-100 text-green-700' : 
+                                    item.trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+                                  }`}>
+                                    {item.trend}
+                                  </span>
+                                </td>
+                                <td className="py-3 px-6 text-center">
+                                    <button onClick={() => handleDeleteMarket(item._id)} className="text-red-400 hover:text-red-600 transform hover:scale-110">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </main>
 
@@ -718,6 +847,8 @@ export default function AdminDashboard() {
                                         <option value="lifestyle">Lifestyle</option>
                                         <option value="world">World</option>
                                         <option value="india">India</option>
+                                        <option value="jobs">Jobs/Employment</option>
+                                        <option value="education">Education</option>
                                     </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -1013,6 +1144,72 @@ export default function AdminDashboard() {
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-200 mt-4"
                 >
                   Create Account
+                </button>
+             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Market Trend Modal */}
+      {isMarketModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-8 relative max-h-[90vh] overflow-y-auto">
+             <button onClick={() => setIsMarketModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
+             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+               <FaChartLine className="text-blue-600" /> Add Market Trend (NFT, Gold, etc.)
+             </h2>
+             
+             <form onSubmit={handleMarketSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Category</label>
+                    <select 
+                      value={marketData.category}
+                      onChange={(e) => setMarketData({...marketData, category: e.target.value})}
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="gold">Gold</option>
+                      <option value="silver">Silver</option>
+                      <option value="crypto">Crypto</option>
+                      <option value="nft">NFT</option>
+                      <option value="stock">Stock</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Trend</label>
+                    <select 
+                      value={marketData.trend}
+                      onChange={(e) => setMarketData({...marketData, trend: e.target.value})}
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="up">Up (Green)</option>
+                      <option value="down">Down (Red)</option>
+                      <option value="neutral">Neutral (Gray)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-gray-700">Display Labels (Title)</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <input placeholder="Marathi Label" value={marketData.title.marathi} onChange={(e) => setMarketData({...marketData, title: {...marketData.title, marathi: e.target.value}})} className="px-3 py-2 border rounded" required />
+                    <input placeholder="Hindi Label" value={marketData.title.hindi} onChange={(e) => setMarketData({...marketData, title: {...marketData.title, hindi: e.target.value}})} className="px-3 py-2 border rounded" required />
+                    <input placeholder="English Label" value={marketData.title.english} onChange={(e) => setMarketData({...marketData, title: {...marketData.title, english: e.target.value}})} className="px-3 py-2 border rounded" required />
+                  </div>
+                </div>
+
+                <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-gray-700">Display Values (Price/Rate)</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <input placeholder="Marathi Value" value={marketData.value.marathi} onChange={(e) => setMarketData({...marketData, value: {...marketData.value, marathi: e.target.value}})} className="px-3 py-2 border rounded" required />
+                    <input placeholder="Hindi Value" value={marketData.value.hindi} onChange={(e) => setMarketData({...marketData, value: {...marketData.value, hindi: e.target.value}})} className="px-3 py-2 border rounded" required />
+                    <input placeholder="English Value" value={marketData.value.english} onChange={(e) => setMarketData({...marketData, value: {...marketData.value, english: e.target.value}})} className="px-3 py-2 border rounded" required />
+                  </div>
+                </div>
+                
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 uppercase tracking-wider">
+                  Add to Live Feed
                 </button>
              </form>
           </div>

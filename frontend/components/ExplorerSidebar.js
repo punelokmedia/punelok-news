@@ -12,20 +12,26 @@ export default function ExplorerSidebar() {
         { 
             id: 1, 
             label: language === 'english' ? 'Live TV' : language === 'hindi' ? 'लाइव टीवी' : 'लाईव्ह टीव्ही', 
-            icon: <FaClock />, 
+            icon: <FaPlay />, 
             href: '/live-tv' 
+        },
+        { 
+            id: 2, 
+            label: 'LIVE', 
+            icon: <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse" />, 
+            href: '/live' 
         },
         { 
             id: 3, 
             label: language === 'english' ? 'Video Shorts' : language === 'hindi' ? 'वीडियो शॉर्ट्स' : 'व्हिडिओ शॉर्ट्स', 
-            icon: <FaFire />, 
+            icon: <FaFilm />, 
             href: '/shorts' 
         },
         { 
             id: 5, 
             label: language === 'english' ? 'Photo Gallery' : language === 'hindi' ? 'फोटो गैलरी' : 'फोटो गॅलरी', 
             icon: <FaRegNewspaper />, 
-            href: '/photos' 
+            href: '/gallery' 
         },
         { 
             id: 6, 
@@ -37,31 +43,31 @@ export default function ExplorerSidebar() {
             id: 7, 
             label: language === 'english' ? 'Sports' : language === 'hindi' ? 'खेल' : 'खेळ', 
             icon: <FaTrophy />, 
-            href: '/sports' 
+            href: '/category/sports' 
         },
         { 
             id: 8, 
             label: language === 'english' ? 'Jobs' : language === 'hindi' ? 'रोजगार' : 'रोजगार', 
             icon: <FaBriefcase />, 
-            href: '/jobs' 
+            href: '/category/jobs' 
         },
         { 
             id: 9, 
             label: language === 'english' ? 'Education' : language === 'hindi' ? 'शिक्षा' : 'शिक्षण', 
             icon: <FaGraduationCap />, 
-            href: '/education' 
+            href: '/category/education' 
         },
         { 
             id: 10, 
             label: language === 'english' ? 'Entertainment' : language === 'hindi' ? 'मनोरंजन' : 'मनोरंजन', 
             icon: <FaFilm />, 
-            href: '/entertainment' 
+            href: '/category/entertainment' 
         },
         { 
             id: 11, 
             label: language === 'english' ? 'Crime' : language === 'hindi' ? 'क्राइम' : 'गुन्हेगारी', 
             icon: <FaGavel />, 
-            href: '/crime' 
+            href: '/category/crime' 
         },
     ];
 
