@@ -160,7 +160,7 @@ export default function NewsDetail() {
                     {/* Main Content (Left Column 70%) */}
                     <main className="lg:w-[70%] bg-white mb-8 lg:mb-0">
                         {/* Headline */}
-                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-4 font-['Kohinoor_Devanagari','Mukta',sans-serif] text-justify">
+                        <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-semibold text-gray-900 leading-tight mb-4 text-justify">
                             {getLocalizedContent(news, 'title')}
                         </h1>
 
@@ -236,14 +236,14 @@ export default function NewsDetail() {
 
                         {/* Article Content */}
                         {/* Article Content */}
-                        <div className="prose prose-lg prose-red max-w-none text-gray-800 leading-loose font-['Kohinoor_Devanagari','Mukta',sans-serif] text-justify text-lg sm:text-xl">
+                        <div className="prose prose-lg prose-red max-w-none text-gray-800 leading-loose text-justify text-base">
                             {/* Simple mapping for paragraphs with advanced formatting */}
                             {getLocalizedContent(news, 'content').split('\n').map((paragraph, idx) => {
                                 if (!paragraph.trim()) return null;
                                 // Add Drop Cap for the first paragraph
                                 const isFirst = idx === 0;
                                 return (
-                                    <p key={idx} className={`mb-6 ${isFirst ? 'first-letter:text-5xl first-letter:font-bold first-letter:text-red-600 first-letter:float-left first-letter:mr-3 first-letter:mt-[-6px]' : ''}`}>
+                                    <p key={idx} className={`mb-6 font-normal ${isFirst ? 'first-letter:text-5xl first-letter:font-bold first-letter:text-red-600 first-letter:float-left first-letter:mr-3 first-letter:mt-[-6px]' : ''}`}>
                                         {paragraph}
                                     </p>
                                 );
@@ -326,7 +326,7 @@ export default function NewsDetail() {
                         {/* Trending / Recommended Widget */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                             <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
-                                <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wide border-l-4 border-red-600 pl-3">
+                                <h3 className="font-semibold text-gray-900 uppercase text-[14px] tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'ट्रेंडिंग न्यूज' : 'Trending News'}
                                 </h3>
                                 <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
@@ -349,7 +349,7 @@ export default function NewsDetail() {
                                             {idx === 0 && <span className="absolute top-0 right-0 w-3 h-3 bg-red-600 skew-x-[-10deg]"></span>}
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-red-700 leading-snug mb-1">
+                                            <h4 className="text-[16px] font-normal text-gray-800 line-clamp-2 group-hover:text-red-700 leading-snug mb-1">
                                                 {getLocalizedContent(item, 'title')}
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">{item.category}</span>
@@ -582,7 +582,7 @@ export default function NewsDetail() {
                 <section className="mt-12 lg:mt-16 pt-8 border-t border-gray-200">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center pl-3 border-l-8 border-red-600">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 uppercase tracking-tight">
+                            <h2 className="text-xl sm:text-[24px] font-semibold text-gray-800 uppercase tracking-tight">
                                 {language === 'marathi' ? 'आणखी बातम्या वाचा' : language === 'hindi' ? 'और भी पढ़ें' : 'Read More News'}
                             </h2>
                         </div>
@@ -625,7 +625,7 @@ export default function NewsDetail() {
                                             {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                         </span>
                                     </div>
-                                    <h3 className="font-bold text-gray-900 text-lg leading-snug line-clamp-3 mb-2 group-hover:text-red-700 transition-colors">
+                                    <h3 className="font-normal text-gray-900 text-[16px] leading-snug line-clamp-3 mb-2 group-hover:text-red-700 transition-colors">
                                         {getLocalizedContent(item, 'title')}
                                     </h3>
                                 </div>

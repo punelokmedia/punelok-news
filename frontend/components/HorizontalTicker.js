@@ -20,7 +20,7 @@ const HorizontalTicker = ({ title, items, bgColor = "bg-red-600", titleColor = "
     return (
       <div className={`group w-full ${bgColor} text-white overflow-hidden flex items-center h-8 sm:h-10 border-b border-white/10 relative z-20 shadow-sm`}>
          {/* Skewed Title Label */}
-         <div className={`${titleColor} px-3 sm:px-6 h-full flex items-center justify-center font-bold text-[10px] sm:text-xs tracking-widest shrink-0 z-30 uppercase relative`}>
+         <div className={`${titleColor} px-3 sm:px-6 h-full flex items-center justify-center font-bold text-xs sm:text-[14px] tracking-widest shrink-0 z-30 uppercase relative`}>
             {title}
             <span className="w-1.5 h-1.5 bg-white rounded-full ml-2 animate-pulse shadow-[0_0_8px_white]"></span>
             {/* Slanted Edge Effect */}
@@ -35,14 +35,14 @@ const HorizontalTicker = ({ title, items, bgColor = "bg-red-600", titleColor = "
                {[...items, ...items, ...items, ...items].map((item, idx) => (
                   <span 
                     key={idx} 
-                    className="flex items-center text-xs sm:text-sm font-semibold tracking-wider hover:text-yellow-300 transition-colors duration-200 cursor-pointer uppercase"
+                    className="flex items-center text-sm sm:text-base font-semibold tracking-tight hover:text-yellow-300 transition-colors duration-200 cursor-pointer"
                     onClick={() => {
                         if (typeof item === 'object') {
                             router.push(`/news/${item._id || item.id}`);
                         }
                     }}
                   >
-                     <span className="text-yellow-400 text-[8px] mx-4 transform rotate-45">■</span>
+                     <span className="text-white opacity-40 text-[10px] mx-4">•</span>
                      {typeof item === 'string' ? item : getLocalizedContent(item, 'title')}
                   </span>
                ))}

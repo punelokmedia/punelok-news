@@ -26,13 +26,13 @@ const NewsTicker = ({ items, getLocalizedContent }) => {
   return (
     <div className="flex flex-col h-full min-h-0 relative overflow-hidden mask-linear-fade">
       <div 
-        className="flex flex-col space-y-4 transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateY(-${currentIndex * 60}px)` }} // Approximate height of each item + gap
+        className="flex flex-col space-y-2 transition-transform duration-700 ease-in-out"
+        style={{ transform: `translateY(-${currentIndex * 68}px)` }} // Exact item height + gap
       >
         {items.map((item, idx) => (
-          <div key={idx} className="group cursor-pointer flex items-start gap-3 min-w-0 overflow-hidden shrink-0 h-[48px]"> 
-              <FaCaretRight className="text-white mt-[5px] text-lg shrink-0 flex-shrink-0 drop-shadow-md" />
-              <p className="hero-bullet-text text-base sm:text-lg font-medium text-white leading-snug flex-1 text-left line-clamp-2 font-['Kohinoor_Devanagari','Mukta',sans-serif] drop-shadow-sm">
+          <div key={idx} className="group cursor-pointer flex items-start gap-3 min-w-0 overflow-hidden shrink-0 h-[60px] py-1"> 
+              <FaCaretRight className="text-white mt-[6px] text-lg shrink-0 flex-shrink-0 drop-shadow-md" />
+              <p className="hero-bullet-text text-[15px] font-semibold text-white leading-relaxed flex-1 text-left line-clamp-2 drop-shadow-sm">
                 {typeof item === 'string' ? item : getLocalizedContent(item, 'title')}
               </p>
           </div>
@@ -276,8 +276,8 @@ export default function Home() {
                 {/* Exact reference: 3 Columns - Image | Title | List */}
                 <div key={featured._id || safeIndex} className="flex flex-col lg:flex-row h-full animate-in fade-in duration-700">
                   
-                  {/* Column 1: Image (Auto Width / Aspect Video) - Forces 16:9 Ratio on Desktop */}
-                  <div className="w-full lg:w-auto lg:aspect-video lg:min-w-0 relative min-w-0 flex flex-col shrink-0 lg:h-full h-[200px] sm:h-[250px] bg-black overflow-hidden group">
+                  {/* Column 1: Image (45% Width) */}
+                  <div className="w-full lg:w-[45%] relative min-w-0 flex flex-col shrink-0 lg:h-full h-[200px] sm:h-[250px] bg-black overflow-hidden group">
                     <Image 
                       src={featured.image || 'https://placehold.co/800x600/png?text=News'} 
                       alt={getLocalizedContent(featured, 'title')}
@@ -288,7 +288,7 @@ export default function Home() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
                     {featured.isLive && (
-                      <div className="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.8)] rounded-br-xl z-10 flex items-center gap-2 backdrop-blur-sm bg-opacity-90 border-r border-b border-red-400">
+                      <div className="absolute top-0 left-0 bg-red-600 text-white text-xs font-bold px-3 py-1.5 uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.8)] rounded-br-2xl z-10 flex items-center gap-2 backdrop-blur-sm bg-opacity-90 border-r border-b border-red-400">
                         <span className="w-2 h-2 bg-white rounded-full animate-ping shadow-[0_0_10px_white]"></span>
                         LIVE
                       </div>
@@ -305,7 +305,7 @@ export default function Home() {
 
                   {/* Column 2: Big Title Text (Flex Fill) - Auto width */}
                   <div 
-                    className="flex w-full lg:flex-1 p-3 sm:p-5 flex-col justify-center text-white border-b lg:border-b-0 lg:border-r border-white/20 bg-gradient-to-br from-[#c40404] to-[#a00000] overflow-hidden h-full relative backdrop-blur-md cursor-pointer hover:bg-black/10 transition-colors"
+                    className="flex w-full lg:flex-1 p-3 sm:p-5 flex-col justify-start pt-6 lg:pt-6 text-white border-b lg:border-b-0 lg:border-r border-white/20 bg-gradient-to-br from-[#c40404] to-[#a00000] overflow-hidden h-full relative backdrop-blur-md cursor-pointer hover:bg-black/10 transition-colors"
                     onClick={() => router.push(`/news/${featured._id || featured.id}`)} // Updated onClick
                   >
                       <div className="absolute top-0 right-0 p-2 opacity-10">
@@ -319,13 +319,13 @@ export default function Home() {
                             const displayLine2 = line2.replace(/^[-–—]*/, '').trim();
                             
                             return (
-                              <div className="flex flex-col gap-1 items-start justify-center h-full">
-                                <span className="text-xl sm:text-2xl lg:text-3xl text-white block leading-tight tracking-tight break-words font-extrabold line-clamp-4 animate-in slide-in-from-bottom-2 duration-500 drop-shadow-lg">
+                              <div className="flex flex-col gap-1 items-start justify-start">
+                                <span className="text-xl sm:text-2xl lg:text-[25px] text-white block leading-normal tracking-tight break-words font-semibold line-clamp-2 animate-in slide-in-from-bottom-2 duration-500 drop-shadow-lg">
                                   {displayLine1}
                                 </span>
                                 {/* Decorative line */}
-                                <div className="w-12 h-1.5 bg-[#ffcc00] rounded-full shrink-0 my-1 shadow-sm opacity-90"></div>
-                                <span className="text-xl sm:text-2xl lg:text-3xl text-[#ffcc00] block leading-tight tracking-tight break-words font-extrabold line-clamp-4 animate-in slide-in-from-bottom-4 duration-700 delay-100 drop-shadow-lg filter brightness-110">
+                                <div className="w-12 h-1 bg-[#ffcc00] rounded-full shrink-0 my-1 shadow-sm opacity-90"></div>
+                                <span className="text-xl sm:text-2xl lg:text-[25px] text-[#ffcc00] block leading-relaxed tracking-tight break-words font-semibold line-clamp-2 animate-in slide-in-from-bottom-4 duration-700 delay-100 drop-shadow-lg filter brightness-110">
                                   {displayLine2}
                                 </span>
                               </div>
@@ -334,8 +334,8 @@ export default function Home() {
                       </h1>
                   </div>
 
-                  {/* Column 3: List (30%) */}
-                  <div className="w-full lg:w-[30%] lg:min-w-0 py-3 px-3 sm:py-4 sm:px-4 lg:py-3 lg:px-4 flex flex-col justify-center min-w-0 bg-[#c40404] overflow-hidden">
+                  {/* Column 3: List (25%) */}
+                  <div className="w-full lg:w-[25%] lg:min-w-0 py-3 px-3 sm:py-4 sm:px-4 lg:py-3 lg:px-4 flex flex-col justify-start pt-6 lg:pt-6 min-w-0 bg-[#c40404] overflow-hidden">
                     <div className="mb-2 pb-1 border-b border-white/20">
                         <h3 className="text-white font-bold text-sm uppercase tracking-wider flex items-center gap-2">
                            <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
@@ -369,7 +369,7 @@ export default function Home() {
 
             <div className="mt-6 sm:mt-8 mb-6 sm:mb-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'ताज्या बातम्या' : language === 'hindi' ? 'ताज़ा ख़बर' : 'Latest News'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -398,7 +398,7 @@ export default function Home() {
                         >
                             {/* Category Header */}
                             <div className="flex items-center justify-between mb-1.5">
-                                <span className="text-red-600 font-bold text-[10px] uppercase tracking-wide">
+                                <span className="text-red-600 font-bold text-xs uppercase tracking-wide">
                                     {item.category ? getLocalizedContent(item, 'category') : (language === 'marathi' ? 'महाराष्ट्र' : 'Maharashtra')}
                                 </span>
                             </div>
@@ -413,14 +413,14 @@ export default function Home() {
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
                                 />
                                 {item.isLive && (
-                                    <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded animate-pulse z-10">
+                                    <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded animate-pulse z-10">
                                         LIVE
                                     </div>
                                 )}
                             </div>
                             
                             {/* Title */}
-                            <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">
+                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">
                                 {getLocalizedContent(item, 'title')}
                             </h3>
                         </div>
@@ -432,7 +432,7 @@ export default function Home() {
             {maharashtraNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'महाराष्ट्र' : 'MAHARASHTRA'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -495,7 +495,7 @@ export default function Home() {
             {entertainmentNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'मनोरंजन' : 'ENTERTAINMENT'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -517,7 +517,7 @@ export default function Home() {
                             <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
-                            <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
+                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
                         </div>
                     ))}
                 </div>
@@ -528,7 +528,7 @@ export default function Home() {
             {sportsNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'क्रीडा' : 'SPORTS'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -543,7 +543,7 @@ export default function Home() {
                             <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
-                            <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
+                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
                         </div>
                     ))}
                 </div>
@@ -554,7 +554,7 @@ export default function Home() {
             {businessNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'बिझनेस' : 'BUSINESS'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -568,7 +568,7 @@ export default function Home() {
                              <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
-                            <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
+                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
                         </div>
                     ))}
                 </div>
@@ -579,7 +579,7 @@ export default function Home() {
             {astroNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'भविष्य' : 'ASTRO'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -593,7 +593,7 @@ export default function Home() {
                             <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
-                            <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
+                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
                         </div>
                     ))}
                 </div>
@@ -604,7 +604,7 @@ export default function Home() {
             {lifestyleNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'लाईफस्टाईल' : 'LIFESTYLE'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -618,7 +618,7 @@ export default function Home() {
                             <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
-                            <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
+                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
                         </div>
                     ))}
                 </div>
@@ -629,7 +629,7 @@ export default function Home() {
             {politicsNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
-                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tighter font-['Kohinoor_Devanagari','Mukta',sans-serif] leading-none">
+                    <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
                         {language === 'marathi' ? 'राजकारण' : 'POLITICS'}
                     </h2>
                     <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
@@ -694,7 +694,7 @@ export default function Home() {
         {remainingGridStories.length > 0 && (
           <div className="mt-6 sm:mt-8">
             <div className="flex items-center mb-4 sm:mb-6 pl-2 border-l-4 border-red-600">
-               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 uppercase tracking-tight">
+               <h2 className="text-xl sm:text-[24px] font-semibold text-gray-800 uppercase tracking-tight">
                   {language === 'marathi' ? 'ताज्या बातम्या' : 'Recent Stories'}
                </h2>
             </div>
@@ -721,7 +721,7 @@ export default function Home() {
                       
                       {/* Text Content - Low visual noise */}
                       <div className="flex flex-col flex-1">
-                         <h3 className="text-base font-bold text-gray-900 leading-snug mb-2 line-clamp-2 group-hover:text-red-700 transition-colors">
+                         <h3 className="text-[16px] font-normal text-gray-900 leading-snug mb-2 line-clamp-2 group-hover:text-red-700 transition-colors">
                             {getLocalizedContent(item, 'title')}
                          </h3>
                          <div className="flex items-center text-xs text-gray-500 mt-auto font-medium">
@@ -742,7 +742,7 @@ export default function Home() {
                 
                 {/* 1. Crime Column */}
                 <div className="flex flex-col">
-                    <div className="bg-[#cc0000] text-white font-bold text-xl px-4 py-2 mb-4 w-fit shadow-sm">
+                    <div className="bg-[#cc0000] text-white font-semibold text-[24px] px-4 py-2 mb-4 w-fit shadow-sm">
                         {language === 'marathi' ? 'क्राईम' : 'CRIME'}
                     </div>
                     {allCrimeNews.length > 0 ? (
@@ -774,7 +774,7 @@ export default function Home() {
 
                 {/* 2. Business Column */}
                 <div className="flex flex-col">
-                    <div className="bg-[#cc0000] text-white font-bold text-xl px-4 py-2 mb-4 w-fit shadow-sm">
+                    <div className="bg-[#cc0000] text-white font-semibold text-[24px] px-4 py-2 mb-4 w-fit shadow-sm">
                         {language === 'marathi' ? 'व्यवसाय' : 'BUSINESS'}
                     </div>
                     {allBusinessNews.length > 0 ? (
@@ -803,7 +803,7 @@ export default function Home() {
 
                 {/* 3. Sports (Play) Column */}
                 <div className="flex flex-col">
-                    <div className="bg-[#cc0000] text-white font-bold text-xl px-4 py-2 mb-4 w-fit shadow-sm">
+                    <div className="bg-[#cc0000] text-white font-semibold text-[24px] px-4 py-2 mb-4 w-fit shadow-sm">
                         {language === 'marathi' ? 'खेळ' : 'SPORTS'}
                     </div>
                     {allSportsNews.length > 0 ? (

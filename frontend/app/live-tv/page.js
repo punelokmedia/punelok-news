@@ -23,15 +23,15 @@ export default function LiveTVPage() {
                             
                             <div className="flex items-center gap-5">
                                 <div className="w-1.5 h-10 bg-red-600 rounded-full shadow-[0_0_15px_rgba(220,38,38,0.3)]"></div>
-                                <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight font-['Mukta',sans-serif]">
+                                <h1 className="text-3xl md:text-[32px] font-semibold text-gray-900 tracking-tight">
                                     {language === 'marathi' ? 'लाईव्ह टीव्ही' : 'LIVE TV CHANNEL'}
                                 </h1>
                             </div>
                         </div>
                         
                         <div className="flex items-center gap-3">
-                            <div className="bg-red-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest flex items-center shadow-lg shadow-red-500/20 animate-pulse border border-red-500">
-                                <Fa BroadcastTower className="mr-2" /> ON AIR
+                            <div className="bg-red-600 text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-widest flex items-center shadow-lg shadow-red-500/20 animate-pulse border border-red-500">
+                                <FaBroadcastTower className="mr-2" /> ON AIR
                             </div>
                         </div>
                     </div>
@@ -76,7 +76,7 @@ export default function LiveTVPage() {
                         <div className="absolute bottom-0 left-0 right-0 p-10 z-20">
                             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                                 <div>
-                                    <h2 className="text-3xl md:text-4xl font-black text-white mb-2 font-['Mukta',sans-serif]">
+                                    <h2 className="text-2xl md:text-3xl font-semibold text-white mb-2">
                                         Punelok LIVE - 24/7 News
                                     </h2>
                                     <p className="text-gray-300 font-medium flex items-center gap-2">
@@ -108,22 +108,22 @@ export default function LiveTVPage() {
                             <div className="w-12 h-12 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center text-xl shadow-inner">
                                 <FaBroadcastTower />
                             </div>
-                            <h3 className="text-2xl font-black text-gray-900 tracking-tight">
+                            <h3 className="text-xl md:text-2xl font-semibold text-gray-900 tracking-tight">
                                 {language === 'marathi' ? 'पुणेलोक न्यूझ लाईव्ह' : 'Punelok News Digital'}
                             </h3>
                         </div>
                         
-                        <p className="text-gray-500 text-lg leading-relaxed mb-10 font-medium opacity-90">
+                        <p className="text-gray-600 text-base md:text-[16px] leading-relaxed mb-10 font-normal">
                             {language === 'marathi' 
                                 ? 'पुणेलोक न्यूझवर पहा महाराष्ट्रातील आणि देशातील सर्व ताज्या घडामोडी थेट. आमचे लाईव्ह प्रक्षेपणाद्वारे महत्त्वाच्या बातम्यांचे सर्वात वेगवान अपडेट्स मिळवा. २४ तास सात दिवस विनाथांबा बातम्यांचे केंद्र.' 
                                 : 'Watch all the latest updates from Maharashtra and across the country live on Punelok News. Get the fastest news updates through our premium digital live streaming service, active 24/7 for you.'}
                         </p>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <button className="bg-red-600 text-white font-black py-4.5 px-8 rounded-[20px] hover:bg-red-700 transition-all flex items-center justify-center shadow-lg shadow-red-600/20 hover:-translate-y-1">
-                                <FaPlay className="mr-3 text-sm" /> {language === 'marathi' ? 'आकृती पहा' : 'WATCH CHANNELING'}
+                            <button className="bg-red-600 text-white font-semibold py-4.5 px-8 rounded-[20px] hover:bg-red-700 transition-all flex items-center justify-center shadow-lg shadow-red-600/20 hover:-translate-y-1">
+                                <FaPlay className="mr-3 text-sm" /> {language === 'marathi' ? 'थेट पहा' : 'WATCH LIVE'}
                             </button>
-                            <Link href="/" className="bg-gray-900 text-white font-black py-4.5 px-8 rounded-[20px] hover:bg-black transition-all flex items-center justify-center shadow-lg hover:-translate-y-1">
+                            <Link href="/" className="bg-gray-900 text-white font-semibold py-4.5 px-8 rounded-[20px] hover:bg-black transition-all flex items-center justify-center shadow-lg hover:-translate-y-1">
                                 <FaRegNewspaper className="mr-3 text-sm" /> {language === 'marathi' ? 'ताज्या बातम्या' : 'LATEST HEADLINES'}
                             </Link>
                         </div>

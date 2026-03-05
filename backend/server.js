@@ -29,12 +29,14 @@ const newsRoutes = require('./routes/news');
 const translateRoutes = require('./routes/translate');
 const cricketRoutes = require('./routes/cricket');
 const marketRoutes = require('./routes/market');
+const adsRoutes = require('./routes/ads'); // Added ads route
 
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/translate', translateRoutes);
 app.use('/api/cricket', cricketRoutes);
 app.use('/api/market', marketRoutes);
+app.use('/api/ads', adsRoutes); // Added ads middleware
 
 
 app.get('/', (req, res) => {

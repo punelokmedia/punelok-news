@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt, FaBolt, FaGavel, FaChartLine, FaBriefcase, FaGraduationCap, FaTrophy } from 'react-icons/fa';
+import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt, FaBolt, FaGavel, FaChartLine, FaBriefcase, FaGraduationCap, FaTrophy, FaBullhorn } from 'react-icons/fa';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -29,6 +29,13 @@ export default function AdminDashboard() {
   const [newsList, setNewsList] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentNewsId, setCurrentNewsId] = useState(null);
+
+  // Ads Management State
+  const [adsList, setAdsList] = useState([]);
+  const [isAdModalOpen, setIsAdModalOpen] = useState(false);
+  const [isEditingAd, setIsEditingAd] = useState(false);
+  const [currentAdId, setCurrentAdId] = useState(null);
+  const [adData, setAdData] = useState({ title: '', link: '', position: 'popup', active: true, image: null });
 
   // New User Form State
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'user' });
@@ -73,17 +80,19 @@ export default function AdminDashboard() {
   const fetchData = async (token) => {
     try {
       setLoading(true);
-      const [pendingRes, statsRes, newsRes, marketRes] = await Promise.all([
+      const [pendingRes, statsRes, newsRes, marketRes, adsRes] = await Promise.all([
         axios.get('http://localhost:5000/api/auth/pending-users', { headers: { Authorization: `Bearer ${token}` } }),
         axios.get('http://localhost:5000/api/auth/stats', { headers: { Authorization: `Bearer ${token}` } }),
         axios.get('http://localhost:5000/api/news?limit=50'),
-        axios.get('http://localhost:5000/api/market')
+        axios.get('http://localhost:5000/api/market'),
+        axios.get('http://localhost:5000/api/ads')
       ]);
       
       setUsers(pendingRes.data);
       setStats(statsRes.data);
       setNewsList(newsRes.data);
       setMarketList(marketRes.data);
+      setAdsList(adsRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -450,6 +459,72 @@ export default function AdminDashboard() {
     router.push('/');
   };
 
+  const handleAdSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = Cookies.get('token');
+      const formData = new FormData();
+      formData.append('title', adData.title);
+      formData.append('link', adData.link);
+      formData.append('position', adData.position);
+      formData.append('active', adData.active);
+      
+      if (adData.image instanceof File) {
+        formData.append('image', adData.image);
+      } else if (isEditingAd && adData.image) {
+        formData.append('existingImage', adData.image);
+      }
+
+      if (isEditingAd) {
+        await axios.put(`http://localhost:5000/api/ads/update/${currentAdId}`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } else {
+        await axios.post('http://localhost:5000/api/ads/create', formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+
+      setIsAdModalOpen(false);
+      resetAdForm();
+      fetchData(token);
+    } catch (error) {
+      alert('Failed to save ad');
+    }
+  };
+
+  const resetAdForm = () => {
+    setAdData({ title: '', link: '', position: 'popup', active: true, image: null });
+    setIsEditingAd(false);
+    setCurrentAdId(null);
+  };
+
+  const handleEditAd = (ad) => {
+    setAdData({
+      title: ad.title,
+      link: ad.link,
+      position: ad.position,
+      active: ad.active,
+      image: ad.imageUrl
+    });
+    setCurrentAdId(ad._id);
+    setIsEditingAd(true);
+    setIsAdModalOpen(true);
+  };
+
+  const handleDeleteAd = async (id) => {
+    if(!confirm('Are you sure you want to delete this ad?')) return;
+    try {
+      const token = Cookies.get('token');
+      await axios.delete(`http://localhost:5000/api/ads/delete/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchData(token);
+    } catch (error) {
+      alert('Failed to delete ad');
+    }
+  };
+
   if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
   return (
@@ -538,6 +613,16 @@ export default function AdminDashboard() {
           >
              <FaChartLine />
              <span>Market Trends</span>
+          </button>
+          <button 
+             onClick={() => { 
+                resetAdForm();
+                setIsAdModalOpen(true);
+             }}
+             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
+          >
+             <FaBullhorn />
+             <span>Manage Ads</span>
           </button>
         </nav>
         <div className="p-4 border-t border-gray-800">
@@ -750,6 +835,57 @@ export default function AdminDashboard() {
                                 </td>
                                 <td className="py-3 px-6 text-center">
                                     <button onClick={() => handleDeleteMarket(item._id)} className="text-red-400 hover:text-red-600 transform hover:scale-110">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Manage Ads Section */}
+            <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-6">Manage Ads (Popup & Sidebar)</h2>
+            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100 mb-10">
+              <table className="min-w-max w-full table-auto">
+                <thead className="bg-gray-50">
+                  <tr className="text-gray-600 uppercase text-xs leading-normal font-semibold tracking-wider">
+                    <th className="py-4 px-6 text-left">Ad Preview</th>
+                    <th className="py-4 px-6 text-left">Title/Link</th>
+                    <th className="py-4 px-6 text-center">Position</th>
+                    <th className="py-4 px-6 text-center">Status</th>
+                    <th className="py-4 px-6 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600 text-sm font-light">
+                    {adsList.length === 0 ? (
+                        <tr><td colSpan="5" className="py-8 text-center bg-gray-50 italic">No ads added.</td></tr>
+                    ) : (
+                        adsList.map((ad) => (
+                            <tr key={ad._id} className="border-b border-gray-100 hover:bg-gray-50">
+                                <td className="py-3 px-6 text-left">
+                                    {ad.imageUrl && (
+                                        <img src={ad.imageUrl} className="h-16 w-auto object-contain rounded" alt="ad preview" />
+                                    )}
+                                </td>
+                                <td className="py-3 px-6 text-left">
+                                    <div className="font-bold text-gray-800">{ad.title}</div>
+                                    <a href={ad.link} target="_blank" rel="noreferrer" className="text-blue-500 text-xs hover:underline truncate inline-block max-w-[200px]">{ad.link || 'No Link'}</a>
+                                </td>
+                                <td className="py-3 px-6 text-center capitalize font-semibold">{ad.position}</td>
+                                <td className="py-3 px-6 text-center">
+                                    <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${
+                                        ad.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                    }`}>
+                                        {ad.active ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+                                <td className="py-3 px-6 text-center">
+                                    <button onClick={() => handleEditAd(ad)} className="text-blue-500 hover:text-blue-700 mr-3 transform hover:scale-110">
+                                        Edit
+                                    </button>
+                                    <button onClick={() => handleDeleteAd(ad._id)} className="text-red-400 hover:text-red-600 transform hover:scale-110">
                                         Delete
                                     </button>
                                 </td>
@@ -1210,6 +1346,91 @@ export default function AdminDashboard() {
                 
                 <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 uppercase tracking-wider">
                   Add to Live Feed
+                </button>
+             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Ad Management Modal */}
+      {isAdModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl p-8 relative max-h-[90vh] overflow-y-auto">
+             <button onClick={() => setIsAdModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
+             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+               <FaBullhorn className="text-purple-600" /> {isEditingAd ? 'Edit Ad' : 'Create New Ad'}
+             </h2>
+             
+             <form onSubmit={handleAdSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">Ad Title (For Reference)</label>
+                  <input
+                    type="text"
+                    value={adData.title}
+                    onChange={(e) => setAdData({...adData, title: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">Target Link / URL</label>
+                  <input
+                    type="url"
+                    value={adData.link}
+                    onChange={(e) => setAdData({...adData, link: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
+                    placeholder="https://"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Position</label>
+                    <select
+                      value={adData.position}
+                      onChange={(e) => setAdData({...adData, position: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
+                    >
+                      <option value="popup">Home Page Popup</option>
+                      <option value="sidebar">Sidebar Component</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Status</label>
+                    <select
+                      value={adData.active}
+                      onChange={(e) => setAdData({...adData, active: e.target.value === 'true'})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
+                    >
+                      <option value="true">Active</option>
+                      <option value="false">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">Ad Image/Banner</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => setAdData({...adData, image: e.target.files[0]})}
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer"
+                    required={!isEditingAd}
+                  />
+                  {adData.image && typeof adData.image === 'string' && (
+                    <div className="mt-3">
+                      <p className="text-xs text-gray-500 mb-1">Current Image:</p>
+                      <img src={adData.image} alt="current ad" className="h-20 object-contain rounded border" />
+                    </div>
+                  )}
+                  {adData.image && adData.image instanceof File && (
+                    <div className="mt-3">
+                      <p className="text-xs text-gray-500 mb-1">New Image Preview:</p>
+                      <img src={URL.createObjectURL(adData.image)} alt="new ad preview" className="h-20 object-contain rounded border" />
+                    </div>
+                  )}
+                </div>
+                
+                <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded shadow-md transition duration-200 mt-2">
+                  {isEditingAd ? 'Update Ad' : 'Create Ad'}
                 </button>
              </form>
           </div>

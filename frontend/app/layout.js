@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Mukta } from "next/font/google";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { LanguageProvider } from "@/context/LanguageContext";
 import "./globals.css";
@@ -13,6 +13,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const mukta = Mukta({
+  subsets: ["devanagari", "latin"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  variable: "--font-mukta",
+});
+
 export const metadata = {
   title: "Punelok - News App",
   description: "Latest news and updates",
@@ -21,7 +27,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="overflow-x-hidden">
-      <body className={`${geistSans.variable} ${geistMono.variable} overflow-x-hidden max-w-full w-full`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${mukta.variable} font-mukta overflow-x-hidden max-w-full w-full`}>
         <LanguageProvider>
           <LayoutWrapper>
             {children}

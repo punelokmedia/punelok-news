@@ -52,7 +52,7 @@
   background: none;
   border: none;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   padding: 2px 4px;
@@ -335,10 +335,9 @@
 .nav-item {
   text-decoration: none;
   color: #333;
-  font-weight: 700;
-  font-size: 19px;
-  /* Increased from 17px to 19px */
-  /* Larger font */
+  font-weight: 600;
+  font-size: 16px;
+  /* Increased from 14px for better legibility */
   transition: color 0.2s;
   white-space: nowrap;
 }
@@ -354,9 +353,9 @@
   align-items: center;
   cursor: pointer;
   white-space: nowrap;
-  font-weight: 800;
-  font-size: 19px;
-  /* Increased to match others */
+  font-weight: 600;
+  font-size: 16px;
+  /* Increased from 14px for better legibility */
 }
 
 /* Right Actions */
@@ -367,6 +366,8 @@
   width: auto;
   /* Remove min-width to fix right space */
   justify-content: flex-end;
+  font-size: 16px;
+  /* Match menu size */
 }
 
 .search-btn {
@@ -626,12 +627,13 @@
   align-items: center;
   margin-bottom: 8px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
 .mega-menu-category {
   color: #FF0100;
+  font-weight: 600;
 }
 
 .mega-menu-image-container {
@@ -655,10 +657,11 @@
 }
 
 .mega-menu-title {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.4;
   margin: 0;
-  font-weight: 700;
+  font-weight: 400;
+  /* Match ABP Majha Card Title 400 */
   color: #333;
   display: -webkit-box;
   -webkit-line-clamp: 3;

@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import ExplorerSidebar from './ExplorerSidebar';
+import AdsPopup from './AdsPopup';
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
@@ -15,8 +16,9 @@ export default function LayoutWrapper({ children }) {
     <div className="overflow-x-hidden w-full max-w-full min-w-0">
       {!shouldHideLayout && <Navbar />}
       {!shouldHideLayout && <div className="hidden lg:block"><ExplorerSidebar /></div>}
-      <main className={`${!shouldHideLayout ? 'main-with-fixed-nav lg:pl-[136px]' : ''} min-h-[80vh] overflow-x-hidden w-full max-w-full min-w-0`}>
+      <main className={`${!shouldHideLayout ? 'main-with-fixed-nav lg:pl-[136px]' : ''} min-h-[80vh] overflow-x-hidden w-full max-w-full min-w-0 relative`}>
         {children}
+        {!shouldHideLayout && <AdsPopup />}
       </main>
       {!shouldHideLayout && <Footer />}
     </div>

@@ -21,6 +21,13 @@ body {
   max-width: 100%;
   position: relative;
   overflow-y: auto;
+  font-family: var(--font-mukta), Arial, sans-serif;
+}
+
+@layer base {
+  .font-mukta {
+    font-family: var(--font-mukta), Arial, sans-serif;
+  }
 }
 
 /* Global Professional Scrollbar */

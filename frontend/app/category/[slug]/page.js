@@ -76,7 +76,7 @@ export default function CategoryPage() {
                 {/* Section Title */}
                 <div className="flex items-center gap-3 mb-10 border-b border-gray-100 pb-6">
                     <div className="w-1.5 h-8 bg-black"></div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight uppercase font-['Mukta',sans-serif]">
+                    <h1 className="text-xl sm:text-[24px] font-semibold text-gray-900 tracking-tight uppercase">
                         {getCategoryDisplayName()}
                     </h1>
                 </div>
@@ -118,7 +118,7 @@ export default function CategoryPage() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-[17px] font-black text-gray-900 leading-[1.3] group-hover:text-red-600 transition-colors line-clamp-2 font-['Kohinoor_Devanagari','Mukta',sans-serif] tracking-tight">
+                                <h3 className="text-[16px] font-normal text-gray-900 leading-[1.3] group-hover:text-red-600 transition-colors line-clamp-2 tracking-tight">
                                     {getLocalized(item, 'title')}
                                 </h3>
                             </Link>
