@@ -409,6 +409,7 @@ export default function Home() {
                                     src={item.image || 'https://placehold.co/600x400/png?text=News'} 
                                     alt={getLocalizedContent(item, 'title')}
                                     fill
+                                    priority={idx < 4}
                                     className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out"
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
                                 />

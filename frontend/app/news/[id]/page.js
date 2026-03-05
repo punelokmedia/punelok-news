@@ -7,6 +7,7 @@ import { translations } from '../../../utils/translations';
 import Image from 'next/image'; // Added Import
 import { FaWhatsapp, FaFacebook, FaTwitter, FaShareAlt, FaClock, FaUser, FaFire } from 'react-icons/fa';
 import HorizontalTicker from '@/components/HorizontalTicker';
+import SidebarAds from '@/components/SidebarAds';
 
 export default function NewsDetail() {
     const { id } = useParams();
@@ -318,10 +319,7 @@ export default function NewsDetail() {
                     {/* Sidebar (Right Column 30%) - Scrollable */}
                     <aside className="lg:w-[30%] space-y-8 sticky top-32 max-h-[calc(100vh-140px)] overflow-y-auto pr-2">
                         {/* Ad Unit 1 */}
-                        <div className="w-full h-[250px] bg-gray-100 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400">
-                            <span className="text-sm font-semibold uppercase tracking-wider">Advertisement</span>
-                            <span className="text-xs mt-1">300 x 250</span>
-                        </div>
+                        <SidebarAds />
 
                         {/* Trending / Recommended Widget */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -570,10 +568,7 @@ export default function NewsDetail() {
                         </div>
                         
                         {/* Ad Unit 2 - Vertical */}
-                         <div className="w-full h-[400px] bg-gray-100 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hidden lg:flex">
-                            <span className="text-sm font-semibold uppercase tracking-wider">Advertisement</span>
-                            <span className="text-xs mt-1">300 x 600</span>
-                        </div>
+                        <SidebarAds />
 
                     </aside>
                 </div>
