@@ -20,7 +20,9 @@ export default function NewsDetail() {
     const [loading, setLoading] = useState(true);
     const [viewCount, setViewCount] = useState(0);
     const [likeCount, setLikeCount] = useState(0);
-    const [isLiked, setIsLiked] = useState(false); // Local state to prevent multiple likes in one session (simple check)
+    const [isLiked, setIsLiked] = useState(false);
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [isLiking, setIsLiking] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -98,13 +100,34 @@ export default function NewsDetail() {
     };
 
     const handleLike = async () => {
-        if (isLiked) return;
+        if (isLiked || isLiking) return;
+        setIsLiking(true);
         try {
             const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/${id}/like`);
             setLikeCount(response.data.likes);
             setIsLiked(true);
         } catch (error) {
             console.error('Error liking news:', error);
+        } finally {
+            setTimeout(() => setIsLiking(false), 500);
+        }
+    };
+
+    const handleShare = (platform) => {
+        const url = window.location.href;
+        const title = getLocalizedContent(news, 'title');
+        
+        if (platform === 'whatsapp') {
+            window.open(`https://wa.me/?text=${encodeURIComponent(title + " " + url)}`, '_blank');
+        } else if (platform === 'facebook') {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        } else if (platform === 'twitter') {
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, '_blank');
+        } else if (platform === 'copy') {
+            navigator.clipboard.writeText(url).then(() => {
+                setCopySuccess(true);
+                setTimeout(() => setCopySuccess(false), 2000);
+            });
         }
     };
 
@@ -188,31 +211,36 @@ export default function NewsDetail() {
                             
                             {/* Share Buttons */}
                             <div className="flex items-center gap-2">
-                                <button className="w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:opacity-90 transition-opacity" title="Share on WhatsApp">
-                                    <FaWhatsapp size={16} />
+                                <button onClick={() => handleShare('whatsapp')} className="w-9 h-9 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm" title="Share on WhatsApp">
+                                    <FaWhatsapp size={18} />
                                 </button>
-                                <button className="w-8 h-8 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:opacity-90 transition-opacity" title="Share on Facebook">
-                                    <FaFacebook size={16} />
+                                <button onClick={() => handleShare('facebook')} className="w-9 h-9 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm" title="Share on Facebook">
+                                    <FaFacebook size={18} />
                                 </button>
-                                <button className="w-8 h-8 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center hover:opacity-90 transition-opacity" title="Share on Twitter">
-                                    <FaTwitter size={16} />
+                                <button onClick={() => handleShare('twitter')} className="w-9 h-9 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm" title="Share on Twitter">
+                                    <FaTwitter size={18} />
                                 </button>
-                                <button className="w-8 h-8 rounded-full bg-gray-600 text-white flex items-center justify-center hover:bg-gray-700 transition-colors" title="Copy Link">
-                                    <FaShareAlt size={14} />
+                                <button onClick={() => handleShare('copy')} className="w-9 h-9 rounded-full bg-gray-600 text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm relative" title="Copy Link">
+                                    <FaShareAlt size={16} />
+                                    {copySuccess && (
+                                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded whitespace-nowrap animate-bounce">
+                                            Copied!
+                                        </div>
+                                    )}
                                 </button>
                             </div>
                         </div>
 
-                        {/* Like Button (Floating or separate?) - Let's integrate nicely */}
+                        {/* Like Button */}
                         <div className="mb-6 flex items-center gap-4">
                             <button 
                                 onClick={handleLike}
-                                disabled={isLiked}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold transition-all ${isLiked ? 'bg-red-100 text-red-600 cursor-default' : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'}`}
+                                disabled={isLiked || isLiking}
+                                className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold transition-all duration-300 transform active:scale-90 ${isLiked ? 'bg-red-50 text-red-600 border border-red-200 shadow-inner' : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg scale-100 hover:scale-105'}`}
                             >
-                                <span className={isLiked ? "" : "animate-bounce"}>❤️</span>
-                                <span>{isLiked ? 'Liked' : 'Like'}</span>
-                                <span className="bg-white/20 px-2 py-0.5 rounded text-sm ml-1">{likeCount.toLocaleString()}</span>
+                                <span className={`${isLiked ? 'animate-heart-pop' : isLiking ? 'animate-ping' : 'animate-pulse'} text-xl transition-transform duration-500`}>❤️</span>
+                                <span className="tracking-wide">{isLiked ? 'Liked' : 'Like'}</span>
+                                <span className={`bg-white/20 px-2 py-0.5 rounded text-sm ml-1 ${isLiking ? 'animate-bounce' : ''}`}>{likeCount.toLocaleString()}</span>
                             </button>
                         </div>
 

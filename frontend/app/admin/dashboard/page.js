@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   const [logo, setLogo] = useState(null);
   const [logoSettings, setLogoSettings] = useState({ x: 5, y: 5, size: 15 });
   const [isDragging, setIsDragging] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
   const containerRef = useRef(null);
@@ -289,6 +290,7 @@ export default function AdminDashboard() {
 
   const handleNewsSubmit = async (e) => {
       e.preventDefault();
+      setIsSubmitting(true);
       setNewsError('');
       setNewsSuccess('');
 
@@ -355,6 +357,8 @@ export default function AdminDashboard() {
       } catch (err) {
           console.error(err);
           setNewsError(err.response?.data?.message || 'Failed to save news');
+      } finally {
+          setIsSubmitting(false);
       }
   };
 
@@ -421,6 +425,7 @@ export default function AdminDashboard() {
 
   const handleMarketSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const token = Cookies.get('token');
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market/create`, marketData, {
@@ -436,6 +441,8 @@ export default function AdminDashboard() {
       fetchData(token);
     } catch (error) {
       alert('Failed to add market update');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -1223,9 +1230,23 @@ export default function AdminDashboard() {
                     </button>
                     <button
                         onClick={() => document.getElementById('news-form').requestSubmit()}
-                        className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-md shadow-sm hover:shadow transition-all transform hover:-translate-y-0.5 flex items-center"
+                        disabled={isSubmitting}
+                        className={`px-6 py-2 ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'} text-white text-sm font-bold rounded-md shadow-sm hover:shadow transition-all transform hover:-translate-y-0.5 flex items-center`}
                     >
-                        <FaNewspaper className="mr-2"/> {isEditing ? 'Update News' : 'Publish Live'}
+                        {isSubmitting ? (
+                            <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                Saving...
+                            </>
+                        ) : newsSuccess ? (
+                            <>
+                                <span className="mr-2">✓</span> Published
+                            </>
+                        ) : (
+                            <>
+                                <FaNewspaper className="mr-2"/> {isEditing ? 'Update News' : 'Publish Live'}
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
@@ -1349,8 +1370,17 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 
-                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 uppercase tracking-wider">
-                  Add to Live Feed
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className={`w-full ${isSubmitting ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 uppercase tracking-wider flex items-center justify-center`}
+                >
+                  {isSubmitting ? (
+                      <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          Adding...
+                      </>
+                  ) : 'Add to Live Feed'}
                 </button>
              </form>
           </div>
