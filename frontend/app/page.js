@@ -159,11 +159,11 @@ export default function Home() {
   const sportsNews = allSportsNews.slice(0, 4);
   const shownSportsIds = new Set(sportsNews.map(n => n._id || n.id));
 
-  // Business Section Filter
-  const allBusinessNews = news.filter(item => item.category === 'business' && !item.isLive)
+  // Jobs Section Filter
+  const allJobNews = news.filter(item => item.category === 'jobs' && !item.isLive)
     .filter((item, index, arr) => arr.findIndex(n => (n._id || n.id) === (item._id || item.id)) === index);
-  const businessNews = allBusinessNews.slice(0, 4);
-  const shownBusinessIds = new Set(businessNews.map(n => n._id || n.id));
+  const jobNews = allJobNews.slice(0, 4);
+  const shownJobIds = new Set(jobNews.map(n => n._id || n.id));
 
   // Astro Section Filter
   const allAstroNews = news.filter(item => item.category === 'astro' && !item.isLive)
@@ -189,7 +189,7 @@ export default function Home() {
     !shownMaharashtraIds.has(item._id || item.id) &&
     !shownEntertainmentIds.has(item._id || item.id) &&
     !shownSportsIds.has(item._id || item.id) &&
-    !shownBusinessIds.has(item._id || item.id) && 
+    !shownJobIds.has(item._id || item.id) && 
     !shownAstroIds.has(item._id || item.id) && 
     !shownLifestyleIds.has(item._id || item.id) && 
     !shownCrimeIds.has(item._id || item.id)
@@ -562,23 +562,23 @@ export default function Home() {
             </div>
             )}
 
-            {/* Business Section */}
-            {businessNews.length > 0 && (
+            {/* Jobs Section */}
+            {jobNews.length > 0 && (
             <div className="mt-6 sm:mt-8 border-t border-b border-gray-200 py-4 sm:py-6 pl-4">
                 <div className="flex items-center mb-5 pl-4 border-l-[6px] border-[#c40404]">
                     <h2 className="text-xl sm:text-[24px] font-semibold text-gray-900 uppercase tracking-tighter leading-none">
-                        {language === 'marathi' ? 'बिझनेस' : 'BUSINESS'}
+                        {language === 'marathi' ? 'नोकरी' : 'JOBS'}
                     </h2>
-                    <FaBolt className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
+                    <FaBriefcase className="text-[#c40404] text-lg ml-3 drop-shadow-sm" />
                 </div>
                  <div className="mb-6 w-full overflow-x-hidden">
-                  <HorizontalTicker title={language === 'marathi' ? 'बिझनेस' : 'BUSINESS'} items={allBusinessNews.length > 0 ? allBusinessNews : [language === 'marathi' ? 'बातम्या उपलब्ध नाहीत...' : 'No news available...']} bgColor="bg-[#a00000]" titleColor="bg-[#800000]" />
+                  <HorizontalTicker title={language === 'marathi' ? 'नोकरी' : 'JOBS'} items={allJobNews.length > 0 ? allJobNews : [language === 'marathi' ? 'बातम्या उपलब्ध नाहीत...' : 'No news available...']} bgColor="bg-[#a00000]" titleColor="bg-[#800000]" />
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {businessNews.map((item, idx) => (
+                    {jobNews.map((item, idx) => (
                         <div key={item._id || item.id || idx} className="flex flex-col group cursor-pointer" onClick={() => router.push(`/news/${item._id || item.id}`)}>
                              <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
-                                <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
+                                <Image src={item.image || 'https://placehold.co/600x400/png?text=Jobs'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
                             <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
                         </div>
@@ -784,31 +784,31 @@ export default function Home() {
                     )}
                 </div>
 
-                {/* 2. Business Column */}
+                {/* 2. Job Column */}
                 <div className="flex flex-col">
                     <div className="bg-[#cc0000] text-white font-semibold text-[24px] px-4 py-2 mb-4 w-fit shadow-sm">
-                        {language === 'marathi' ? 'व्यवसाय' : 'BUSINESS'}
+                        {language === 'marathi' ? 'नोकरी/रोजगार' : 'JOBS'}
                     </div>
-                    {allBusinessNews.length > 0 ? (
+                    {allJobNews.length > 0 ? (
                         <div 
                             className="relative w-full h-[250px] group cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-                            onClick={() => router.push(`/news/${allBusinessNews[0]._id || allBusinessNews[0].id}`)}
+                            onClick={() => router.push(`/news/${allJobNews[0]._id || allJobNews[0].id}`)}
                         >
                              <Image 
-                                src={allBusinessNews[0].image || 'https://placehold.co/600x400/png?text=News'} 
-                                alt={getLocalizedContent(allBusinessNews[0], 'title')}
+                                src={allJobNews[0].image || 'https://placehold.co/600x400/png?text=Jobs'} 
+                                alt={getLocalizedContent(allJobNews[0], 'title')}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                 className="object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90"></div>
                             <h3 className="absolute bottom-0 left-0 right-0 p-4 text-white text-lg sm:text-xl font-bold leading-snug drop-shadow-md">
-                                {getLocalizedContent(allBusinessNews[0], 'title')}
+                                {getLocalizedContent(allJobNews[0], 'title')}
                             </h3>
                         </div>
                     ) : (
                         <div className="h-[250px] bg-gray-100 flex items-center justify-center text-gray-400 italic border border-gray-200">
-                             No business news available
+                             No jobs available
                         </div>
                     )}
                 </div>
