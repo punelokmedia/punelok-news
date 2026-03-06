@@ -10,7 +10,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 3000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -393,7 +393,7 @@
   padding: 15px 0;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-top: 1px solid #eee;
-  z-index: 50;
+  z-index: 2100;
   animation: slideDown 0.3s ease-out;
   display: flex;
   justify-content: center;
@@ -531,6 +531,7 @@
     gap: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: none;
+    z-index: 3000;
   }
 
   .nav-menu.active {
@@ -566,32 +567,32 @@
 
 .mega-menu-dropdown {
   position: fixed;
-  top: 98px;
-  /* Adjust based on your header height */
+  top: 135px;
+  /* Accurate header height (45px top bar + 90px main nav) */
   left: 0;
-  transform: none;
   width: 100%;
   max-width: 100%;
   background-color: white;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   border-top: 4px solid #FF0100;
-  z-index: 1000;
+  z-index: 2100;
+  /* Ensure it's above sidebars and other content */
   display: flex;
   flex-direction: column;
   padding: 0;
   border-radius: 0 0 8px 8px;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -10px);
+    transform: translateY(-20px);
   }
 
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
 
