@@ -6,10 +6,12 @@ import { useLanguage } from '@/context/LanguageContext';
 import Link from 'next/link';
 import Image from 'next/image'; // Added Import
 import { useRouter } from 'next/navigation';
-import { FaChevronRight, FaBolt, FaCaretRight, FaClock, FaFire, FaRegNewspaper, FaHeadphones, FaThLarge, FaTrophy, FaGraduationCap, FaBriefcase, FaChartLine } from 'react-icons/fa';
+import { FaChevronRight, FaBolt, FaCaretRight, FaClock, FaFire, FaRegNewspaper, FaHeadphones, FaThLarge, FaTrophy, FaGraduationCap, FaBriefcase, FaChartLine, FaArrowRight } from 'react-icons/fa';
 import HorizontalTicker from '@/components/HorizontalTicker';
 import CricketDashboard from '@/components/CricketDashboard';
 import MarketTrends from '@/components/MarketTrends';
+import { motion, AnimatePresence } from 'framer-motion';
+import Skeleton, { NewsCardSkeleton } from '@/components/Skeleton';
 
 // ... (NewsTicker component remains unchanged) ...
 const NewsTicker = ({ items, getLocalizedContent }) => {
@@ -86,10 +88,15 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex h-[80vh] items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600 mb-4"></div>
-            <p className="text-gray-500 font-medium">Loading Latest News...</p>
+      <div className="bg-gray-50 min-h-screen">
+        <div className="max-w-[1280px] mx-auto px-4 py-8">
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <Skeleton className="lg:col-span-2 h-[450px] rounded-xl" />
+              <Skeleton className="h-[450px] rounded-xl" />
+           </div>
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[1,2,3,4].map(i => <NewsCardSkeleton key={i} />)}
+           </div>
         </div>
       </div>
     );
@@ -182,10 +189,9 @@ export default function Home() {
     !shownMaharashtraIds.has(item._id || item.id) &&
     !shownEntertainmentIds.has(item._id || item.id) &&
     !shownSportsIds.has(item._id || item.id) &&
-    !shownBusinessIds.has(item._id || item.id) &&
-    !shownAstroIds.has(item._id || item.id) &&
-    !shownAstroIds.has(item._id || item.id) &&
-    !shownLifestyleIds.has(item._id || item.id) &&
+    !shownBusinessIds.has(item._id || item.id) && 
+    !shownAstroIds.has(item._id || item.id) && 
+    !shownLifestyleIds.has(item._id || item.id) && 
     !shownCrimeIds.has(item._id || item.id)
   );
 
@@ -240,7 +246,12 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden w-full max-w-full pt-0"> 
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-[60vh] bg-white overflow-x-hidden w-full max-w-full pt-0"
+    >
        
       {/* Container – lg pe left se start, no gap: content sidebar ke turant right me */}
       <div className="w-full max-w-full mx-auto px-0 pt-0 pb-0 sm:pb-5 lg:mx-0 lg:px-0 lg:pt-0 lg:pb-0 overflow-x-hidden">
@@ -844,11 +855,11 @@ export default function Home() {
         <MarketTrends data={marketTrends} />
 
         {/* Cricket Center – sabse niche, footer se pehle; sidebar ke andar nahi */}
-        <div className="mt-12 w-full">
+        <div className="mt-6 w-full">
            <CricketDashboard />
         </div>
 
       </div>
-     </div>
+    </motion.div>
   );
 }

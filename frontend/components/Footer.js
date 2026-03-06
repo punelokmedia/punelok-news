@@ -28,7 +28,7 @@ export default function Footer() {
 
   return (
     <footer className="footer-wrapper overflow-x-hidden w-full max-w-full relative z-[10]">
-      <div className="lg:pl-[280px] md:pl-[100px] pl-0">
+      <div className="lg:pl-[140px] md:pl-[120px] pl-0">
           {/* Footer Top Bar (Red Background) */}
           <div className="footer-red-bar">
               <div className="footer-container red-bar-flex">

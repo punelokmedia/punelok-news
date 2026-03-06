@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt, FaBolt, FaGavel, FaChartLine, FaBriefcase, FaGraduationCap, FaTrophy, FaBullhorn } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -532,10 +533,22 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center bg-gray-50">
+       <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-500 font-bold animate-pulse">Initializing Dashboard...</p>
+       </div>
+    </div>
+  );
 
   return (
-    <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-gray-50 flex flex-col pt-0"
+    >
+      <div className="flex flex-1 pt-0">
       {/* Sidebar */}
       <aside className={`w-64 bg-gray-900 text-white flex flex-col fixed md:relative z-30 h-full transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-xl overflow-y-auto scrollbar-hide`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <style jsx>{`
@@ -911,19 +924,27 @@ export default function AdminDashboard() {
         </main>
 
         {/* Backdrop for News Drawer */}
-        {isNewsModalOpen && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
-            onClick={() => setIsNewsModalOpen(false)}
-          ></div>
-        )}
-
-        {/* Add Live News Drawer (Right to Left Animation) */}
-        <div 
-            className={`fixed inset-y-0 right-0 z-50 w-full max-w-xl bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${
-                isNewsModalOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}
-        >
+        {/* News Drawer with Framer Motion */}
+        <AnimatePresence>
+          {isNewsModalOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsNewsModalOpen(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50]"
+              />
+              
+              {/* Drawer */}
+              <motion.div 
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed inset-y-0 right-0 z-[60] w-full max-w-xl bg-white shadow-2xl flex flex-col font-sans"
+              >
             <div className="h-full flex flex-col font-sans">
                 {/* Drawer Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white shadow-sm">
@@ -1249,8 +1270,11 @@ export default function AdminDashboard() {
                         )}
                     </button>
                 </div>
-            </div>
-        </div>
+              </div>
+            </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
       {/* Create User/Admin Modal (Centered - kept as is) */}
       {isCreateModalOpen && (
@@ -1472,6 +1496,7 @@ export default function AdminDashboard() {
         </div>
       )}
       </div>
-     </div>
+    </div>
+    </motion.div>
   );
 }

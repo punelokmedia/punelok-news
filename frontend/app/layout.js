@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Mukta } from "next/font/google";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { LanguageProvider } from "@/context/LanguageContext";
+import NextTopLoader from 'nextjs-toploader';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="overflow-x-hidden">
       <body className={`${geistSans.variable} ${geistMono.variable} ${mukta.variable} font-mukta overflow-x-hidden max-w-full w-full`}>
+        <NextTopLoader color="#C40B0B" showSpinner={false} height={3} shadow="0 0 10px #C40B0B,0 0 5px #C40B0B" />
         <LanguageProvider>
           <LayoutWrapper>
             {children}

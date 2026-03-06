@@ -8,6 +8,8 @@ import Image from 'next/image'; // Added Import
 import { FaWhatsapp, FaFacebook, FaTwitter, FaShareAlt, FaClock, FaUser, FaFire } from 'react-icons/fa';
 import HorizontalTicker from '@/components/HorizontalTicker';
 import SidebarAds from '@/components/SidebarAds';
+import { motion } from 'framer-motion';
+import { NewsDetailSkeleton } from '@/components/Skeleton';
 
 export default function NewsDetail() {
     const { id } = useParams();
@@ -132,11 +134,7 @@ export default function NewsDetail() {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen pt-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-            </div>
-        );
+        return <NewsDetailSkeleton />;
     }
 
     if (!news) {
@@ -156,7 +154,12 @@ export default function NewsDetail() {
     const t = translations[language] || translations['english'];
 
     return (
-        <div className="bg-gray-50 min-h-screen pb-12 pt-0">
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-gray-50 min-h-screen pb-12 pt-0"
+        >
             <HorizontalTicker 
                 title={language === 'marathi' ? 'ताज्या बातम्या' : 'LATEST NEWS'} 
                 items={relatedNews}
@@ -663,9 +666,9 @@ export default function NewsDetail() {
                 </section>
                 
                 {/* Final spacer */}
-                <div className="mb-20"></div>
+                <div className="mb-8"></div>
 
             </div>
-        </div>
+        </motion.div>
     );
 }
