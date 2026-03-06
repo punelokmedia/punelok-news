@@ -34,7 +34,7 @@ const NewsTicker = ({ items, getLocalizedContent }) => {
         {items.map((item, idx) => (
           <div key={idx} className="group cursor-pointer flex items-start gap-3 min-w-0 overflow-hidden shrink-0 h-[60px] py-1"> 
               <FaCaretRight className="text-white mt-[6px] text-lg shrink-0 flex-shrink-0 drop-shadow-md" />
-              <p className="hero-bullet-text text-[15px] font-semibold text-white leading-relaxed flex-1 text-left line-clamp-2 drop-shadow-sm">
+              <p className="hero-bullet-text text-[16px] font-medium text-white leading-tight flex-1 text-left line-clamp-2 drop-shadow-sm">
                 {typeof item === 'string' ? item : getLocalizedContent(item, 'title')}
               </p>
           </div>

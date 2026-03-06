@@ -18,31 +18,31 @@ const HorizontalTicker = ({ title, items, bgColor = "bg-red-600", titleColor = "
     if (!items || items.length === 0) return null;
 
     return (
-      <div className={`group w-full ${bgColor} text-white overflow-hidden flex items-center h-8 sm:h-10 border-b border-white/10 relative z-20 shadow-sm`}>
+      <div className={`group w-full ${bgColor} text-white overflow-hidden flex items-center h-10 sm:h-12 border-b border-white/10 relative z-20 shadow-sm`}>
          {/* Skewed Title Label */}
-         <div className={`${titleColor} px-3 sm:px-6 h-full flex items-center justify-center font-bold text-xs sm:text-[14px] tracking-widest shrink-0 z-30 uppercase relative`}>
+         <div className={`${titleColor} px-4 sm:px-8 h-full flex items-center justify-center font-bold text-xs sm:text-[15px] tracking-[0.15em] shrink-0 z-30 uppercase relative`}>
             {title}
-            <span className="w-1.5 h-1.5 bg-white rounded-full ml-2 animate-pulse shadow-[0_0_8px_white]"></span>
+            <span className="w-1.5 h-1.5 bg-white rounded-full ml-3 animate-pulse shadow-[0_0_10px_white]"></span>
             {/* Slanted Edge Effect */}
-            <div className={`absolute top-0 right-0 translate-x-1/2 w-4 h-full ${titleColor} skew-x-[-20deg] z-[-1]`}></div>
+            <div className={`absolute top-0 right-0 translate-x-1/2 w-5 h-full ${titleColor} skew-x-[-20deg] z-[-1]`}></div>
          </div>
          
          {/* Scrolling Content with Fade Mask - Scrollable on Hover */}
-         <div className="flex-1 min-w-0 flex overflow-hidden relative items-center pl-4 mask-marquee-fade pb-1">
+         <div className="flex-1 min-w-0 flex overflow-hidden relative items-center pl-6 mask-marquee-fade">
             {/* The wrapper div needs to be duplicated to create the infinite scroll effect seamlessly */}
-            <div className="animate-marquee whitespace-nowrap flex items-center gap-8 pl-4 will-change-transform">
+            <div className="animate-marquee whitespace-nowrap flex items-center gap-12 will-change-transform">
                {/* Repeat items x4 to ensure enough content for wide screens before loop resets */}
                {[...items, ...items, ...items, ...items].map((item, idx) => (
                   <span 
                     key={idx} 
-                    className="flex items-center text-sm sm:text-base font-semibold tracking-tight hover:text-yellow-300 transition-colors duration-200 cursor-pointer"
+                    className="flex items-center text-[16px] sm:text-[19px] font-medium tracking-tight whitespace-nowrap hover:text-yellow-300 transition-colors duration-200 cursor-pointer"
                     onClick={() => {
                         if (typeof item === 'object') {
                             router.push(`/news/${item._id || item.id}`);
                         }
                     }}
                   >
-                     <span className="text-white opacity-40 text-[10px] mx-4">•</span>
+                     <span className="text-white opacity-50 text-[11px] mx-4">•</span>
                      {typeof item === 'string' ? item : getLocalizedContent(item, 'title')}
                   </span>
                ))}
