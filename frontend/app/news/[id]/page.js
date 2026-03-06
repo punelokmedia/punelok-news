@@ -317,7 +317,12 @@ export default function NewsDetail() {
                     </main>
 
                     {/* Sidebar (Right Column 30%) - Scrollable */}
-                    <aside className="lg:w-[30%] space-y-8 sticky top-32 max-h-[calc(100vh-140px)] overflow-y-auto pr-2">
+                    <aside className="lg:w-[30%] space-y-8 sticky top-32 max-h-[calc(100vh-140px)] overflow-y-auto pr-2 scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        <style jsx>{`
+                            aside::-webkit-scrollbar {
+                                display: none;
+                            }
+                        `}</style>
                         {/* Ad Unit 1 */}
                         <SidebarAds />
 

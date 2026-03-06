@@ -75,13 +75,9 @@ export default function ExplorerSidebar() {
         <aside className="explorer-sidebar">
             <div className="flex flex-col items-center w-full pt-4 pb-2 cursor-default">
                  {/* Explore Dots Icon */}
-                 <div className="w-6 h-6 grid grid-cols-3 gap-0.5">
-                    {[...Array(9)].map((_, i) => (
-                        <div key={i} className="w-1 h-1 bg-white rounded-full opacity-80" />
-                    ))}
-                 </div>
+                     <FaThLarge className="text-white opacity-80" />
                  <span className="text-[10px] text-white/90 font-bold uppercase tracking-widest mt-1.5">{language === 'marathi' ? 'एक्स्प्लोर' : 'Explore'}</span>
-            </div>
+             </div>
             
             {menuItems.map((item) => {
                 const isActive = pathname === item.href;

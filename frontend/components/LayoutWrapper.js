@@ -15,7 +15,7 @@ export default function LayoutWrapper({ children }) {
   return (
     <div className="overflow-x-hidden w-full max-w-full min-w-0">
       {!shouldHideLayout && <Navbar />}
-      {!shouldHideLayout && <div className="hidden lg:block"><ExplorerSidebar /></div>}
+      {!shouldHideLayout && <ExplorerSidebar />}
       <main className={`${!shouldHideLayout ? 'main-with-fixed-nav lg:pl-[136px]' : ''} min-h-[80vh] overflow-x-hidden w-full max-w-full min-w-0 relative`}>
         {children}
         {!shouldHideLayout && pathname === '/' && <AdsPopup />}

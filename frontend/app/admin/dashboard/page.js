@@ -530,7 +530,12 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
       {/* Sidebar */}
-      <aside className={`w-64 bg-gray-900 text-white flex flex-col fixed md:relative z-30 h-full transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-xl`}>
+      <aside className={`w-64 bg-gray-900 text-white flex flex-col fixed md:relative z-30 h-full transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-xl overflow-y-auto scrollbar-hide`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <style jsx>{`
+          aside::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
         <div className="p-6 text-2xl font-bold flex justify-between items-center border-b border-gray-800">
            <span>Admin Panel</span>
            <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">×</button>
