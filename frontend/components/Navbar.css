@@ -17,7 +17,6 @@
 /* Top Bar Styling */
 .top-bar {
   background-color: #FF0100;
-  /* Deep Maroon */
   color: white;
   padding: 8px 0;
   font-size: 14px;
@@ -693,23 +692,93 @@
 }
 
 @media (max-width: 768px) {
+  .top-bar {
+    padding: 12px 0;
+  }
+
+  .top-bar-container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 0 10px;
+  }
+
+  .top-left-section {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .language-compact-list {
+    padding: 4px 8px;
+  }
+
+  .lang-btn-minimal {
+    font-size: 13px;
+  }
+
+  .live-market-label {
+    margin-right: 0;
+  }
+
+  .market-ticker-container {
+    width: 100%;
+    margin: 5px 0;
+    height: 48px;
+  }
+
+  .ticker-item-square {
+    min-width: 160px;
+  }
+
+  .social-icons {
+    width: 100%;
+    justify-content: center;
+    gap: 15px;
+    padding-bottom: 5px;
+  }
+
+  .social-icon {
+    width: 22px;
+    height: 22px;
+  }
+
   .mega-menu-dropdown {
     display: none !important;
   }
 
+  .main-navbar {
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .main-navbar-container {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
   .logo-section {
     width: auto;
-    min-width: 140px;
-    height: 70px;
+    min-width: 120px;
+    height: 50px;
     padding: 0;
+    order: 1;
   }
 
   .navbar-logo-img {
-    height: 100px !important;
-    /* Ensure visibility on mobile */
+    height: 80px !important;
     position: relative;
-    top: auto;
-    transform: none;
+    top: -15px;
     left: 0;
+    transform: none;
+  }
+
+  .nav-menu {
+    order: 3;
+    width: 100%;
+  }
+
+  .search-login-section {
+    order: 2;
   }
 }
