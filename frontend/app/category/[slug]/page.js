@@ -43,7 +43,7 @@ export default function CategoryPage() {
         const fetchCategoryNews = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`http://localhost:5000/api/news?category=${slug}&language=${language}`);
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=${slug}&language=${language}`);
                 setNews(res.data);
             } catch (error) {
                 console.error("Failed to fetch category news", error);

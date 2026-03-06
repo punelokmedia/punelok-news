@@ -69,8 +69,8 @@ export default function Home() {
       setLoading(true);
       try {
         const [newsRes, marketRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/news?language=${language}`),
-          axios.get(`http://localhost:5000/api/market`)
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?language=${language}`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market`)
         ]);
         setNews(newsRes.data);
         setMarketTrends(marketRes.data);

@@ -81,11 +81,11 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       const [pendingRes, statsRes, newsRes, marketRes, adsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/auth/pending-users', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://localhost:5000/api/auth/stats', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://localhost:5000/api/news?limit=50'),
-        axios.get('http://localhost:5000/api/market'),
-        axios.get('http://localhost:5000/api/ads')
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/pending-users`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/stats`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?limit=50`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market`),
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads`)
       ]);
       
       setUsers(pendingRes.data);
@@ -103,7 +103,7 @@ export default function AdminDashboard() {
   const handleApprove = async (userId) => {
     try {
       const token = Cookies.get('token');
-      await axios.post('http://localhost:5000/api/auth/approve-user', { userId }, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/approve-user`, { userId }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Refresh list and stats
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
     
     try {
       const token = Cookies.get('token');
-      await axios.post('http://localhost:5000/api/auth/create-user', newUser, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/create-user`, newUser, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
   const translateText = async (text, fromLang, toLang) => {
       if (!text || fromLang === toLang) return text;
       try {
-          const res = await axios.post('http://localhost:5000/api/translate', {
+          const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/translate`, {
               text,
               from: fromLang,
               to: toLang
@@ -332,12 +332,12 @@ export default function AdminDashboard() {
           }
 
           if (isEditing) {
-              await axios.put(`http://localhost:5000/api/news/update/${currentNewsId}`, formData, {
+              await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/update/${currentNewsId}`, formData, {
                   headers: { Authorization: `Bearer ${token}` }
               });
               setNewsSuccess('News updated successfully!');
           } else {
-              await axios.post('http://localhost:5000/api/news/create', formData, {
+              await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/create`, formData, {
                   headers: { Authorization: `Bearer ${token}` }
               });
               setNewsSuccess('News published successfully!');
@@ -410,7 +410,7 @@ export default function AdminDashboard() {
       
       try {
           const token = Cookies.get('token');
-          await axios.delete(`http://localhost:5000/api/news/delete/${id}?all=true`, {
+          await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/delete/${id}?all=true`, {
               headers: { Authorization: `Bearer ${token}` }
           });
           fetchData(token);
@@ -423,7 +423,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     try {
       const token = Cookies.get('token');
-      await axios.post('http://localhost:5000/api/market/create', marketData, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market/create`, marketData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIsMarketModalOpen(false);
@@ -443,7 +443,7 @@ export default function AdminDashboard() {
     if(!confirm('Delete this market update?')) return;
     try {
       const token = Cookies.get('token');
-      await axios.delete(`http://localhost:5000/api/market/delete/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData(token);
@@ -476,11 +476,11 @@ export default function AdminDashboard() {
       }
 
       if (isEditingAd) {
-        await axios.put(`http://localhost:5000/api/ads/update/${currentAdId}`, formData, {
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads/update/${currentAdId}`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await axios.post('http://localhost:5000/api/ads/create', formData, {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads/create`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -516,7 +516,7 @@ export default function AdminDashboard() {
     if(!confirm('Are you sure you want to delete this ad?')) return;
     try {
       const token = Cookies.get('token');
-      await axios.delete(`http://localhost:5000/api/ads/delete/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData(token);

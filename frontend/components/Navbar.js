@@ -86,7 +86,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/news?limit=10&language=${language}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?limit=10&language=${language}`);
         const nonLiveNews = res.data.filter(item => item.isLive !== true).slice(0, 6);
         setLatestNews(nonLiveNews);
         setMoreNews(nonLiveNews); // Use same latest news for 'More' dropdown
@@ -97,7 +97,7 @@ export default function Navbar() {
     
     const fetchPolitics = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/news?category=politics&limit=6&language=${language}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=politics&limit=6&language=${language}`);
             const politicsItems = res.data.filter(item => item.category === 'politics').slice(0, 6);
             setPoliticsNews(politicsItems);
         } catch (err) {
@@ -107,7 +107,7 @@ export default function Navbar() {
 
     const fetchMaharashtra = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/news?category=maharashtra&limit=6&language=${language}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=maharashtra&limit=6&language=${language}`);
             const maharashtraItems = res.data.filter(item => item.category === 'maharashtra').slice(0, 6);
             setMaharashtraNews(maharashtraItems);
         } catch (err) {
@@ -117,7 +117,7 @@ export default function Navbar() {
 
     const fetchEntertainment = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/news?category=entertainment&limit=6&language=${language}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=entertainment&limit=6&language=${language}`);
             const items = res.data.filter(item => item.category === 'entertainment').slice(0, 6);
             setEntertainmentNews(items);
         } catch (err) { console.error("Failed to fetch entertainment news", err); }
@@ -125,7 +125,7 @@ export default function Navbar() {
 
     const fetchSports = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/news?category=sports&limit=6&language=${language}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=sports&limit=6&language=${language}`);
             const items = res.data.filter(item => item.category === 'sports').slice(0, 6);
             setSportsNews(items);
         } catch (err) { console.error("Failed to fetch sports news", err); }
@@ -133,7 +133,7 @@ export default function Navbar() {
 
     const fetchBusiness = async () => {
          try {
-            const res = await axios.get(`http://localhost:5000/api/news?category=business&limit=6&language=${language}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=business&limit=6&language=${language}`);
             const items = res.data.filter(item => item.category === 'business').slice(0, 6);
             setBusinessNews(items);
         } catch (err) { console.error("Failed to fetch business news", err); }
@@ -141,7 +141,7 @@ export default function Navbar() {
 
     const fetchAstro = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/news?category=astro&limit=6&language=${language}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=astro&limit=6&language=${language}`);
             const items = res.data.filter(item => item.category === 'astro').slice(0, 6);
             setAstroNews(items);
         } catch (err) { console.error("Failed to fetch astro news", err); }
@@ -149,7 +149,7 @@ export default function Navbar() {
 
     const fetchLifestyle = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/news?category=lifestyle&limit=6&language=${language}`);
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=lifestyle&limit=6&language=${language}`);
             const items = res.data.filter(item => item.category === 'lifestyle').slice(0, 6);
             setLifestyleNews(items);
         } catch (err) { console.error("Failed to fetch lifestyle news", err); }
@@ -157,7 +157,7 @@ export default function Navbar() {
 
     const fetchMarket = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/market');
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market`);
             setMarketTrends(res.data);
         } catch (err) {
             console.error("Failed to fetch market trends for ticker", err);

@@ -19,7 +19,7 @@ export default function RegisterPage() {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { ...formData, role: 'user' });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`, { ...formData, role: 'user' });
       setSuccess('Registration successful! Please wait for admin approval.');
       setTimeout(() => router.push('/login'), 3000);
     } catch (err) {

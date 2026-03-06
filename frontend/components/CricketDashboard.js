@@ -15,7 +15,7 @@ const CricketDashboard = () => {
 
     const fetchAll = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/cricket/all');
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/cricket/all`);
             const data = res?.data || {};
             return {
                 live: Array.isArray(data.live) ? data.live : [],

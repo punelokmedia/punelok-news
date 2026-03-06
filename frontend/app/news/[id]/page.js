@@ -33,14 +33,14 @@ export default function NewsDetail() {
         try {
             setLoading(true);
             // 1. Get Details
-            const response = await axios.get(`http://localhost:5000/api/news/${id}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/${id}`);
             setNews(response.data);
             setComments(response.data.comments || []);
             setViewCount(response.data.views || 0);
             setLikeCount(response.data.likes || 0);
 
             // 2. Increment View Count (Background)
-            axios.patch(`http://localhost:5000/api/news/${id}/view`)
+            axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/${id}/view`)
                  .then(res => setViewCount(res.data.views))
                  .catch(err => console.error(err));
 
@@ -55,7 +55,7 @@ export default function NewsDetail() {
     const fetchRelatedNews = async () => {
         try {
             // Fetch all news and filter (ideally backend should support fetching related by category)
-            const response = await axios.get('http://localhost:5000/api/news');
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news`);
             // Mock related news by excluding current one
             if (response.data && Array.isArray(response.data)) {
                 setRelatedNews(response.data.filter(n => n._id !== id).slice(0, 8));
@@ -85,7 +85,7 @@ export default function NewsDetail() {
         if (!newComment.trim()) return;
 
         try {
-            const response = await axios.post(`http://localhost:5000/api/news/${id}/comment`, {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/${id}/comment`, {
                 content: newComment,
                 user: 'Reader' // In a real app, from auth context
             });
@@ -100,7 +100,7 @@ export default function NewsDetail() {
     const handleLike = async () => {
         if (isLiked) return;
         try {
-            const response = await axios.patch(`http://localhost:5000/api/news/${id}/like`);
+            const response = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/${id}/like`);
             setLikeCount(response.data.likes);
             setIsLiked(true);
         } catch (error) {

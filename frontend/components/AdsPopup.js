@@ -12,7 +12,7 @@ export default function AdsPopup() {
     useEffect(() => {
         const fetchAds = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/ads?active=true&position=popup');
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads?active=true&position=popup`);
                 if (res.data.length > 0) {
                     setAds(res.data);
                     setIsVisible(true);

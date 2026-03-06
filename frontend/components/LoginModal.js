@@ -29,7 +29,7 @@ export default function LoginModal({ isOpen, onClose }) {
     setError('');
     setSuccess('');
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', loginData);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, loginData);
       const { token, user } = response.data;
 
       if (role === 'admin' && user.role !== 'admin') {
@@ -57,7 +57,7 @@ export default function LoginModal({ isOpen, onClose }) {
     setSuccess('');
     try {
       // Default role is user
-      await axios.post('http://localhost:5000/api/auth/register', { ...registerData, role: 'user' });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`, { ...registerData, role: 'user' });
       setSuccess('Request sent successfully! Please wait for admin approval.');
       // Optional: Switch back to login after short delay or just show success
       // setView('login'); 
