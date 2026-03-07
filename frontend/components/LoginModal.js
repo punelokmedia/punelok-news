@@ -29,7 +29,12 @@ export default function LoginModal({ isOpen, onClose }) {
     setError('');
     setSuccess('');
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, loginData);
+      const payload = { username: loginData.username?.trim() ?? '', password: loginData.password ?? '' };
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`,
+        payload,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
       const { token, user } = response.data;
 
       if (role === 'admin' && user.role !== 'admin') {

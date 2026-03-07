@@ -19,7 +19,12 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, formData);
+      const payload = { username: formData.username?.trim() ?? '', password: formData.password ?? '' };
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`,
+        payload,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
       const { token, user } = response.data;
 
       if (role === 'admin' && user.role !== 'admin') {
