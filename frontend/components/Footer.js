@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { translations } from '@/utils/translations';
 import './Footer.css';
 import { useState } from 'react';
-import { FaWhatsapp, FaTelegramPlane, FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt } from 'react-icons/fa';
+import { FaTelegramPlane, FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { BsChatDots } from 'react-icons/bs';
 
@@ -28,7 +28,6 @@ export default function Footer() {
 
   return (
     <footer className="footer-wrapper overflow-x-hidden w-full max-w-full relative z-[10]">
-      <div className="lg:pl-[140px] md:pl-[120px] pl-0">
           {/* Footer Top Bar (Red Background) */}
           <div className="footer-red-bar">
               <div className="footer-container red-bar-flex">
@@ -160,7 +159,6 @@ export default function Footer() {
                  </div>
               </div>
           </div>
-      </div>
     </footer>
   );
 }
