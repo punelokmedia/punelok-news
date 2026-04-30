@@ -38,7 +38,7 @@ export default function Footer() {
                      </div>
                      
                      <div className="lang-dropdown-wrapper">
-                         <button className="lang-dropdown-btn" onClick={() => setIsLangOpen(!isLangOpen)}>
+                         <button type="button" className="lang-dropdown-btn" onClick={() => setIsLangOpen(!isLangOpen)}>
                             {getCurrentLangLabel()} <FaChevronDown size={12} />
                          </button>
                          {isLangOpen && (

@@ -21,7 +21,7 @@ const NewsTicker = ({ items, getLocalizedContent }) => {
     if (items.length <= 4) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
-    }, 4000); // Faster tick for smoother feel
+    }, 6500);
     return () => clearInterval(interval);
   }, [items.length]);
 
@@ -61,7 +61,7 @@ export default function Home() {
 
     const interval = setInterval(() => {
       setActiveHeroIndex((prev) => (prev + 1) % liveCount);
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [news]);

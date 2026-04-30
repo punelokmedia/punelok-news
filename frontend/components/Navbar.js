@@ -288,6 +288,7 @@ export default function Navbar() {
               {languages.map((lang, index) => (
                 <React.Fragment key={lang.code}>
                   <button
+                    type="button"
                     onClick={() => setLanguage(lang.code)}
                     className={`lang-btn-minimal ${language === lang.code ? 'active' : ''}`}
                   >

@@ -87,7 +87,7 @@ body {
 
   /* Marquee Animation */
   .animate-marquee {
-    animation: marquee 60s linear infinite;
+    animation: marquee 140s linear infinite;
   }
 
   .mask-marquee-fade {

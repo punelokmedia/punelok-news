@@ -9,7 +9,16 @@ export function LanguageProvider({ children }) {
   const [t, setT] = useState(translations.marathi);
 
   useEffect(() => {
+    const savedLanguage = window.localStorage.getItem('punelok-language');
+    if (savedLanguage && translations[savedLanguage]) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  useEffect(() => {
     setT(translations[language]);
+    window.localStorage.setItem('punelok-language', language);
+    document.documentElement.lang = language;
   }, [language]);
 
   const value = {
