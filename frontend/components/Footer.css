@@ -18,6 +18,7 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 20px;
+  box-sizing: border-box;
 }
 
 /* -- TOP BRAND BAR -- */
@@ -390,27 +391,39 @@
   background-color: #000000;
   padding: 25px 0;
   border-top: 1px solid #111111;
+  overflow: hidden;
 }
 
 .bottom-flex {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
+  padding: 0 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .copyright-text {
   font-size: 17px;
   color: rgba(255, 255, 255, 0.7);
-  max-width: 600px;
+  max-width: 100%;
   font-weight: 600;
+  min-width: 0;
+  padding-left: 0;
+  overflow-wrap: anywhere;
 }
 
 .footer-socials {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ad-box {
+  justify-self: end;
 }
 
 .follow-text {
@@ -462,6 +475,18 @@
   .link-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 26px;
+  }
+
+  .bottom-flex {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 14px;
+    padding: 0 10px;
+  }
+
+  .ad-box {
+    justify-self: auto;
   }
 }
 
@@ -528,6 +553,7 @@
   }
 
   .bottom-flex {
+    display: flex;
     flex-direction: column;
     text-align: center;
     gap: 14px;

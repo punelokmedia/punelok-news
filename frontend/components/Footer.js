@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { translations } from '@/utils/translations';
 import './Footer.css';
 import { useState } from 'react';
-import { FaTelegramPlane, FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt } from 'react-icons/fa';
+import { FaTelegramPlane, FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt, FaWhatsapp } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { BsChatDots } from 'react-icons/bs';
 
@@ -12,6 +12,7 @@ export default function Footer() {
   const { language, setLanguage } = useLanguage();
   const t = translations[language]?.footer || translations.marathi.footer; 
   const topT = translations[language]?.footerTop || translations.marathi.footerTop;
+  const whatsappChatLink = "https://wa.me/918956776951?text=Hello%20Punelok%20team%2C%20I%20need%20help.";
 
   const [isLangOpen, setIsLangOpen] = useState(false);
 
@@ -146,13 +147,14 @@ export default function Footer() {
                  </div>
                  <div className="footer-socials">
                      <span className="follow-text">{t.headers?.follow}</span>
+                     <a href={whatsappChatLink} className="social-circle" title="WhatsApp" target="_blank" rel="noopener noreferrer"><FaWhatsapp /></a>
                      <a href="#" className="social-circle" title="X (Twitter)"><FaXTwitter /></a>
                      <a href="#" className="social-circle" title="Facebook"><FaFacebookF /></a>
                      <a href="#" className="social-circle" title="Email"><FaAt /></a>
                      <a href="#" className="social-circle" title="YouTube"><FaYoutube /></a>
                      <a href="#" className="social-circle" title="Instagram"><FaInstagram /></a>
                      <a href="#" className="social-circle" title="Telegram"><FaTelegramPlane /></a>
-                     <a href="#" className="social-circle" title="Chat"><BsChatDots /></a>
+                     <a href={whatsappChatLink} className="social-circle" title="WhatsApp Chat Bot" target="_blank" rel="noopener noreferrer"><BsChatDots /></a>
                  </div>
                  <div className="ad-box">
                     <a href="/advertise" className="footer-ad-btn">{t.headers?.advertise}</a>

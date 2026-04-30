@@ -23,6 +23,11 @@ const mukta = Mukta({
 export const metadata = {
   title: "Punelok - News App",
   description: "Latest news and updates",
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default function RootLayout({ children }) {
