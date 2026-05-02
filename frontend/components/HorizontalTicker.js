@@ -1,16 +1,18 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
 const HorizontalTicker = ({ title, items, bgColor = "bg-red-600", titleColor = "bg-red-800" }) => {
-    const router = useRouter();
     const { language } = useLanguage();
 
     const getLocalizedContent = (item, field) => {
         if (!item || !item[field]) return '';
         if (typeof item[field] === 'string') return item[field];
         if (typeof item[field] === 'object') {
-            return item[field][language] || item[field].english || item[field].marathi || item[field].hindi || '';
+            const block = item[field];
+            const primary = block[language];
+            if (primary && String(primary).trim()) return primary;
+            return block.english || block.marathi || block.hindi || '';
         }
         return '';
     };
@@ -32,20 +34,34 @@ const HorizontalTicker = ({ title, items, bgColor = "bg-red-600", titleColor = "
             {/* The wrapper div needs to be duplicated to create the infinite scroll effect seamlessly */}
             <div className="animate-marquee whitespace-nowrap flex items-center gap-12 will-change-transform">
                {/* Repeat items x4 to ensure enough content for wide screens before loop resets */}
-               {[...items, ...items, ...items, ...items].map((item, idx) => (
-                  <span 
-                    key={idx} 
-                    className="flex items-center text-[16px] sm:text-[19px] font-medium tracking-tight whitespace-nowrap hover:text-yellow-300 transition-colors duration-200 cursor-pointer"
-                    onClick={() => {
-                        if (typeof item === 'object') {
-                            router.push(`/news/${item._id || item.id}`);
-                        }
-                    }}
-                  >
+               {[...items, ...items, ...items, ...items].map((item, idx) => {
+                  const label = typeof item === 'string' ? item : getLocalizedContent(item, 'title');
+                  const nid = typeof item === 'object' && item ? item._id || item.id : null;
+                  const inner = (
+                    <>
                      <span className="text-white opacity-50 text-[11px] mx-4">•</span>
-                     {typeof item === 'string' ? item : getLocalizedContent(item, 'title')}
+                     {label}
+                    </>
+                  );
+                  if (nid) {
+                    return (
+                      <Link
+                        key={idx}
+                        href={`/news/${nid}`}
+                        prefetch={false}
+                        className="flex items-center text-[16px] sm:text-[19px] font-medium tracking-tight whitespace-nowrap hover:text-yellow-300 transition-colors duration-200 touch-manipulation py-1"
+                      >
+                        {inner}
+                      </Link>
+                    );
+                  }
+                  return (
+                  <span key={idx} className="flex items-center text-[16px] sm:text-[19px] font-medium tracking-tight whitespace-nowrap">
+                     <span className="text-white opacity-50 text-[11px] mx-4">•</span>
+                     {label}
                   </span>
-               ))}
+                  );
+               })}
             </div>
          </div>
       </div>

@@ -7,19 +7,22 @@ import { motion } from 'framer-motion';
 
 export default function ExplorerSidebar() {
     const pathname = usePathname();
-    const { language } = useLanguage();
+    const { t } = useLanguage();
+    const nav = t.nav;
+    const ft = t.footerTop;
+    const fl = t.footer.links;
 
     const menuItems = [
-        { id: 1, label: language === 'english' ? 'Live TV' : language === 'hindi' ? 'लाइव टीवी' : 'लाईव्ह टीव्ही', icon: <FaPlay />, href: '/live-tv' },
+        { id: 1, label: ft.liveTv, icon: <FaPlay />, href: '/live-tv' },
         { id: 2, label: 'LIVE', icon: <div className="w-2 h-2 bg-red-600 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse" />, href: '/live' },
-        { id: 3, label: language === 'english' ? 'Video Shorts' : language === 'hindi' ? 'वीडियो शॉर्ट्स' : 'व्हिडिओ शॉर्ट्स', icon: <FaFilm />, href: '/shorts' },
-        { id: 5, label: language === 'english' ? 'Photo Gallery' : language === 'hindi' ? 'फोटो गैलरी' : 'फोटो गॅलरी', icon: <FaRegNewspaper />, href: '/gallery' },
-        { id: 6, label: language === 'english' ? 'Podcast' : language === 'hindi' ? 'पॉडकास्ट' : 'पॉडकास्ट', icon: <FaHeadphones />, href: '/podcast' },
-        { id: 7, label: language === 'english' ? 'Sports' : language === 'hindi' ? 'खेल' : 'खेळ', icon: <FaTrophy />, href: '/category/sports' },
-        { id: 8, label: language === 'english' ? 'Jobs' : language === 'hindi' ? 'रोजगार' : 'रोजगार', icon: <FaBriefcase />, href: '/category/jobs' },
-        { id: 9, label: language === 'english' ? 'Education' : language === 'hindi' ? 'शिक्षा' : 'शिक्षण', icon: <FaGraduationCap />, href: '/category/education' },
-        { id: 10, label: language === 'english' ? 'Entertainment' : language === 'hindi' ? 'मनोरंजन' : 'मनोरंजन', icon: <FaFilm />, href: '/category/entertainment' },
-        { id: 11, label: language === 'english' ? 'Crime' : language === 'hindi' ? 'क्राइम' : 'गुन्हेगारी', icon: <FaGavel />, href: '/category/crime' },
+        { id: 3, label: nav.videoShorts, icon: <FaFilm />, href: '/shorts' },
+        { id: 5, label: ft.photoGallery, icon: <FaRegNewspaper />, href: '/gallery' },
+        { id: 6, label: ft.podcast, icon: <FaHeadphones />, href: '/podcast' },
+        { id: 7, label: nav.sports, icon: <FaTrophy />, href: '/category/sports' },
+        { id: 8, label: nav.jobs, icon: <FaBriefcase />, href: '/category/jobs' },
+        { id: 9, label: fl.education, icon: <FaGraduationCap />, href: '/category/education' },
+        { id: 10, label: nav.entertainment, icon: <FaFilm />, href: '/category/entertainment' },
+        { id: 11, label: fl.crime, icon: <FaGavel />, href: '/category/crime' },
     ];
 
     const containerVariants = {
@@ -45,9 +48,9 @@ export default function ExplorerSidebar() {
                 variants={containerVariants}
                 className="flex flex-col items-center w-full"
             >
-                <div className="flex flex-col items-center w-full pt-4 pb-2 cursor-default">
-                    <FaThLarge className="text-white opacity-80" />
-                    <span className="text-[10px] text-white/90 font-bold uppercase tracking-widest mt-1.5">{language === 'marathi' ? 'एक्स्प्लोर' : 'Explore'}</span>
+                <div className="flex flex-col items-center w-full pt-2 pb-1 cursor-default">
+                    <FaThLarge className="text-white opacity-80 text-lg" />
+                    <span className="text-[10px] text-white/90 font-bold uppercase tracking-widest mt-1">{nav.explore}</span>
                 </div>
                 
                 {menuItems.map((item) => {
@@ -56,11 +59,11 @@ export default function ExplorerSidebar() {
                         <motion.div key={item.id} variants={itemVariants} className="w-full">
                             <Link 
                                 href={item.href}
-                                className={`flex flex-col items-center justify-center w-full py-2 hover:bg-black/10 transition-colors group relative ${isActive ? 'bg-black/20' : ''}`}
+                                className={`flex flex-col items-center justify-center w-full py-1.5 hover:bg-black/10 transition-colors group relative ${isActive ? 'bg-black/20' : ''}`}
                             >
                                 <motion.div 
                                     whileHover={{ scale: 1.2, rotate: 5 }}
-                                    className={`text-xl mb-0.5 text-white group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)] transition-all`}
+                                    className={`text-lg mb-0 text-white group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)] transition-all`}
                                 >
                                     {item.icon}
                                 </motion.div>

@@ -18,13 +18,13 @@ export default function LayoutWrapper({ children }) {
     <div className="overflow-x-hidden w-full max-w-full min-w-0">
       {!shouldHideLayout && <Navbar />}
       {!shouldHideLayout && <ExplorerSidebar />}
-      <main className={`${!shouldHideLayout ? 'main-with-fixed-nav lg:pl-[136px]' : ''} min-h-[50vh] overflow-x-hidden w-full max-w-full min-w-0 relative`}>
+      <main className={`${!shouldHideLayout ? 'main-with-fixed-nav lg:pl-[120px]' : ''} min-h-[50vh] overflow-x-hidden w-full max-w-full min-w-0 relative`}>
         {children}
         {!shouldHideLayout && pathname === '/' && <AdsPopup />}
       </main>
       {!shouldHideLayout && (
         <>
-          <div className="lg:pl-[136px]">
+          <div className="lg:pl-[120px]">
             <Footer />
           </div>
           {pathname === '/' && (

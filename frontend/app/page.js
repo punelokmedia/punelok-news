@@ -5,13 +5,18 @@ import axios from 'axios';
 import { useLanguage } from '@/context/LanguageContext';
 import Link from 'next/link';
 import Image from 'next/image'; // Added Import
-import { useRouter } from 'next/navigation';
 import { FaChevronRight, FaBolt, FaCaretRight, FaClock, FaFire, FaRegNewspaper, FaHeadphones, FaThLarge, FaTrophy, FaGraduationCap, FaBriefcase, FaChartLine, FaArrowRight } from 'react-icons/fa';
 import HorizontalTicker from '@/components/HorizontalTicker';
 import CricketDashboard from '@/components/CricketDashboard';
 import MarketTrends from '@/components/MarketTrends';
 import { motion, AnimatePresence } from 'framer-motion';
 import Skeleton, { NewsCardSkeleton } from '@/components/Skeleton';
+
+/** Homepage grid cards: padding + border; icons only (no emoji in UI). */
+const GRID_NEWS_CARD =
+    'flex flex-col group text-inherit no-underline touch-manipulation block active:opacity-95 rounded-xl border border-gray-100 bg-white p-3 sm:p-4 shadow-sm hover:border-red-100/80 hover:shadow-md transition-all duration-200';
+
+const GRID_NEWS_CARD_FULL = `${GRID_NEWS_CARD} h-full`;
 
 // ... (NewsTicker component remains unchanged) ...
 const NewsTicker = ({ items, getLocalizedContent }) => {
@@ -21,9 +26,12 @@ const NewsTicker = ({ items, getLocalizedContent }) => {
     if (items.length <= 4) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
-    }, 6500);
+    }, 11000);
     return () => clearInterval(interval);
   }, [items.length]);
+
+  const rowClass =
+    'group flex items-start gap-3 min-w-0 overflow-hidden shrink-0 h-[60px] py-1 text-white touch-manipulation';
 
   return (
     <div className="flex flex-col h-full min-h-0 relative overflow-hidden mask-linear-fade">
@@ -31,14 +39,30 @@ const NewsTicker = ({ items, getLocalizedContent }) => {
         className="flex flex-col space-y-2 transition-transform duration-700 ease-in-out"
         style={{ transform: `translateY(-${currentIndex * 68}px)` }} // Exact item height + gap
       >
-        {items.map((item, idx) => (
-          <div key={idx} className="group cursor-pointer flex items-start gap-3 min-w-0 overflow-hidden shrink-0 h-[60px] py-1"> 
-              <FaCaretRight className="text-white mt-[6px] text-lg shrink-0 flex-shrink-0 drop-shadow-md" />
-              <p className="hero-bullet-text text-[16px] font-medium text-white leading-tight flex-1 text-left line-clamp-2 drop-shadow-sm">
-                {typeof item === 'string' ? item : getLocalizedContent(item, 'title')}
+        {items.map((item, idx) => {
+          const label = typeof item === 'string' ? item : getLocalizedContent(item, 'title');
+          const nid = typeof item === 'object' && item ? item._id || item.id : null;
+          const inner = (
+            <>
+              <FaCaretRight className="text-white mt-[6px] text-lg shrink-0 flex-shrink-0 drop-shadow-md pointer-events-none" />
+              <p className="hero-bullet-text text-[16px] font-medium text-white leading-tight flex-1 text-left line-clamp-2 drop-shadow-sm pointer-events-none">
+                {label}
               </p>
-          </div>
-        ))}
+            </>
+          );
+          if (nid) {
+            return (
+              <Link key={idx} href={`/news/${nid}`} className={`${rowClass} block active:opacity-90`} prefetch={false}>
+                {inner}
+              </Link>
+            );
+          }
+          return (
+            <div key={idx} className={rowClass}>
+              {inner}
+            </div>
+          );
+        })}
       </div>
       {/* Gradient mask at bottom to fade out text */}
       <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#c40404] to-transparent pointer-events-none"></div>
@@ -52,7 +76,6 @@ export default function Home() {
   const [marketTrends, setMarketTrends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
-  const router = useRouter();
 
   useEffect(() => {
     // Only set interval if we have live items
@@ -61,7 +84,7 @@ export default function Home() {
 
     const interval = setInterval(() => {
       setActiveHeroIndex((prev) => (prev + 1) % liveCount);
-    }, 8000);
+    }, 12000);
 
     return () => clearInterval(interval);
   }, [news]);
@@ -71,7 +94,7 @@ export default function Home() {
       setLoading(true);
       try {
         const [newsRes, marketRes] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?language=${language}`),
+          axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?language=${language}&limit=40`),
           axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market`)
         ]);
         setNews(newsRes.data);
@@ -287,8 +310,12 @@ export default function Home() {
                 {/* Exact reference: 3 Columns - Image | Title | List */}
                 <div key={featured._id || safeIndex} className="flex flex-col lg:flex-row h-full animate-in fade-in duration-700">
                   
-                  {/* Column 1: Image (45% Width) */}
-                  <div className="w-full lg:w-[45%] relative min-w-0 flex flex-col shrink-0 lg:h-full h-[200px] sm:h-[250px] bg-black overflow-hidden group">
+                  {/* Column 1: Image — own link (avoid nesting NewsTicker links) */}
+                  <Link
+                    href={`/news/${featured._id || featured.id}`}
+                    className="w-full lg:w-[45%] relative min-w-0 flex flex-col shrink-0 lg:h-full h-[200px] sm:h-[250px] bg-black overflow-hidden group text-inherit no-underline touch-manipulation active:opacity-95"
+                    prefetch={false}
+                  >
                     <Image 
                       src={featured.image || 'https://placehold.co/800x600/png?text=News'} 
                       alt={getLocalizedContent(featured, 'title')}
@@ -305,24 +332,25 @@ export default function Home() {
                       </div>
                     )}
                     {/* Progress Bar for the slide timer */}
-                    <div key={activeHeroIndex} className="absolute bottom-0 left-0 h-1 bg-red-600 animate-[width_5s_linear_forward]" style={{ animationName: 'growWidth', animationDuration: '5s', animationTimingFunction: 'linear' }}></div>
+                    <div key={activeHeroIndex} className="absolute bottom-0 left-0 h-1 bg-red-600 animate-[width_12s_linear_forward]" style={{ animationName: 'growWidth', animationDuration: '12s', animationTimingFunction: 'linear' }}></div>
                     <style jsx>{`
                       @keyframes growWidth {
                         from { width: 0%; }
                         to { width: 100%; }
                       }
                     `}</style>
-                  </div>
+                  </Link>
 
-                  {/* Column 2: Big Title Text (Flex Fill) - Auto width */}
-                  <div 
-                    className="flex w-full lg:flex-1 p-3 sm:p-5 flex-col justify-start pt-6 lg:pt-6 text-white border-b lg:border-b-0 lg:border-r border-white/20 bg-gradient-to-br from-[#c40404] to-[#a00000] overflow-hidden h-full relative backdrop-blur-md cursor-pointer hover:bg-black/10 transition-colors"
-                    onClick={() => router.push(`/news/${featured._id || featured.id}`)} // Updated onClick
+                  {/* Column 2: Headline — same article link */}
+                  <Link
+                    href={`/news/${featured._id || featured.id}`}
+                    className="flex w-full lg:flex-1 p-3 sm:p-5 flex-col justify-start pt-6 lg:pt-6 text-white border-b lg:border-b-0 lg:border-r border-white/20 bg-gradient-to-br from-[#c40404] to-[#a00000] overflow-hidden h-full relative backdrop-blur-md text-inherit no-underline touch-manipulation active:opacity-95"
+                    prefetch={false}
                   >
                       <div className="absolute top-0 right-0 p-2 opacity-10">
                          <FaBolt className="text-6xl text-white" />
                       </div>
-                      <h1 className="font-['Kohinoor_Devanagari','Mukta',sans-serif] font-bold drop-shadow-md w-full max-h-full z-10">
+                      <h1 className="font-news-headline font-bold drop-shadow-md w-full max-h-full z-10">
                         {(() => {
                             const { line1, line2 } = getHeroTitleLines(featured);
                             // Clean up hyphens for display
@@ -343,7 +371,7 @@ export default function Home() {
                             );
                         })()}
                       </h1>
-                  </div>
+                  </Link>
 
                   {/* Column 3: List (25%) */}
                   <div className="w-full lg:w-[25%] lg:min-w-0 py-3 px-3 sm:py-4 sm:px-4 lg:py-3 lg:px-4 flex flex-col justify-start pt-6 lg:pt-6 min-w-0 bg-[#c40404] overflow-hidden">
@@ -370,8 +398,10 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-               <div className="bg-gray-100 p-12 text-center rounded text-gray-500 italic mb-10 border-2 border-dashed border-gray-300">
-                  <div className="text-4xl mb-2 text-gray-300">📰</div>
+               <div className="bg-gray-100 p-12 text-center rounded-lg text-gray-500 italic mb-10 border-2 border-dashed border-gray-300">
+                  <div className="mb-4 flex justify-center" aria-hidden>
+                    <FaRegNewspaper className="h-14 w-14 text-gray-300" />
+                  </div>
                    News feed is empty. Please add news from the Admin Dashboard.
                </div>
             )}
@@ -402,10 +432,11 @@ export default function Home() {
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {stripItems.map((item, idx) => (
-                        <div 
-                            key={item._id || item.id || idx} 
-                            className="flex flex-col group cursor-pointer"
-                            onClick={() => router.push(`/news/${item._id || item.id}`)} // Added onClick
+                        <Link
+                            key={item._id || item.id || idx}
+                            href={`/news/${item._id || item.id}`}
+                            className={GRID_NEWS_CARD}
+                            prefetch={false}
                         >
                             {/* Category Header */}
                             <div className="flex items-center justify-between mb-1.5">
@@ -435,7 +466,7 @@ export default function Home() {
                             <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">
                                 {getLocalizedContent(item, 'title')}
                             </h3>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -465,10 +496,11 @@ export default function Home() {
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {maharashtraNews.map((item, idx) => (
-                        <div 
-                            key={item._id || item.id || idx} 
-                            className="flex flex-col group cursor-pointer"
-                            onClick={() => router.push(`/news/${item._id || item.id}`)}
+                        <Link
+                            key={item._id || item.id || idx}
+                            href={`/news/${item._id || item.id}`}
+                            className={GRID_NEWS_CARD}
+                            prefetch={false}
                         >
                             {/* Category Header */}
                             <div className="flex items-center justify-between mb-1.5">
@@ -497,7 +529,7 @@ export default function Home() {
                             <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">
                                 {getLocalizedContent(item, 'title')}
                             </h3>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -524,13 +556,30 @@ export default function Home() {
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {entertainmentNews.map((item, idx) => (
-                        <div key={item._id || item.id || idx} className="flex flex-col group cursor-pointer" onClick={() => router.push(`/news/${item._id || item.id}`)}>
-                            <div className="flex items-center justify-between mb-1.5"><span className="text-red-600 font-bold text-[10px] uppercase tracking-wide">{language === 'marathi' ? 'मनोरंजन' : 'ENTERTAINMENT'}</span></div>
-                            <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
-                                <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
+                        <Link
+                            key={item._id || item.id || idx}
+                            href={`/news/${item._id || item.id}`}
+                            className={GRID_NEWS_CARD}
+                            prefetch={false}
+                        >
+                            <div className="flex items-center justify-between mb-1.5">
+                                <span className="text-red-600 font-bold text-[10px] uppercase tracking-wide">
+                                    {language === 'marathi' ? 'मनोरंजन' : 'ENTERTAINMENT'}
+                                </span>
                             </div>
-                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
-                        </div>
+                            <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
+                                <Image
+                                    src={item.image || 'https://placehold.co/600x400/png?text=News'}
+                                    alt={getLocalizedContent(item, 'title')}
+                                    fill
+                                    className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out"
+                                    sizes="(max-width: 768px) 100vw, 25vw"
+                                />
+                            </div>
+                            <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">
+                                {getLocalizedContent(item, 'title')}
+                            </h3>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -550,13 +599,13 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {sportsNews.map((item, idx) => (
-                        <div key={item._id || item.id || idx} className="flex flex-col group cursor-pointer" onClick={() => router.push(`/news/${item._id || item.id}`)}>
+                        <Link key={item._id || item.id || idx} href={`/news/${item._id || item.id}`} className={GRID_NEWS_CARD} prefetch={false}>
                             <div className="flex items-center justify-between mb-1.5"><span className="text-red-600 font-bold text-[10px] uppercase tracking-wide">{language === 'marathi' ? 'क्रीडा' : 'SPORTS'}</span></div>
                             <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
                             <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -576,12 +625,12 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {jobNews.map((item, idx) => (
-                        <div key={item._id || item.id || idx} className="flex flex-col group cursor-pointer" onClick={() => router.push(`/news/${item._id || item.id}`)}>
+                        <Link key={item._id || item.id || idx} href={`/news/${item._id || item.id}`} className={GRID_NEWS_CARD} prefetch={false}>
                              <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=Jobs'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
                             <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -601,12 +650,12 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {astroNews.map((item, idx) => (
-                        <div key={item._id || item.id || idx} className="flex flex-col group cursor-pointer" onClick={() => router.push(`/news/${item._id || item.id}`)}>
+                        <Link key={item._id || item.id || idx} href={`/news/${item._id || item.id}`} className={GRID_NEWS_CARD} prefetch={false}>
                             <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
                             <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -626,12 +675,12 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {lifestyleNews.map((item, idx) => (
-                        <div key={item._id || item.id || idx} className="flex flex-col group cursor-pointer" onClick={() => router.push(`/news/${item._id || item.id}`)}>
+                        <Link key={item._id || item.id || idx} href={`/news/${item._id || item.id}`} className={GRID_NEWS_CARD} prefetch={false}>
                             <div className="relative aspect-video mb-2 overflow-hidden rounded-md bg-gray-100">
                                 <Image src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedContent(item, 'title')} fill className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out" sizes="(max-width: 768px) 100vw, 25vw" />
                             </div>
                             <h3 className="text-[16px] font-normal text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">{getLocalizedContent(item, 'title')}</h3>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -662,10 +711,11 @@ export default function Home() {
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {politicsNews.map((item, idx) => (
-                        <div 
-                            key={item._id || item.id || idx} 
-                            className="flex flex-col group cursor-pointer"
-                            onClick={() => router.push(`/news/${item._id || item.id}`)}
+                        <Link
+                            key={item._id || item.id || idx}
+                            href={`/news/${item._id || item.id}`}
+                            className={GRID_NEWS_CARD}
+                            prefetch={false}
                         >
                             {/* Category Header */}
                             <div className="flex items-center justify-between mb-1.5">
@@ -694,7 +744,7 @@ export default function Home() {
                             <h3 className="text-sm font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-red-700 transition-colors">
                                 {getLocalizedContent(item, 'title')}
                             </h3>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -713,7 +763,7 @@ export default function Home() {
              
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-x-6 sm:gap-y-10">
                 {remainingGridStories.map(item => (
-                   <div key={item._id} className="group cursor-pointer flex flex-col h-full">
+                   <Link key={item._id} href={`/news/${item._id || item.id}`} className={GRID_NEWS_CARD_FULL} prefetch={false}>
                       {/* Image Container - No Radius, No Shadow */}
                       <div className="relative aspect-video mb-3 overflow-hidden bg-gray-100">
                          <Image 
@@ -742,7 +792,7 @@ export default function Home() {
                             <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                          </div>
                       </div>
-                   </div>
+                   </Link>
                 ))}
              </div>
           </div>
@@ -758,9 +808,10 @@ export default function Home() {
                         {language === 'marathi' ? 'क्राईम' : 'CRIME'}
                     </div>
                     {allCrimeNews.length > 0 ? (
-                        <div 
-                            className="relative w-full h-[250px] group cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-                            onClick={() => router.push(`/news/${allCrimeNews[0]._id || allCrimeNews[0].id}`)}
+                        <Link
+                            href={`/news/${allCrimeNews[0]._id || allCrimeNews[0].id}`}
+                            className="relative w-full h-[250px] group block overflow-hidden rounded-xl shadow-md ring-1 ring-black/5 transition-shadow hover:shadow-xl text-inherit no-underline touch-manipulation active:opacity-95"
+                            prefetch={false}
                         >
                             <Image 
                                 src={allCrimeNews[0].image || 'https://placehold.co/600x400/png?text=News'} 
@@ -773,10 +824,10 @@ export default function Home() {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90"></div>
                             
                             {/* Title Overlay */}
-                            <h3 className="absolute bottom-0 left-0 right-0 p-4 text-white text-lg sm:text-xl font-bold leading-snug drop-shadow-md">
+                            <h3 className="absolute bottom-0 left-0 right-0 p-5 text-white text-lg sm:text-xl font-bold leading-snug drop-shadow-md">
                                 {getLocalizedContent(allCrimeNews[0], 'title')}
                             </h3>
-                        </div>
+                        </Link>
                     ) : (
                          <div className="h-[250px] bg-gray-100 flex items-center justify-center text-gray-400 italic border border-gray-200">
                             No crime news available
@@ -790,9 +841,10 @@ export default function Home() {
                         {language === 'marathi' ? 'नोकरी/रोजगार' : 'JOBS'}
                     </div>
                     {allJobNews.length > 0 ? (
-                        <div 
-                            className="relative w-full h-[250px] group cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-                            onClick={() => router.push(`/news/${allJobNews[0]._id || allJobNews[0].id}`)}
+                        <Link
+                            href={`/news/${allJobNews[0]._id || allJobNews[0].id}`}
+                            className="relative w-full h-[250px] group block overflow-hidden rounded-xl shadow-md ring-1 ring-black/5 transition-shadow hover:shadow-xl text-inherit no-underline touch-manipulation active:opacity-95"
+                            prefetch={false}
                         >
                              <Image 
                                 src={allJobNews[0].image || 'https://placehold.co/600x400/png?text=Jobs'} 
@@ -802,10 +854,10 @@ export default function Home() {
                                 className="object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90"></div>
-                            <h3 className="absolute bottom-0 left-0 right-0 p-4 text-white text-lg sm:text-xl font-bold leading-snug drop-shadow-md">
+                            <h3 className="absolute bottom-0 left-0 right-0 p-5 text-white text-lg sm:text-xl font-bold leading-snug drop-shadow-md">
                                 {getLocalizedContent(allJobNews[0], 'title')}
                             </h3>
-                        </div>
+                        </Link>
                     ) : (
                         <div className="h-[250px] bg-gray-100 flex items-center justify-center text-gray-400 italic border border-gray-200">
                              No jobs available
@@ -819,9 +871,10 @@ export default function Home() {
                         {language === 'marathi' ? 'खेळ' : 'SPORTS'}
                     </div>
                     {allSportsNews.length > 0 ? (
-                        <div 
-                            className="relative w-full h-[250px] group cursor-pointer overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-                            onClick={() => router.push(`/news/${allSportsNews[0]._id || allSportsNews[0].id}`)}
+                        <Link
+                            href={`/news/${allSportsNews[0]._id || allSportsNews[0].id}`}
+                            className="relative w-full h-[250px] group block overflow-hidden rounded-xl shadow-md ring-1 ring-black/5 transition-shadow hover:shadow-xl text-inherit no-underline touch-manipulation active:opacity-95"
+                            prefetch={false}
                         >
                             <Image 
                                 src={allSportsNews[0].image || 'https://placehold.co/600x400/png?text=News'} 
@@ -831,10 +884,10 @@ export default function Home() {
                                 className="object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90"></div>
-                            <h3 className="absolute bottom-0 left-0 right-0 p-4 text-white text-lg sm:text-xl font-bold leading-snug drop-shadow-md">
+                            <h3 className="absolute bottom-0 left-0 right-0 p-5 text-white text-lg sm:text-xl font-bold leading-snug drop-shadow-md">
                                 {getLocalizedContent(allSportsNews[0], 'title')}
                             </h3>
-                        </div>
+                        </Link>
                     ) : (
                         <div className="h-[250px] bg-gray-100 flex items-center justify-center text-gray-400 italic border border-gray-200">
                              No sports news available

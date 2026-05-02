@@ -1,31 +1,43 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { translations } from '../utils/translations';
+import { normalizeLanguage, getTranslationBundle } from '../utils/i18n';
 
-const LanguageContext = createContext();
+const LanguageContext = createContext(null);
+
+const defaultContextValue = {
+  language: 'marathi',
+  setLanguage: () => {},
+  t: translations.marathi,
+};
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState('marathi'); // Default to Marathi
-  const [t, setT] = useState(translations.marathi);
+  const [language, setLanguageState] = useState('marathi');
+
+  const setLanguage = useCallback((code) => {
+    setLanguageState(normalizeLanguage(code));
+  }, []);
 
   useEffect(() => {
-    const savedLanguage = window.localStorage.getItem('punelok-language');
-    if (savedLanguage && translations[savedLanguage]) {
-      setLanguage(savedLanguage);
+    const raw = typeof window !== 'undefined' ? window.localStorage.getItem('punelok-language') : null;
+    if (raw) {
+      setLanguageState(normalizeLanguage(raw));
     }
   }, []);
 
   useEffect(() => {
-    setT(translations[language]);
+    if (typeof window === 'undefined') return;
     window.localStorage.setItem('punelok-language', language);
-    document.documentElement.lang = language;
+    const htmlLang = { marathi: 'mr', hindi: 'hi', english: 'en' }[language] || 'mr';
+    document.documentElement.lang = htmlLang;
   }, [language]);
 
-  const value = {
-    language,
-    setLanguage,
-    t
-  };
+  const t = useMemo(() => getTranslationBundle(language), [language]);
+
+  const value = useMemo(
+    () => ({ language, setLanguage, t }),
+    [language, setLanguage, t]
+  );
 
   return (
     <LanguageContext.Provider value={value}>
@@ -35,5 +47,6 @@ export function LanguageProvider({ children }) {
 }
 
 export function useLanguage() {
-  return useContext(LanguageContext);
+  const ctx = useContext(LanguageContext);
+  return ctx ?? defaultContextValue;
 }

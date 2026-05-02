@@ -4,14 +4,125 @@ const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
 const News = require('../models/News');
 const { authenticateToken, isAdmin } = require('../middleware/authMiddleware');
-const { translate } = require('@vitalets/google-translate-api');
+const { translateText } = require('../utils/translateText');
 const crypto = require('crypto');
 
-const langMap = {
-  'marathi': 'mr',
-  'hindi': 'hi',
-  'english': 'en'
-};
+const APP_LANGS = ['marathi', 'hindi', 'english'];
+
+function nonEmpty(s) {
+  return typeof s === 'string' && s.trim().length > 0;
+}
+
+/** Pick which locale to translate from when filling targetLang */
+function pickSourceLocaleForTarget(titleObj, targetLang) {
+  if (!titleObj || typeof titleObj !== 'object') return null;
+  const candidates = ['marathi', 'hindi', 'english'].filter((l) => l !== targetLang);
+  for (const loc of candidates) {
+    if (nonEmpty(titleObj[loc])) return loc;
+  }
+  return null;
+}
+
+function pickSourceLocaleForTopUpdates(tuObj, targetLang) {
+  if (!tuObj || typeof tuObj !== 'object') return null;
+  const candidates = ['marathi', 'hindi', 'english'].filter((l) => l !== targetLang);
+  for (const loc of candidates) {
+    const arr = tuObj[loc];
+    if (Array.isArray(arr) && arr.length > 0 && arr.some((x) => nonEmpty(x))) return loc;
+  }
+  return null;
+}
+
+/** Legacy rows sometimes store title as a plain string — normalize to nested object. */
+async function normalizeDocTitle(doc) {
+  if (!doc?._id) return;
+  const t = doc.title;
+  if (typeof t === 'string' && t.trim()) {
+    const nested = { marathi: t.trim(), hindi: '', english: '' };
+    doc.title = nested;
+    await News.findByIdAndUpdate(doc._id, { $set: { title: nested } });
+  }
+}
+
+/** List/card views: fill missing title only (persist). */
+async function ensureTitleLocale(doc, targetLang) {
+  await normalizeDocTitle(doc);
+  if (!doc?.title || typeof doc.title !== 'object') return;
+  if (!APP_LANGS.includes(targetLang)) return;
+  if (nonEmpty(doc.title[targetLang])) return;
+
+  const src = pickSourceLocaleForTarget(doc.title, targetLang);
+  if (!src) return;
+
+  try {
+    const text = await translateText(doc.title[src], src, targetLang);
+    doc.title[targetLang] = text;
+    await News.findByIdAndUpdate(doc._id, {
+      $set: { [`title.${targetLang}`]: text },
+    });
+  } catch (err) {
+    console.error(`ensureTitleLocale ${doc._id}:`, err.message);
+  }
+}
+
+/** Detail view: fill title, content, topUpdates when missing (persist). */
+async function ensureFullArticleLocales(doc, targetLang) {
+  if (!doc || !APP_LANGS.includes(targetLang)) return;
+
+  await normalizeDocTitle(doc);
+
+  const $set = {};
+
+  const fillBlock = async (blockKey) => {
+    const block = doc[blockKey];
+    if (!block || typeof block !== 'object') return;
+    if (nonEmpty(block[targetLang])) return;
+    const src = pickSourceLocaleForTarget(block, targetLang);
+    if (!src || !nonEmpty(block[src])) return;
+    try {
+      const text = await translateText(block[src], src, targetLang);
+      $set[`${blockKey}.${targetLang}`] = text;
+      block[targetLang] = text;
+    } catch (e) {
+      console.error(`ensureFull ${blockKey}:`, e.message);
+    }
+  };
+
+  await fillBlock('title');
+  await fillBlock('content');
+
+  const tu = doc.topUpdates;
+  if (tu && typeof tu === 'object' && !Array.isArray(tu)) {
+    const destArr = tu[targetLang];
+    const srcLocale = pickSourceLocaleForTopUpdates(tu, targetLang);
+    const srcArr = srcLocale ? tu[srcLocale] : null;
+    const needs =
+      (!destArr || destArr.length === 0) &&
+      Array.isArray(srcArr) &&
+      srcArr.length > 0 &&
+      srcArr.some((x) => nonEmpty(x));
+    if (needs && srcLocale) {
+      try {
+        const batched = srcArr.join(' ||| ');
+        const batchOut = await translateText(batched, srcLocale, targetLang);
+        const translatedUpdates = batchOut.split('|||').map((s) => s.trim());
+        if (translatedUpdates.length === srcArr.length) {
+          $set[`topUpdates.${targetLang}`] = translatedUpdates;
+          tu[targetLang] = translatedUpdates;
+        }
+      } catch (e) {
+        console.error('ensureFull topUpdates:', e.message);
+      }
+    }
+  }
+
+  if (Object.keys($set).length > 0) {
+    await News.findByIdAndUpdate(doc._id, { $set });
+    doc.markModified('title');
+    doc.markModified('content');
+    doc.markModified('topUpdates');
+  }
+}
 
 // Configure Multer
 const storage = multer.memoryStorage();
@@ -63,11 +174,8 @@ router.post('/create', authenticateToken, isAdmin, upload.single('image'), async
     const updates = { marathi: [], hindi: [], english: [] };
     
     const targetLanguages = ['marathi', 'hindi', 'english'];
-    const fromCode = langMap[language];
 
     for (const targetLang of targetLanguages) {
-        const toCode = langMap[targetLang];
-        
         if (targetLang === language) {
             titles[targetLang] = title;
             contents[targetLang] = content;
@@ -76,24 +184,21 @@ router.post('/create', authenticateToken, isAdmin, upload.single('image'), async
         } else {
             try {
                  console.log(`Translating new post to ${targetLang}...`);
-                 // Wait 1000ms
-                 await new Promise(r => setTimeout(r, 1000));
+                 await new Promise(r => setTimeout(r, 600));
                  
-                 const [transTitle, transContent] = await Promise.all([
-                    translate(title, { from: fromCode, to: toCode }),
-                    translate(content, { from: fromCode, to: toCode })
-                 ]);
+                 const transTitle = await translateText(title, language, targetLang);
+                 const transContent = await translateText(content, language, targetLang);
                  
                  let translatedUpdates = [];
                  if (topUpdates.length > 0) {
-                     await new Promise(r => setTimeout(r, 1000));
+                     await new Promise(r => setTimeout(r, 600));
                      const batchedUpdates = topUpdates.join(' ||| ');
-                     const transBatch = await translate(batchedUpdates, { from: fromCode, to: toCode });
-                     translatedUpdates = transBatch.text.split('|||').map(s => s.trim());
+                     const transBatchText = await translateText(batchedUpdates, language, targetLang);
+                     translatedUpdates = transBatchText.split('|||').map(s => s.trim());
                  }
 
-                 titles[targetLang] = transTitle.text;
-                 contents[targetLang] = transContent.text;
+                 titles[targetLang] = transTitle;
+                 contents[targetLang] = transContent;
                  updates[targetLang] = translatedUpdates.length === topUpdates.length ? translatedUpdates : topUpdates;
                  console.log(`Successfully translated to ${targetLang}`);
 
@@ -132,8 +237,19 @@ router.get('/', async (req, res) => {
     let query = {};
     if (category) query.category = category;
 
+    const lang =
+      language && APP_LANGS.includes(String(language).toLowerCase())
+        ? String(language).toLowerCase()
+        : 'marathi';
 
     const news = await News.find(query).sort({ createdAt: -1 }).limit(Number(limit) || 20);
+
+    const batchSize = 3;
+    for (let i = 0; i < news.length; i += batchSize) {
+      const slice = news.slice(i, i + batchSize);
+      await Promise.all(slice.map((doc) => ensureTitleLocale(doc, lang)));
+    }
+
     res.json(news);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -193,9 +309,8 @@ router.put('/update/:id', authenticateToken, isAdmin, upload.single('image'), as
 
     // Update fields
     const targetLanguages = ['marathi', 'hindi', 'english'];
-    const fromCode = langMap[language];
 
-    console.log(`Update request for language: ${language} (fromCode: ${fromCode})`);
+    console.log(`Update request for language: ${language}`);
 
     if (language && targetLanguages.includes(language)) {
         for (const targetLang of targetLanguages) {
@@ -205,36 +320,29 @@ router.put('/update/:id', authenticateToken, isAdmin, upload.single('image'), as
                 news.content[targetLang] = content;
                 news.topUpdates[targetLang] = topUpdates;
             } else {
-                const toCode = langMap[targetLang];
-                console.log(`Translating to ${targetLang} (toCode: ${toCode})...`);
+                console.log(`Translating to ${targetLang}...`);
                 try {
-                     // Wait 1000ms between language blocks
-                     await new Promise(r => setTimeout(r, 1000));
+                     await new Promise(r => setTimeout(r, 600));
 
-                     console.log(`Translating Title and Content...`);
-                     const [transTitle, transContent] = await Promise.all([
-                        translate(title, { from: fromCode, to: toCode }),
-                        translate(content, { from: fromCode, to: toCode })
-                     ]);
+                     const transTitle = await translateText(title, language, targetLang);
+                     const transContent = await translateText(content, language, targetLang);
                      
-                     // Batch translate updates to avoid rate limits
                      let translatedUpdates = [];
                      if (topUpdates.length > 0) {
-                         await new Promise(r => setTimeout(r, 1000));
+                         await new Promise(r => setTimeout(r, 600));
                          console.log(`Translating ${topUpdates.length} updates in one batch...`);
                          const batchedUpdates = topUpdates.join(' ||| ');
-                         const transBatch = await translate(batchedUpdates, { from: fromCode, to: toCode });
-                         translatedUpdates = transBatch.text.split('|||').map(s => s.trim());
+                         const transBatchText = await translateText(batchedUpdates, language, targetLang);
+                         translatedUpdates = transBatchText.split('|||').map(s => s.trim());
                      }
     
-                     news.title[targetLang] = transTitle.text;
-                     news.content[targetLang] = transContent.text;
+                     news.title[targetLang] = transTitle;
+                     news.content[targetLang] = transContent;
                      news.topUpdates[targetLang] = translatedUpdates.length === topUpdates.length ? translatedUpdates : topUpdates;
                      console.log(`Successfully updated and translated ${targetLang}`);
     
                 } catch (err) {
                     console.error(`Translation to ${targetLang} failed during update:`, err.message);
-                    // Fallback: Use provided text but log the failure
                     news.title[targetLang] = title;
                     news.content[targetLang] = content;
                     news.topUpdates[targetLang] = topUpdates;
@@ -293,6 +401,17 @@ router.get('/:id', async (req, res) => {
   try {
     const news = await News.findById(req.params.id);
     if (!news) return res.status(404).json({ message: 'News not found' });
+
+    const { language } = req.query;
+    const lang =
+      language && APP_LANGS.includes(String(language).toLowerCase())
+        ? String(language).toLowerCase()
+        : null;
+
+    if (lang) {
+      await ensureFullArticleLocales(news, lang);
+    }
+
     res.json(news);
   } catch (error) {
     res.status(500).json({ message: error.message });

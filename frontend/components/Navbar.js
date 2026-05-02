@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { useLanguage } from '@/context/LanguageContext';
-import { translations } from '@/utils/translations';
 import LoginModal from './LoginModal';
 import { 
   FaXTwitter, 
@@ -13,20 +12,27 @@ import {
   FaYoutube, 
   FaInstagram, 
   FaTelegram, 
-  FaWhatsapp 
+  FaWhatsapp,
+  FaBitcoin,
+  FaImage,
+  FaChartLine,
+  FaArrowUp,
+  FaArrowDown,
+  FaMinus,
 } from 'react-icons/fa6';
+import { GiGoldBar, GiWeight } from 'react-icons/gi';
 import './Navbar.css';
 
 export default function Navbar() {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const t = translations[language];
 
-  // Fallback if translation is missing
-  const safeT = t?.nav || translations.marathi.nav;
+  const safeT = t.nav;
+  const ft = t.footerTop;
+  const fl = t.footer.links;
 
   const languages = [
     { code: 'marathi', label: 'मराठी', color: '#ffcc00' }, // First one highlighted yellow
@@ -178,7 +184,7 @@ export default function Navbar() {
   const getLocalizedTitle = (item) => {
       if (!item || !item.title) return '';
       if (typeof item.title === 'string') return item.title;
-      return item.title[language] || item.title.english || item.title.marathi || '';
+      return item.title[language] || item.title.marathi || item.title.hindi || item.title.english || '';
   };
   
   const handleLatestMouseEnter = () => {
@@ -276,6 +282,22 @@ export default function Navbar() {
     }
   };
 
+  const MarketTickerCategoryIcon = ({ category }) => {
+    const sz = 20;
+    switch (category) {
+      case 'gold':
+        return <GiGoldBar size={sz} className="text-amber-300 drop-shadow-[0_0_6px_rgba(253,224,71,0.5)]" aria-hidden />;
+      case 'silver':
+        return <GiWeight size={sz} className="text-gray-200 drop-shadow-[0_0_6px_rgba(229,231,235,0.45)]" aria-hidden />;
+      case 'crypto':
+        return <FaBitcoin size={sz} className="text-orange-400 drop-shadow-[0_0_6px_rgba(251,146,60,0.5)]" aria-hidden />;
+      case 'nft':
+        return <FaImage size={sz} className="text-fuchsia-300 drop-shadow-[0_0_6px_rgba(232,121,249,0.45)]" aria-hidden />;
+      default:
+        return <FaChartLine size={sz} className="text-white/90" aria-hidden />;
+    }
+  };
+
   return (
     <header className="navbar-wrapper">
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
@@ -334,14 +356,20 @@ export default function Navbar() {
                       }}
                     >
                       <div className="ticker-icon-box">
-                        {item.category === 'gold' ? '🏆' : item.category === 'silver' ? '🥈' : item.category === 'crypto' ? '₿' : item.category === 'nft' ? '🖼️' : '📈'}
+                        <MarketTickerCategoryIcon category={item.category} />
                       </div>
                       <div className="ticker-info">
                         <span className="ticker-label-small">{item.title[language] || item.title.english}</span>
                         <div className="ticker-value-row">
                           <span className="ticker-value-bold">{item.value[language] || item.value.english}</span>
                           <span className={`ticker-trend-box ${item.trend}`}>
-                            {item.trend === 'up' ? '▲' : item.trend === 'down' ? '▼' : '●'}
+                            {item.trend === 'up' ? (
+                              <FaArrowUp size={11} className="inline-block align-middle" aria-hidden />
+                            ) : item.trend === 'down' ? (
+                              <FaArrowDown size={11} className="inline-block align-middle" aria-hidden />
+                            ) : (
+                              <FaMinus size={9} className="inline-block align-middle opacity-90" aria-hidden />
+                            )}
                           </span>
                         </div>
                       </div>
@@ -388,7 +416,7 @@ export default function Navbar() {
                             {latestNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
                                     <div className="mega-menu-header">
-                                        <span className="mega-menu-category">{item.category || (language === 'marathi' ? 'महाराष्ट्र' : 'Maharashtra')}</span>
+                                        <span className="mega-menu-category">{item.category || safeT.maharashtra}</span>
                                         <span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span>
                                     </div>
                                     <div className="mega-menu-image-container">
@@ -425,7 +453,7 @@ export default function Navbar() {
                             {maharashtraNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
                                     <div className="mega-menu-header">
-                                        <span className="mega-menu-category">{item.category || (language === 'marathi' ? 'महाराष्ट्र' : 'Maharashtra')}</span>
+                                        <span className="mega-menu-category">{item.category || safeT.maharashtra}</span>
                                         <span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span>
                                     </div>
                                     <div className="mega-menu-image-container">
@@ -462,7 +490,7 @@ export default function Navbar() {
                             {politicsNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
                                     <div className="mega-menu-header">
-                                        <span className="mega-menu-category">{item.category || (language === 'marathi' ? 'राजकारण' : 'Politics')}</span>
+                                        <span className="mega-menu-category">{item.category || safeT.politics}</span>
                                         <span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span>
                                     </div>
                                     <div className="mega-menu-image-container">
@@ -494,7 +522,7 @@ export default function Navbar() {
                         <div className="mega-menu-container">
                             {entertainmentNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
-                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || (language === 'marathi' ? 'मनोरंजन' : 'Entertainment')}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
+                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || safeT.entertainment}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
                                     <div className="mega-menu-image-container"><img src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedTitle(item)} className="mega-menu-image" onError={(e) => {e.target.onerror = null; e.target.src = "https://placehold.co/600x400/png?text=News"}} /></div>
                                     <h4 className="mega-menu-title">{getLocalizedTitle(item)}</h4>
                                 </Link>
@@ -513,7 +541,7 @@ export default function Navbar() {
                         <div className="mega-menu-container">
                             {sportsNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
-                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || (language === 'marathi' ? 'क्रीडा' : 'Sports')}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
+                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || safeT.sports}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
                                     <div className="mega-menu-image-container"><img src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedTitle(item)} className="mega-menu-image" onError={(e) => {e.target.onerror = null; e.target.src = "https://placehold.co/600x400/png?text=News"}} /></div>
                                     <h4 className="mega-menu-title">{getLocalizedTitle(item)}</h4>
                                 </Link>
@@ -532,7 +560,7 @@ export default function Navbar() {
                         <div className="mega-menu-container">
                             {businessNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
-                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || (language === 'marathi' ? 'बिझनेस' : 'Business')}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
+                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || safeT.business}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
                                     <div className="mega-menu-image-container"><img src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedTitle(item)} className="mega-menu-image" onError={(e) => {e.target.onerror = null; e.target.src = "https://placehold.co/600x400/png?text=News"}} /></div>
                                     <h4 className="mega-menu-title">{getLocalizedTitle(item)}</h4>
                                 </Link>
@@ -551,7 +579,7 @@ export default function Navbar() {
                         <div className="mega-menu-container">
                             {astroNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
-                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || (language === 'marathi' ? 'भविष्य' : 'Astro')}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
+                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || safeT.astro}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
                                     <div className="mega-menu-image-container"><img src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedTitle(item)} className="mega-menu-image" onError={(e) => {e.target.onerror = null; e.target.src = "https://placehold.co/600x400/png?text=News"}} /></div>
                                     <h4 className="mega-menu-title">{getLocalizedTitle(item)}</h4>
                                 </Link>
@@ -570,7 +598,7 @@ export default function Navbar() {
                         <div className="mega-menu-container">
                             {lifestyleNews.map((item) => (
                                 <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
-                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || (language === 'marathi' ? 'लाईफस्टाईल' : 'Lifestyle')}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
+                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || safeT.lifestyle}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
                                     <div className="mega-menu-image-container"><img src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedTitle(item)} className="mega-menu-image" onError={(e) => {e.target.onerror = null; e.target.src = "https://placehold.co/600x400/png?text=News"}} /></div>
                                     <h4 className="mega-menu-title">{getLocalizedTitle(item)}</h4>
                                 </Link>
@@ -597,17 +625,17 @@ export default function Navbar() {
                             gap: '10px'
                         }}>
                              {[
-                                { name: language === 'marathi' ? 'एक्स्प्लोर' : 'Explore', link: '/category/explore' },
-                                { name: language === 'marathi' ? 'लाईव्ह टीव्ही' : 'Live TV', link: '/live-tv' },
+                                { name: safeT.explore, link: '/category/explore' },
+                                { name: ft.liveTv, link: '/live-tv' },
                                 { name: 'LIVE', link: '/live' },
-                                { name: language === 'marathi' ? 'व्हिडिओ शॉर्ट्स' : 'Video Shorts', link: '/shorts' },
-                                { name: language === 'marathi' ? 'फोटो गॅलरी' : 'Photo Gallery', link: '/gallery' },
-                                { name: language === 'marathi' ? 'पॉडकास्ट' : 'Podcast', link: '/podcast' },
-                                { name: language === 'marathi' ? 'क्रीडा' : 'Sports', link: '/category/sports' },
-                                { name: language === 'marathi' ? 'रोजगार' : 'Jobs', link: '/category/jobs' },
-                                { name: language === 'marathi' ? 'शिक्षण' : 'Education', link: '/category/education' },
-                                { name: language === 'marathi' ? 'मनोरंजन' : 'Entertainment', link: '/category/entertainment' },
-                                { name: language === 'marathi' ? 'गुन्हेगारी' : 'Crime', link: '/category/crime' }
+                                { name: safeT.videoShorts, link: '/shorts' },
+                                { name: ft.photoGallery, link: '/gallery' },
+                                { name: ft.podcast, link: '/podcast' },
+                                { name: safeT.sports, link: '/category/sports' },
+                                { name: safeT.jobs, link: '/category/jobs' },
+                                { name: fl.education, link: '/category/education' },
+                                { name: safeT.entertainment, link: '/category/entertainment' },
+                                { name: fl.crime, link: '/category/crime' }
                              ].map((cat, idx) => (
                                  <Link key={idx} href={cat.link} className="sidebar-link" style={{
                                      textDecoration: 'none',
@@ -633,7 +661,7 @@ export default function Navbar() {
                                 <div className="mega-menu-container" style={{padding: '30px', gridTemplateColumns: 'repeat(5, 1fr)', gap: '15px'}}> {/* Slightly adjusted for sidebar space */}
                                     {moreNews.slice(0, 5).map((item) => ( // Show 5 to fit well with sidebar
                                         <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
-                                            <div className="mega-menu-header"><span className="mega-menu-category">{item.category || (language === 'marathi' ? 'ताज्या बातम्या' : 'Latest')}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
+                                            <div className="mega-menu-header"><span className="mega-menu-category">{item.category || safeT.latest}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
                                             <div className="mega-menu-image-container"><img src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedTitle(item)} className="mega-menu-image" onError={(e) => {e.target.onerror = null; e.target.src = "https://placehold.co/600x400/png?text=News"}} /></div>
                                             <h4 className="mega-menu-title">{getLocalizedTitle(item)}</h4>
                                         </Link>
@@ -643,7 +671,7 @@ export default function Navbar() {
                                 </>
                             ) : (
                                 <div style={{padding: '40px', textAlign: 'center', color: '#666'}}>
-                                    {language === 'marathi' ? 'बातम्या लोड करत आहे...' : 'Loading news...'}
+                                    {safeT.loadingNews}
                                 </div>
                             )}
                         </div>
@@ -654,7 +682,7 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div className="nav-actions">
-             <button className="search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)}>
+             <button type="button" className="search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)}>
                 {isSearchOpen ? (
                   <span style={{fontSize: '24px', fontWeight: 'bold'}}>×</span>
                 ) : (
@@ -666,6 +694,7 @@ export default function Navbar() {
               </button>
             
             <button 
+              type="button"
               onClick={() => setIsLoginModalOpen(true)}
               className="login-btn-nav" 
               style={{ textDecoration: 'none', color: 'inherit', fontWeight: 'bold', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
@@ -674,8 +703,11 @@ export default function Navbar() {
             </button>
 
             <button 
+              type="button"
               className="mobile-toggle"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-expanded={isMenuOpen}
+              aria-label="Open menu"
             >
               ☰
             </button>

@@ -44,7 +44,7 @@ export default function MaharashtraNewsPage() {
 
     return (
         <div className="min-h-screen bg-white py-8">
-            <div className="container mx-auto px-4 lg:pl-[140px]">
+            <div className="container mx-auto px-4">
                 <div className="flex items-center gap-2 text-[11px] font-bold uppercase text-gray-400 mb-6">
                     <Link href="/" className="hover:text-red-600">HOME</Link>
                     <FaChevronRight size={8} className="opacity-50" />

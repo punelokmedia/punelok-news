@@ -2,10 +2,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useLanguage } from '../../../context/LanguageContext';
-import { translations } from '../../../utils/translations';
+import { getTranslationBundle } from '../../../utils/i18n';
 import Image from 'next/image'; // Added Import
-import { FaWhatsapp, FaFacebook, FaTwitter, FaShareAlt, FaClock, FaUser, FaFire } from 'react-icons/fa';
+import { FaWhatsapp, FaFacebook, FaTwitter, FaShareAlt, FaClock, FaFire, FaHeart, FaPlay } from 'react-icons/fa';
 import HorizontalTicker from '@/components/HorizontalTicker';
 import SidebarAds from '@/components/SidebarAds';
 import { motion } from 'framer-motion';
@@ -31,13 +32,15 @@ export default function NewsDetail() {
             fetchNewsDetails();
             fetchRelatedNews();
         }
-    }, [id]);
+    }, [id, language]);
 
     const fetchNewsDetails = async () => {
         try {
             setLoading(true);
-            // 1. Get Details
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/${id}`);
+            // 1. Get Details — backend fills missing title/content for selected language
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news/${id}?language=${encodeURIComponent(language)}`
+            );
             setNews(response.data);
             setComments(response.data.comments || []);
             setViewCount(response.data.views || 0);
@@ -59,7 +62,9 @@ export default function NewsDetail() {
     const fetchRelatedNews = async () => {
         try {
             // Fetch all news and filter (ideally backend should support fetching related by category)
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news`);
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?language=${encodeURIComponent(language)}&limit=40`
+            );
             // Mock related news by excluding current one
             if (response.data && Array.isArray(response.data)) {
                 setRelatedNews(response.data.filter(n => n._id !== id).slice(0, 8));
@@ -76,10 +81,12 @@ export default function NewsDetail() {
         
         // Field is object
         if (item[field]) {
-            if (item[field][language]) return item[field][language];
-            if (item[field]['english']) return item[field]['english'];
-            // Fallback to first value
-            return Object.values(item[field])[0] || '';
+            const block = item[field];
+            if (block[language]) return block[language];
+            if (block.marathi) return block.marathi;
+            if (block.hindi) return block.hindi;
+            if (block.english) return block.english;
+            return Object.values(block)[0] || '';
         }
         return '';
     };
@@ -151,17 +158,26 @@ export default function NewsDetail() {
         );
     }
 
-    const t = translations[language] || translations['english'];
+    const t = getTranslationBundle(language);
+    const localeTag = language === 'english' ? 'en-IN' : language === 'hindi' ? 'hi-IN' : 'mr-IN';
+    const categoryFromNews = getLocalizedContent(news, 'category') || (typeof news.category === 'string' ? news.category : '');
+    const categoryLabel = categoryFromNews?.trim()
+        ? categoryFromNews.trim()
+        : language === 'marathi'
+          ? 'बातमी'
+          : language === 'hindi'
+            ? 'ख़बर'
+            : 'News';
 
     return (
         <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="bg-gray-50 min-h-screen pb-12 pt-0"
+            className="min-h-screen bg-white pb-14 pt-0"
         >
             <HorizontalTicker 
-                title={language === 'marathi' ? 'ताज्या बातम्या' : 'LATEST NEWS'} 
+                title={t.nav.latest} 
                 items={relatedNews}
                 bgColor="bg-[#cc0000]"
                 titleColor="bg-[#990000]"
@@ -169,178 +185,189 @@ export default function NewsDetail() {
             <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
                 
                 {/* Breadcrumb */}
-                <nav className="flex text-sm text-gray-500 mb-6 overflow-x-auto whitespace-nowrap items-center">
-                   <span className="cursor-pointer hover:text-red-600 font-medium transition-colors" onClick={() => router.push('/')}>
-                        Home
-                   </span>
-                   <span className="mx-2 text-gray-400">/</span>
-                   <span className="cursor-pointer hover:text-red-600 font-medium transition-colors">
-                        {news.category || (language === 'marathi' ? 'ताज्या बातम्या' : 'Latest News')}
-                   </span>
-                   <span className="mx-2 text-gray-400">/</span>
-                   <span className="font-semibold text-gray-800 truncate max-w-[200px] sm:max-w-md">
+                <nav className="flex text-sm text-stone-500 mb-8 overflow-x-auto whitespace-nowrap items-center gap-1.5 sm:gap-2 border-b border-stone-200/80 pb-4">
+                   <Link href="/" className="hover:text-[#c40404] font-medium transition-colors shrink-0">
+                        {language === 'marathi' ? 'मुखपृष्ठ' : language === 'hindi' ? 'होम' : 'Home'}
+                   </Link>
+                   <span className="text-stone-300 select-none">/</span>
+                   <span className="font-medium text-stone-600 truncate max-w-[28vw] sm:max-w-none">{categoryLabel}</span>
+                   <span className="text-stone-300 select-none hidden sm:inline">/</span>
+                   <span className="font-semibold text-stone-800 truncate max-w-[140px] sm:max-w-md min-w-0">
                         {getLocalizedContent(news, 'title')}
                    </span>
                 </nav>
 
-                <div className="lg:flex lg:gap-8 items-start">
-                    {/* Main Content (Left Column 70%) */}
-                    <main className="lg:w-[70%] bg-white mb-8 lg:mb-0">
-                        {/* Headline */}
-                        <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-semibold text-gray-900 leading-tight mb-4 text-justify">
+                <div className="lg:flex lg:gap-12 lg:items-start">
+                    {/* Main story — flat article column (no card chrome) */}
+                    <main className="mb-10 w-full max-w-full lg:mb-0 lg:w-[70%]">
+                        <article className="news-story mx-auto w-full max-w-[42rem] lg:mx-0 lg:max-w-none lg:pr-4">
+                        <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#c40404]">
+                            {categoryLabel}
+                        </p>
+                        <h1 className="news-story-title mb-4 text-[1.75rem] font-bold leading-[1.2] tracking-tight text-stone-900 sm:text-3xl lg:text-[2.125rem]">
                             {getLocalizedContent(news, 'title')}
                         </h1>
+                        <div className="news-title-rule mb-6" aria-hidden />
 
-                        {/* Metadata Row */}
-                        <div className="flex flex-wrap items-center justify-between text-xs sm:text-sm text-gray-500 mb-6 border-b border-gray-100 pb-4 gap-4">
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-1.5">
-                                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600">
-                                        <FaUser size={12} />
-                                    </div>
-                                    <span className="font-bold text-gray-900">Punelok Bureau</span>
-                                </div>
-                                    <span>
-                                        {new Date(news.createdAt).toLocaleDateString(undefined, { 
-                                            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
-                                        })}
-                                    </span> 
-                                <div className="hidden sm:block w-1 h-1 bg-gray-300 rounded-full"></div>
-                                <div className="flex items-center gap-1.5 text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">
-                                    <FaFire />
-                                    <span>{viewCount.toLocaleString()} Views</span>
-                                </div>
-                            </div>
-                            
-                            {/* Share Buttons */}
-                            <div className="flex items-center gap-2">
-                                <button onClick={() => handleShare('whatsapp')} className="w-9 h-9 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm" title="Share on WhatsApp">
+                        {/* Byline — single text line */}
+                        <p className="mb-6 border-b border-stone-200 pb-5 text-sm leading-relaxed text-stone-700">
+                            <span className="font-semibold text-stone-900">Punelok Bureau</span>
+                            <span className="mx-2 text-stone-300" aria-hidden>|</span>
+                            <FaClock className="mr-1 inline-block h-3.5 w-3.5 align-text-bottom text-stone-400" aria-hidden />
+                            {new Date(news.createdAt).toLocaleString(localeTag, {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })}
+                            <span className="mx-2 text-stone-300" aria-hidden>|</span>
+                            <FaFire className="mr-1 inline-block h-3 w-3 align-text-bottom text-[#c40404]" aria-hidden />
+                            {viewCount.toLocaleString(localeTag)}{' '}
+                            {language === 'english' ? 'views' : 'व्ह्यूज'}
+                        </p>
+
+                        {/* Actions: like + share — divider strips only */}
+                        <div className="mb-8 flex flex-col gap-4 border-y border-stone-200 py-4 sm:flex-row sm:items-center sm:justify-between">
+                            <button
+                                type="button"
+                                onClick={handleLike}
+                                disabled={isLiked || isLiking}
+                                className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all active:scale-[0.98] ${isLiked ? 'bg-white text-[#c40404] ring-2 ring-red-100' : 'bg-[#c40404] text-white hover:bg-[#a30303] shadow-md'}`}
+                            >
+                                <FaHeart
+                                    className={`h-4 w-4 shrink-0 ${isLiked ? 'animate-heart-pop text-[#c40404]' : 'text-white opacity-95'} ${isLiking ? 'animate-ping' : ''}`}
+                                    aria-hidden
+                                />
+                                <span>{isLiked ? (language === 'english' ? 'Liked' : language === 'hindi' ? 'पसंद किया' : 'आवडले') : (language === 'english' ? 'Like' : language === 'hindi' ? 'पसंद करें' : 'लाइक करा')}</span>
+                                <span className={`rounded-md px-2 py-0.5 text-xs ${isLiked ? 'bg-red-50' : 'bg-white/20'}`}>{likeCount.toLocaleString(localeTag)}</span>
+                            </button>
+                            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                                <span className="mr-1 hidden text-xs font-semibold uppercase tracking-wide text-stone-500 sm:inline">{language === 'english' ? 'Share' : language === 'hindi' ? 'शेयर' : 'शेअर'}</span>
+                                <button type="button" onClick={() => handleShare('whatsapp')} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white shadow-sm transition hover:scale-105 active:scale-95" title="WhatsApp">
                                     <FaWhatsapp size={18} />
                                 </button>
-                                <button onClick={() => handleShare('facebook')} className="w-9 h-9 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm" title="Share on Facebook">
+                                <button type="button" onClick={() => handleShare('facebook')} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-sm transition hover:scale-105 active:scale-95" title="Facebook">
                                     <FaFacebook size={18} />
                                 </button>
-                                <button onClick={() => handleShare('twitter')} className="w-9 h-9 rounded-full bg-[#1DA1F2] text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm" title="Share on Twitter">
+                                <button type="button" onClick={() => handleShare('twitter')} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1DA1F2] text-white shadow-sm transition hover:scale-105 active:scale-95" title="Twitter">
                                     <FaTwitter size={18} />
                                 </button>
-                                <button onClick={() => handleShare('copy')} className="w-9 h-9 rounded-full bg-gray-600 text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-sm relative" title="Copy Link">
+                                <button type="button" onClick={() => handleShare('copy')} className="relative flex h-10 w-10 items-center justify-center rounded-full bg-stone-700 text-white shadow-sm transition hover:scale-105 active:scale-95" title="Copy link">
                                     <FaShareAlt size={16} />
                                     {copySuccess && (
-                                        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded whitespace-nowrap animate-bounce">
-                                            Copied!
-                                        </div>
+                                        <span className="absolute -top-9 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-stone-900 px-2 py-1 text-[10px] text-white animate-bounce">
+                                            {language === 'english' ? 'Copied!' : language === 'hindi' ? 'कॉपी हो गया!' : 'कॉपी केले!'}
+                                        </span>
                                     )}
                                 </button>
                             </div>
                         </div>
 
-                        {/* Like Button */}
-                        <div className="mb-6 flex items-center gap-4">
-                            <button 
-                                onClick={handleLike}
-                                disabled={isLiked || isLiking}
-                                className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold transition-all duration-300 transform active:scale-90 ${isLiked ? 'bg-red-50 text-red-600 border border-red-200 shadow-inner' : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg scale-100 hover:scale-105'}`}
-                            >
-                                <span className={`${isLiked ? 'animate-heart-pop' : isLiking ? 'animate-ping' : 'animate-pulse'} text-xl transition-transform duration-500`}>❤️</span>
-                                <span className="tracking-wide">{isLiked ? 'Liked' : 'Like'}</span>
-                                <span className={`bg-white/20 px-2 py-0.5 rounded text-sm ml-1 ${isLiking ? 'animate-bounce' : ''}`}>{likeCount.toLocaleString()}</span>
-                            </button>
-                        </div>
+                        {/* Hero image */}
+                        <figure className="mb-8 max-w-none sm:mb-10">
+                            <div className="relative aspect-video w-full overflow-hidden bg-stone-100">
+                                <Image
+                                    src={news.image || 'https://placehold.co/800x600/png?text=News'}
+                                    alt={getLocalizedContent(news, 'title')}
+                                    fill
+                                    priority
+                                    className="object-cover"
+                                    sizes="(max-width: 1024px) 100vw, 70vw"
+                                />
+                                {news.isLive && (
+                                    <div className="absolute left-4 top-4">
+                                        <span className="rounded bg-[#c40404] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow animate-pulse">
+                                            LIVE
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                            <figcaption className="news-figure-caption px-1 sm:px-0">
+                                {language === 'english' ? 'Photo' : language === 'hindi' ? 'फ़ोटो' : 'फोटो'} · {categoryLabel} · Punelok
+                            </figcaption>
+                        </figure>
 
-                        {/* Feature Image */}
-                        <div className="relative w-full aspect-video mb-8 rounded-lg overflow-hidden bg-gray-100 border border-gray-100 shadow-sm group">
-                            <Image 
-                                src={news.image || 'https://placehold.co/800x600/png?text=News'} 
-                                alt={getLocalizedContent(news, 'title')}
-                                fill
-                                priority
-                                className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
-                                sizes="(max-width: 1024px) 100vw, 70vw"
-                            />
-                            {news.isLive && (
-                                <div className="absolute top-4 left-4 flex gap-2">
-                                    <span className="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded shadow animate-pulse uppercase tracking-wider">
-                                        LIVE
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Article Content */}
-                        {/* Article Content */}
-                        <div className="prose prose-lg prose-red max-w-none text-gray-800 leading-loose text-justify text-base">
-                            {/* Simple mapping for paragraphs with advanced formatting */}
+                        {/* Article body */}
+                        <div className="news-story-body text-left lg:mx-0">
                             {getLocalizedContent(news, 'content').split('\n').map((paragraph, idx) => {
                                 if (!paragraph.trim()) return null;
-                                // Add Drop Cap for the first paragraph
                                 const isFirst = idx === 0;
+                                const lede =
+                                    isFirst && language === 'english'
+                                        ? 'news-story-lede news-story-dropcap'
+                                        : isFirst
+                                          ? 'news-story-lede'
+                                          : '';
                                 return (
-                                    <p key={idx} className={`mb-6 font-normal ${isFirst ? 'first-letter:text-5xl first-letter:font-bold first-letter:text-red-600 first-letter:float-left first-letter:mr-3 first-letter:mt-[-6px]' : ''}`}>
+                                    <p key={idx} className={lede}>
                                         {paragraph}
                                     </p>
                                 );
                             })}
                         </div>
 
-                        {/* Bottom Tags (Mock) */}
-                        <div className="mt-8 pt-6 border-t border-gray-100">
-                             <div className="flex flex-wrap gap-2">
-                                <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-50 hover:text-red-600 cursor-pointer transition-colors">
-                                    #{news.category || 'News'}
-                                </span>
-                                <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-50 hover:text-red-600 cursor-pointer transition-colors">
-                                    #Maharashtra
-                                </span>
-                                <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold hover:bg-red-50 hover:text-red-600 cursor-pointer transition-colors">
-                                    #LatestUpdates
-                                </span>
-                             </div>
+                        {/* Topics — inline text, no pill cards */}
+                        <div className="mt-10 border-t border-stone-200 pt-6">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400">
+                                {language === 'english' ? 'Topics' : 'विषय'}
+                            </p>
+                            <p className="mt-2 text-sm text-stone-700">
+                                <span>{news.category || categoryLabel}</span>
+                                <span className="mx-2 text-stone-300">·</span>
+                                <span>Maharashtra</span>
+                                <span className="mx-2 text-stone-300">·</span>
+                                <span>Punelok</span>
+                            </p>
                         </div>
 
-                        {/* Comments Section */}
-                        <div className="mt-10 pt-8 border-t border-gray-200">
-                             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                Comments <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{comments.length}</span>
+                        </article>
+
+                        {/* Comments — flat section */}
+                        <div className="mx-auto mt-12 max-w-[42rem] border-t border-stone-300 pt-10 lg:mx-0 lg:max-w-none">
+                             <h3 className="mb-6 flex items-center gap-2 text-lg font-bold text-stone-900">
+                                {language === 'english' ? 'Comments' : language === 'hindi' ? 'टिप्पणियाँ' : 'टिप्पण्या'}
+                                <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-sm font-semibold text-stone-600">{comments.length}</span>
                              </h3>
-                             
-                             {/* Comment Form */}
+
                              <form onSubmit={handlePostComment} className="mb-8">
                                 <textarea
-                                    className="w-full p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none resize-none bg-gray-50 focus:bg-white transition-colors"
+                                    className="w-full resize-none rounded border border-stone-300 bg-white p-4 text-stone-800 outline-none transition placeholder:text-stone-400 focus:border-[#c40404] focus:ring-1 focus:ring-[#c40404]/30"
                                     rows="3"
-                                    placeholder="Write a comment..."
+                                    placeholder={language === 'english' ? 'Write a comment…' : language === 'hindi' ? 'टिप्पणी लिखें…' : 'टिप्पणी लिहा…'}
                                     value={newComment}
                                     onChange={(e) => setNewComment(e.target.value)}
-                                ></textarea>
-                                <div className="mt-2 flex justify-end">
-                                    <button 
-                                        type="submit" 
-                                        className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+                                />
+                                <div className="mt-3 flex justify-end">
+                                    <button
+                                        type="submit"
+                                        className="rounded-lg bg-[#c40404] px-6 py-2.5 font-semibold text-white transition hover:bg-[#a30303] disabled:opacity-50"
                                         disabled={!newComment.trim()}
                                     >
-                                        Post Comment
+                                        {language === 'english' ? 'Post comment' : language === 'hindi' ? 'पोस्ट करें' : 'पोस्ट करा'}
                                     </button>
                                 </div>
                              </form>
 
-                             {/* Comments List */}
-                             <div className="space-y-6">
+                             <div className="divide-y divide-stone-200">
                                 {comments.map((comment, idx) => (
-                                    <div key={idx} className="flex gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-lg shrink-0">
+                                    <div key={idx} className="flex gap-4 py-5">
+                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-stone-200 text-sm font-bold text-stone-600">
                                             {comment.user.charAt(0)}
                                         </div>
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <span className="font-bold text-gray-900">{comment.user}</span>
-                                                <span className="text-xs text-gray-400">{new Date(comment.date).toLocaleDateString()}</span>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="mb-1 flex flex-wrap items-center gap-2">
+                                                <span className="font-semibold text-stone-900">{comment.user}</span>
+                                                <span className="text-xs text-stone-400">{new Date(comment.date).toLocaleDateString(localeTag)}</span>
                                             </div>
-                                            <p className="text-gray-700 leading-relaxed text-sm">{comment.content}</p>
+                                            <p className="text-sm leading-relaxed text-stone-700">{comment.content}</p>
                                         </div>
                                     </div>
                                 ))}
                                 {comments.length === 0 && (
-                                    <p className="text-gray-500 text-center py-4 italic">No comments yet. Be the first to share your thoughts!</p>
+                                    <p className="py-8 text-center text-sm italic text-stone-500">
+                                        {language === 'english' ? 'No comments yet. Start the conversation.' : language === 'hindi' ? 'अभी कोई टिप्पणी नहीं।' : 'अजून टिप्पण्या नाहीत.'}
+                                    </p>
                                 )}
                              </div>
                         </div>
@@ -358,19 +385,20 @@ export default function NewsDetail() {
                         <SidebarAds />
 
                         {/* Trending / Recommended Widget */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
+                        <div className="mt-10 border-t border-stone-300 pt-8">
+                            <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-2">
                                 <h3 className="font-semibold text-gray-900 uppercase text-[14px] tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'ट्रेंडिंग न्यूज' : 'Trending News'}
                                 </h3>
                                 <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-stone-200">
                                 {relatedNews.slice(0, 5).map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-3 flex gap-3 hover:bg-red-50 cursor-pointer transition-colors group"
-                                        onClick={() => router.push(`/news/${item._id}`)}
+                                    <Link
+                                        key={idx}
+                                        href={`/news/${item._id || item.id}`}
+                                        prefetch={false}
+                                        className="p-3 flex gap-3 hover:bg-red-50 transition-colors group text-inherit no-underline touch-manipulation block active:bg-red-50/90"
                                     >
                                         <div className="w-24 h-16 bg-gray-200 rounded-md overflow-hidden shrink-0 relative">
                                             <Image 
@@ -388,25 +416,26 @@ export default function NewsDetail() {
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">{item.category}</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
 
                         {/* Maharashtra News Widget (Sidebar) */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
+                        <div className="mt-10 border-t border-stone-300 pt-8">
+                            <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-2">
                                 <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'महाराष्ट्र' : 'Maharashtra'}
                                 </h3>
                                 <span className="text-xs text-red-600 font-bold cursor-pointer">View All</span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-stone-200">
                                 {relatedNews.slice(2, 7).map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-3 flex gap-3 hover:bg-red-50 cursor-pointer transition-colors group"
-                                        onClick={() => router.push(`/news/${item._id}`)}
+                                    <Link
+                                        key={idx}
+                                        href={`/news/${item._id || item.id}`}
+                                        prefetch={false}
+                                        className="p-3 flex gap-3 hover:bg-red-50 transition-colors group text-inherit no-underline touch-manipulation block active:bg-red-50/90"
                                     >
                                         <div className="w-24 h-16 bg-gray-200 rounded-md overflow-hidden shrink-0 relative">
                                             <Image 
@@ -423,25 +452,26 @@ export default function NewsDetail() {
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">Maharashtra</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
 
                         {/* Sports News Widget (Sidebar) */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
+                        <div className="mt-10 border-t border-stone-300 pt-8">
+                            <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-2">
                                 <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'क्रीडा' : language === 'hindi' ? 'खेल' : 'Sports'}
                                 </h3>
                                 <span className="text-xs text-red-600 font-bold cursor-pointer">View All</span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-stone-200">
                                 {relatedNews.slice(0, 5).map((item, idx) => ( // Reusing slice 0-5 for demo as we have strictly limited mock data
-                                    <div 
-                                        key={idx} 
-                                        className="p-3 flex gap-3 hover:bg-red-50 cursor-pointer transition-colors group"
-                                        onClick={() => router.push(`/news/${item._id}`)}
+                                    <Link
+                                        key={idx}
+                                        href={`/news/${item._id || item.id}`}
+                                        prefetch={false}
+                                        className="p-3 flex gap-3 hover:bg-red-50 transition-colors group text-inherit no-underline touch-manipulation block active:bg-red-50/90"
                                     >
                                         <div className="w-24 h-16 bg-gray-200 rounded-md overflow-hidden shrink-0 relative">
                                             <Image 
@@ -458,25 +488,26 @@ export default function NewsDetail() {
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">Sports</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
 
                         {/* Jobs News Widget (Sidebar) */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
+                        <div className="mt-10 border-t border-stone-300 pt-8">
+                            <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-2">
                                 <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'रोजगार' : language === 'hindi' ? 'रोजगार' : 'Jobs'}
                                 </h3>
                                 <span className="text-xs text-red-600 font-bold cursor-pointer">View All</span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-stone-200">
                                 {relatedNews.slice(1, 6).map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-3 flex gap-3 hover:bg-red-50 cursor-pointer transition-colors group"
-                                        onClick={() => router.push(`/news/${item._id}`)}
+                                    <Link
+                                        key={idx}
+                                        href={`/news/${item._id || item.id}`}
+                                        prefetch={false}
+                                        className="p-3 flex gap-3 hover:bg-red-50 transition-colors group text-inherit no-underline touch-manipulation block active:bg-red-50/90"
                                     >
                                         <div className="w-24 h-16 bg-gray-200 rounded-md overflow-hidden shrink-0 relative">
                                             <Image 
@@ -493,25 +524,26 @@ export default function NewsDetail() {
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">Jobs</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
 
                         {/* Education News Widget (Sidebar) */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
+                        <div className="mt-10 border-t border-stone-300 pt-8">
+                            <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-2">
                                 <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'शिक्षण' : language === 'hindi' ? 'शिक्षा' : 'Education'}
                                 </h3>
                                 <span className="text-xs text-red-600 font-bold cursor-pointer">View All</span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-stone-200">
                                 {relatedNews.slice(3, 8).map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-3 flex gap-3 hover:bg-red-50 cursor-pointer transition-colors group"
-                                        onClick={() => router.push(`/news/${item._id}`)}
+                                    <Link
+                                        key={idx}
+                                        href={`/news/${item._id || item.id}`}
+                                        prefetch={false}
+                                        className="p-3 flex gap-3 hover:bg-red-50 transition-colors group text-inherit no-underline touch-manipulation block active:bg-red-50/90"
                                     >
                                         <div className="w-24 h-16 bg-gray-200 rounded-md overflow-hidden shrink-0 relative">
                                             <Image 
@@ -528,25 +560,26 @@ export default function NewsDetail() {
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">Education</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
 
                         {/* Entertainment News Widget (Sidebar) */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
+                        <div className="mt-10 border-t border-stone-300 pt-8">
+                            <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-2">
                                 <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'मनोरंजन' : language === 'hindi' ? 'मनोरंजन' : 'Entertainment'}
                                 </h3>
                                 <span className="text-xs text-red-600 font-bold cursor-pointer">View All</span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-stone-200">
                                 {relatedNews.slice(0, 5).map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-3 flex gap-3 hover:bg-red-50 cursor-pointer transition-colors group"
-                                        onClick={() => router.push(`/news/${item._id}`)}
+                                    <Link
+                                        key={idx}
+                                        href={`/news/${item._id || item.id}`}
+                                        prefetch={false}
+                                        className="p-3 flex gap-3 hover:bg-red-50 transition-colors group text-inherit no-underline touch-manipulation block active:bg-red-50/90"
                                     >
                                         <div className="w-24 h-16 bg-gray-200 rounded-md overflow-hidden shrink-0 relative">
                                             <Image 
@@ -563,25 +596,26 @@ export default function NewsDetail() {
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">Entertainment</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
 
                         {/* Crime News Widget (Sidebar) */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-white border-b border-gray-100 p-4 sticky top-0 bg-white z-10 flex items-center justify-between">
+                        <div className="mt-10 border-t border-stone-300 pt-8">
+                            <div className="flex items-center justify-between border-b border-stone-200 pb-3 mb-2">
                                 <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wide border-l-4 border-red-600 pl-3">
                                     {language === 'marathi' ? 'गुन्हेगारी' : language === 'hindi' ? 'क्राइम' : 'Crime'}
                                 </h3>
                                 <span className="text-xs text-red-600 font-bold cursor-pointer">View All</span>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-stone-200">
                                 {relatedNews.slice(2, 7).map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="p-3 flex gap-3 hover:bg-red-50 cursor-pointer transition-colors group"
-                                        onClick={() => router.push(`/news/${item._id}`)}
+                                    <Link
+                                        key={idx}
+                                        href={`/news/${item._id || item.id}`}
+                                        prefetch={false}
+                                        className="p-3 flex gap-3 hover:bg-red-50 transition-colors group text-inherit no-underline touch-manipulation block active:bg-red-50/90"
                                     >
                                         <div className="w-24 h-16 bg-gray-200 rounded-md overflow-hidden shrink-0 relative">
                                             <Image 
@@ -598,7 +632,7 @@ export default function NewsDetail() {
                                             </h4>
                                             <span className="text-[10px] text-gray-400 font-medium uppercase">Crime</span>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>
@@ -609,60 +643,57 @@ export default function NewsDetail() {
                     </aside>
                 </div>
 
-                {/* Bottom Section: Related News Grid (Specific Request "like ABP Majha") */}
-                <section className="mt-12 lg:mt-16 pt-8 border-t border-gray-200">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center pl-3 border-l-8 border-red-600">
-                            <h2 className="text-xl sm:text-[24px] font-semibold text-gray-800 uppercase tracking-tight">
-                                {language === 'marathi' ? 'आणखी बातम्या वाचा' : language === 'hindi' ? 'और भी पढ़ें' : 'Read More News'}
-                            </h2>
-                        </div>
-                        <button className="text-sm font-bold text-red-600 hover:text-red-800 transition-colors uppercase border border-red-200 px-4 py-1.5 rounded-full hover:bg-red-50">
-                            View All
-                        </button>
+                {/* Related — list layout (newspaper style, not card grid) */}
+                <section className="mt-14 border-t-2 border-stone-800 pt-8">
+                    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-stone-200 pb-4">
+                        <h2 className="text-lg font-bold uppercase tracking-wide text-stone-900 sm:text-xl">
+                            {language === 'marathi' ? 'आणखी बातम्या' : language === 'hindi' ? 'और भी पढ़ें' : 'More coverage'}
+                        </h2>
+                        <Link href="/" className="text-sm font-semibold text-[#c40404] hover:underline">
+                            {language === 'english' ? 'Home' : language === 'hindi' ? 'और समाचार' : 'मुखपृष्ठ'}
+                        </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
+                    <ul className="divide-y divide-stone-200">
                         {relatedNews.slice(0, 8).map((item, idx) => (
-                            <div 
-                                key={idx} 
-                                className="group cursor-pointer flex flex-col h-full"
-                                onClick={() => router.push(`/news/${item._id}`)}
-                            >
-                                <div className="aspect-video relative overflow-hidden rounded-md bg-gray-100 mb-3">
-                                    <Image 
-                                        src={item.image || 'https://placehold.co/400x225/png?text=News'} 
-                                        alt={getLocalizedContent(item, 'title')}
-                                        fill
-                                        className="object-cover transform group-hover:scale-105 transition-transform duration-500 ease-out"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
-                                    />
-                                    {/* Play Icon Overlay if Video - Mock logic */}
-                                    {item.videoUrl && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                                           <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg pl-1">
-                                             <span className="text-xs">▶</span>
-                                           </div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex flex-col flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-[10px] uppercase font-bold text-red-600 tracking-wider">
-                                            {item.category || 'NEWS'}
-                                        </span>
-                                        <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                        <span className="text-[10px] text-gray-400 font-medium">
-                                            {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                        </span>
+                            <li key={idx}>
+                                <Link
+                                    href={`/news/${item._id || item.id}`}
+                                    prefetch={false}
+                                    className="group flex gap-4 py-4 text-inherit no-underline transition-colors hover:bg-stone-50/80 sm:gap-5 sm:py-5 touch-manipulation active:bg-stone-100/80"
+                                >
+                                    <div className="relative h-[4.5rem] w-28 shrink-0 overflow-hidden bg-stone-100 sm:h-24 sm:w-36">
+                                        <Image
+                                            src={item.image || 'https://placehold.co/400x225/png?text=News'}
+                                            alt={getLocalizedContent(item, 'title')}
+                                            fill
+                                            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                                            sizes="(max-width: 768px) 112px, 144px"
+                                        />
+                                        {item.videoUrl && (
+                                            <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                                                <span className="flex h-9 w-9 items-center justify-center bg-[#c40404] text-white">
+                                                    <FaPlay className="ml-0.5 h-3.5 w-3.5" aria-hidden />
+                                                </span>
+                                            </span>
+                                        )}
                                     </div>
-                                    <h3 className="font-normal text-gray-900 text-[16px] leading-snug line-clamp-3 mb-2 group-hover:text-red-700 transition-colors">
-                                        {getLocalizedContent(item, 'title')}
-                                    </h3>
-                                </div>
-                            </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[#c40404]">
+                                            {item.category || 'News'}
+                                            <span className="mx-2 font-normal text-stone-300">·</span>
+                                            <span className="font-normal text-stone-500">
+                                                {new Date(item.createdAt).toLocaleDateString(localeTag, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </span>
+                                        </p>
+                                        <h3 className="text-base font-semibold leading-snug text-stone-900 group-hover:text-[#c40404] sm:text-[17px]">
+                                            {getLocalizedContent(item, 'title')}
+                                        </h3>
+                                    </div>
+                                </Link>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 </section>
                 
                 {/* Final spacer */}

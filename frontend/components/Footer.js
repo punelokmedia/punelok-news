@@ -1,7 +1,6 @@
 'use client';
 
 import { useLanguage } from '@/context/LanguageContext';
-import { translations } from '@/utils/translations';
 import './Footer.css';
 import { useState } from 'react';
 import { FaTelegramPlane, FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt, FaWhatsapp } from 'react-icons/fa';
@@ -9,9 +8,9 @@ import { FaXTwitter } from 'react-icons/fa6';
 import { BsChatDots } from 'react-icons/bs';
 
 export default function Footer() {
-  const { language, setLanguage } = useLanguage();
-  const t = translations[language]?.footer || translations.marathi.footer; 
-  const topT = translations[language]?.footerTop || translations.marathi.footerTop;
+  const { language, setLanguage, t: bundle } = useLanguage();
+  const t = bundle.footer;
+  const topT = bundle.footerTop;
   const whatsappChatLink = "https://wa.me/918956776951?text=Hello%20Punelok%20team%2C%20I%20need%20help.";
 
   const [isLangOpen, setIsLangOpen] = useState(false);

@@ -17,7 +17,10 @@ module.exports = {
         'gold': '#ffcc00',
       },
       fontFamily: {
-        sans: ['Arial', 'Helvetica', 'sans-serif'],
+        sans: ['var(--font-mukta)', 'var(--font-noto-deva)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-newsreader)', 'Georgia', 'Times New Roman', 'serif'],
+        mukta: ['var(--font-mukta)', 'var(--font-noto-deva)', 'sans-serif'],
+        newsreader: ['var(--font-newsreader)', 'Georgia', 'serif'],
       },
       maxWidth: {
         'container': '1200px',

@@ -1,6 +1,6 @@
 /* Global Footer Wrapper */
 .footer-wrapper {
-  font-family: 'Mukta', sans-serif;
+  font-family: inherit;
   color: #111827;
   width: 100%;
   max-width: 100%;

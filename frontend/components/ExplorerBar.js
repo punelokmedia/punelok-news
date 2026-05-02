@@ -5,15 +5,17 @@ import { FaClock, FaFire, FaRegNewspaper, FaHeadphones, FaThLarge } from 'react-
 import './ExplorerBar.css';
 
 export default function ExplorerBar() {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
+  const ft = t.footerTop;
+  const nav = t.nav;
 
   const items = [
-    { label: language === 'english' ? 'Live TV' : language === 'hindi' ? 'लाइव टीवी' : 'लाईव्ह टीव्ही', icon: <FaClock />, live: true },
-    { label: language === 'english' ? 'Videos' : language === 'hindi' ? 'वीडियो' : 'व्हिडिओ', icon: <span className="explorer-play">►</span>, live: false },
-    { label: language === 'english' ? 'Short Video' : language === 'hindi' ? 'शॉर्ट व्हिडियो' : 'शॉर्ट व्हिडिओ', icon: <FaFire />, live: false },
-    { label: language === 'english' ? 'Web Stories' : language === 'hindi' ? 'वेब स्टोरीज़' : 'वेब स्टोरिज्', icon: <FaThLarge />, live: false },
-    { label: language === 'english' ? 'Photo Gallery' : language === 'hindi' ? 'फोटो गैलरी' : 'फोटो गॅलरी', icon: <FaRegNewspaper />, live: false },
-    { label: language === 'english' ? 'Podcast' : language === 'hindi' ? 'पॉडकास्ट' : 'पॉडकास्ट', icon: <FaHeadphones />, live: false },
+    { label: ft.liveTv, icon: <FaClock />, live: true },
+    { label: ft.video, icon: <span className="explorer-play">►</span>, live: false },
+    { label: ft.shortVideo, icon: <FaFire />, live: false },
+    { label: nav.webStories, icon: <FaThLarge />, live: false },
+    { label: ft.photoGallery, icon: <FaRegNewspaper />, live: false },
+    { label: ft.podcast, icon: <FaHeadphones />, live: false },
   ];
 
   return (
@@ -26,7 +28,7 @@ export default function ExplorerBar() {
               <span className="explorer-dots">
                 {[...Array(9)].map((_, i) => <span key={i} className="explorer-dot" />)}
               </span>
-              <span className="explorer-label">एक्स्प्लोर</span>
+              <span className="explorer-label">{nav.explore}</span>
             </a>
             {items.map((item, idx) => (
               <a key={idx} href="#" className="explorer-bar-item">

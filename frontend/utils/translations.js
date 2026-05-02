@@ -14,7 +14,12 @@ export const translations = {
       premium: "PREMIUM",
       search: "शोधा",
       advertise: "आमच्यासोबत जाहिरात करा",
-      login: "लॉगिन"
+      login: "लॉगिन",
+      explore: "एक्स्प्लोर",
+      webStories: "वेब स्टोरिज्",
+      videoShorts: "व्हिडिओ शॉर्ट्स",
+      jobs: "रोजगार",
+      loadingNews: "बातम्या लोड करत आहे..."
     },
     footerTop: {
        games: "गेम्स",
@@ -106,7 +111,12 @@ export const translations = {
       premium: "PREMIUM",
       search: "Search",
       advertise: "Advertise with us",
-      login: "Login"
+      login: "Login",
+      explore: "Explore",
+      webStories: "Web Stories",
+      videoShorts: "Video Shorts",
+      jobs: "Jobs",
+      loadingNews: "Loading news..."
     },
     footerTop: {
        games: "Games",
@@ -198,7 +208,12 @@ export const translations = {
       premium: "प्रीमियम",
       search: "खोजें",
       advertise: "विज्ञापन दें",
-      login: "लॉग इन"
+      login: "लॉग इन",
+      explore: "एक्सप्लोर",
+      webStories: "वेब स्टोरीज़",
+      videoShorts: "वीडियो शॉर्ट्स",
+      jobs: "रोजगार",
+      loadingNews: "ख़बरें लोड हो रही हैं..."
     },
     footerTop: {
        games: "गेम्स",

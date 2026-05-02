@@ -21,12 +21,35 @@ body {
   max-width: 100%;
   position: relative;
   overflow-y: auto;
-  font-family: var(--font-mukta), Arial, sans-serif;
+  font-family: var(--font-mukta), var(--font-noto-deva), system-ui, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Devanagari (Marathi / Hindi): Mukta + Noto Sans Devanagari */
+html[lang="mr"] body,
+html[lang="hi"] body {
+  font-family: var(--font-mukta), var(--font-noto-deva), "Noto Sans Devanagari", ui-sans-serif, sans-serif;
+}
+
+/* English: editorial serif tuned for long-form news */
+html[lang="en"] body {
+  font-family: var(--font-newsreader), Georgia, "Times New Roman", serif;
 }
 
 @layer base {
   .font-mukta {
-    font-family: var(--font-mukta), Arial, sans-serif;
+    font-family: var(--font-mukta), var(--font-noto-deva), ui-sans-serif, sans-serif;
+  }
+
+  /** Hero / big headlines — matches active html lang */
+  .font-news-headline {
+    font-family: var(--font-mukta), var(--font-noto-deva), sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  html[lang="en"] .font-news-headline {
+    font-family: var(--font-newsreader), Georgia, serif;
   }
 }
 
@@ -85,9 +108,9 @@ body {
     }
   }
 
-  /* Marquee Animation */
+  /* Marquee Animation — long duration = slow, readable scroll */
   .animate-marquee {
-    animation: marquee 140s linear infinite;
+    animation: marquee 280s linear infinite;
   }
 
   .mask-marquee-fade {
@@ -167,8 +190,8 @@ body {
     flex-direction: column;
     align-items: center;
     padding-top: 0;
-    padding-bottom: 0.5rem;
-    gap: 0.75rem;
+    padding-bottom: 0.35rem;
+    gap: 0.35rem;
     /* Hide scrollbar while keeping functionality */
     scrollbar-width: none;
     /* Firefox */
@@ -314,5 +337,91 @@ body {
 
   .cricket-cards-scroll-light::-webkit-scrollbar-thumb:hover {
     background: #990000;
+  }
+}
+
+/* —— News article detail: readable measure & editorial typography —— */
+@layer components {
+  .news-story {
+    font-variant-numeric: proportional-nums;
+  }
+
+  .news-story-title {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  .news-title-rule {
+    width: 3rem;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #c40404 0%, #e11d48 100%);
+    margin-bottom: 1.25rem;
+  }
+
+  .news-story-body {
+    max-width: 42rem;
+    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .news-story-body p {
+    margin-bottom: 0;
+  }
+
+  .news-story-body p + p {
+    margin-top: 1.35em;
+  }
+
+  /* English: serif long-form */
+  html[lang="en"] .news-story-body {
+    font-family: var(--font-newsreader), Georgia, "Times New Roman", serif;
+    font-size: 1.125rem;
+    line-height: 1.82;
+    color: #1c1917;
+  }
+
+  html[lang="en"] .news-story-lede {
+    font-size: 1.28rem;
+    line-height: 1.65;
+    font-weight: 500;
+    color: #0c0a09;
+  }
+
+  html[lang="en"] .news-story-dropcap::first-letter {
+    font-family: var(--font-newsreader), Georgia, serif;
+    font-size: 3.35rem;
+    font-weight: 700;
+    line-height: 0.82;
+    float: left;
+    margin: 0.06em 0.12em 0 0;
+    color: #b91c1c;
+  }
+
+  /* Marathi / Hindi: Mukta-first, comfortable Devanagari rhythm */
+  html[lang="mr"] .news-story-body,
+  html[lang="hi"] .news-story-body {
+    font-family: var(--font-mukta), var(--font-noto-deva), "Noto Sans Devanagari", ui-sans-serif, sans-serif;
+    font-size: 1.07rem;
+    line-height: 1.9;
+    color: #1c1917;
+  }
+
+  html[lang="mr"] .news-story-lede,
+  html[lang="hi"] .news-story-lede {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.75;
+    color: #0c0a09;
+  }
+
+  .news-figure-caption {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #57534e;
+    margin-top: 0.65rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid #e7e5e4;
   }
 }
