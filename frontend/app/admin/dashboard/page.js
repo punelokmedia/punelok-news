@@ -1,48 +1,30 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { FaPlus, FaNewspaper, FaUsers, FaUserShield, FaCloudUploadAlt, FaBolt, FaGavel, FaChartLine, FaBriefcase, FaGraduationCap, FaTrophy, FaBullhorn } from 'react-icons/fa';
+import { FaNewspaper, FaCloudUploadAlt, FaBolt, FaGavel, FaBriefcase, FaGraduationCap, FaTrophy } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import AdminLayoutShell, { adminSidebarNewsBtnClass } from '@/components/admin/AdminLayoutShell';
+
+const ADMIN_NEWS_PER_PAGE = 5;
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({ totalUsers: 0, totalAdmins: 0, pendingUsers: 0 });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
   const [formType, setFormType] = useState('live'); // 'live' or 'latest'
-  const [isMarketModalOpen, setIsMarketModalOpen] = useState(false);
-  const [marketList, setMarketList] = useState([]);
-  const [marketData, setMarketData] = useState({
-    title: { marathi: '', hindi: '', english: '' },
-    value: { marathi: '', hindi: '', english: '' },
-    category: 'other',
-    trend: 'neutral'
-  });
   
   // News Management State
   const [newsList, setNewsList] = useState([]);
+  const [newsPage, setNewsPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [currentNewsId, setCurrentNewsId] = useState(null);
 
-  // Ads Management State
-  const [adsList, setAdsList] = useState([]);
-  const [isAdModalOpen, setIsAdModalOpen] = useState(false);
-  const [isEditingAd, setIsEditingAd] = useState(false);
-  const [currentAdId, setCurrentAdId] = useState(null);
-  const [adData, setAdData] = useState({ title: '', link: '', position: 'popup', active: true, image: null });
-
-  // New User Form State
-  const [newUser, setNewUser] = useState({ username: '', password: '', role: 'user' });
-  const [createError, setCreateError] = useState('');
-  const [createSuccess, setCreateSuccess] = useState('');
-  
   // News Form State
   // We keep track of the *previous* language to know what to translate FROM
   const [newsData, setNewsData] = useState({ title: '', content: '', category: 'maharashtra', language: 'marathi', image: null, videoUrl: '', topUpdates: [], isLive: false });
@@ -79,59 +61,25 @@ export default function AdminDashboard() {
     fetchData(token);
   }, []);
 
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(newsList.length / ADMIN_NEWS_PER_PAGE));
+    setNewsPage((p) => Math.min(p, totalPages));
+  }, [newsList.length]);
+
   const fetchData = async (token) => {
     try {
       setLoading(true);
-      const [pendingRes, statsRes, newsRes, marketRes, adsRes] = await Promise.all([
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/pending-users`, { headers: { Authorization: `Bearer ${token}` } }),
+      const [statsRes, newsRes] = await Promise.all([
         axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/stats`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?limit=50`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market`),
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?limit=200`),
       ]);
       
-      setUsers(pendingRes.data);
       setStats(statsRes.data);
       setNewsList(newsRes.data);
-      setMarketList(marketRes.data);
-      setAdsList(adsRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleApprove = async (userId) => {
-    try {
-      const token = Cookies.get('token');
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/approve-user`, { userId }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      // Refresh list and stats
-      fetchData(token);
-    } catch (error) {
-      alert('Failed to approve user');
-    }
-  };
-
-  const handleCreateUser = async (e) => {
-    e.preventDefault();
-    setCreateError('');
-    setCreateSuccess('');
-    
-    try {
-      const token = Cookies.get('token');
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/create-user`, newUser, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      setCreateSuccess('Account created successfully!');
-      setNewUser({ username: '', password: '', role: 'user' });
-      fetchData(token); 
-      setTimeout(() => setIsCreateModalOpen(false), 2000);
-    } catch (err) {
-      setCreateError(err.response?.data?.message || 'Failed to create user');
     }
   };
 
@@ -424,115 +372,6 @@ export default function AdminDashboard() {
       }
   };
 
-  const handleMarketSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      const token = Cookies.get('token');
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market/create`, marketData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setIsMarketModalOpen(false);
-      setMarketData({
-        title: { marathi: '', hindi: '', english: '' },
-        value: { marathi: '', hindi: '', english: '' },
-        category: 'other',
-        trend: 'neutral'
-      });
-      fetchData(token);
-    } catch (error) {
-      alert('Failed to add market update');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDeleteMarket = async (id) => {
-    if(!confirm('Delete this market update?')) return;
-    try {
-      const token = Cookies.get('token');
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/market/delete/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchData(token);
-    } catch (error) {
-      alert('Failed to delete market update');
-    }
-  };
-
-
-  const handleLogout = () => {
-    Cookies.remove('token');
-    Cookies.remove('user');
-    router.push('/');
-  };
-
-  const handleAdSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const token = Cookies.get('token');
-      const formData = new FormData();
-      formData.append('title', adData.title);
-      formData.append('link', adData.link);
-      formData.append('position', adData.position);
-      formData.append('active', adData.active);
-      
-      if (adData.image instanceof File) {
-        formData.append('image', adData.image);
-      } else if (isEditingAd && adData.image) {
-        formData.append('existingImage', adData.image);
-      }
-
-      if (isEditingAd) {
-        await axios.put(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads/update/${currentAdId}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      } else {
-        await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads/create`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      }
-
-      setIsAdModalOpen(false);
-      resetAdForm();
-      fetchData(token);
-    } catch (error) {
-      alert('Failed to save ad');
-    }
-  };
-
-  const resetAdForm = () => {
-    setAdData({ title: '', link: '', position: 'popup', active: true, image: null });
-    setIsEditingAd(false);
-    setCurrentAdId(null);
-  };
-
-  const handleEditAd = (ad) => {
-    setAdData({
-      title: ad.title,
-      link: ad.link,
-      position: ad.position,
-      active: ad.active,
-      image: ad.imageUrl
-    });
-    setCurrentAdId(ad._id);
-    setIsEditingAd(true);
-    setIsAdModalOpen(true);
-  };
-
-  const handleDeleteAd = async (id) => {
-    if(!confirm('Are you sure you want to delete this ad?')) return;
-    try {
-      const token = Cookies.get('token');
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/ads/delete/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchData(token);
-    } catch (error) {
-      alert('Failed to delete ad');
-    }
-  };
-
   if (loading) return (
     <div className="flex h-screen items-center justify-center bg-gray-50">
        <div className="flex flex-col items-center">
@@ -542,281 +381,212 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const newsTotalPages = Math.max(1, Math.ceil(newsList.length / ADMIN_NEWS_PER_PAGE));
+  const newsOffset = (newsPage - 1) * ADMIN_NEWS_PER_PAGE;
+  const paginatedNews = newsList.slice(newsOffset, newsOffset + ADMIN_NEWS_PER_PAGE);
+
+  const dashboardSidebarExtra = (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          resetNewsForm();
+          setFormType('live');
+          setIsNewsModalOpen(true);
+        }}
+        className={adminSidebarNewsBtnClass}
+      >
+        <FaNewspaper className="h-3.5 w-3.5 shrink-0 opacity-80" />
+        <span>Add live news</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          resetNewsForm();
+          setFormType('latest');
+          setIsNewsModalOpen(true);
+        }}
+        className={adminSidebarNewsBtnClass}
+      >
+        <FaBolt className="h-3.5 w-3.5 shrink-0 text-amber-400" />
+        <span>Add latest news</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          resetNewsForm();
+          setNewsData((prev) => ({ ...prev, category: 'crime' }));
+          setFormType('latest');
+          setIsNewsModalOpen(true);
+        }}
+        className={adminSidebarNewsBtnClass}
+      >
+        <FaGavel className="h-3.5 w-3.5 shrink-0 opacity-80" />
+        <span>Crime</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          resetNewsForm();
+          setNewsData((prev) => ({ ...prev, category: 'jobs' }));
+          setFormType('latest');
+          setIsNewsModalOpen(true);
+        }}
+        className={adminSidebarNewsBtnClass}
+      >
+        <FaBriefcase className="h-3.5 w-3.5 shrink-0 opacity-80" />
+        <span>Jobs</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          resetNewsForm();
+          setNewsData((prev) => ({ ...prev, category: 'education' }));
+          setFormType('latest');
+          setIsNewsModalOpen(true);
+        }}
+        className={adminSidebarNewsBtnClass}
+      >
+        <FaGraduationCap className="h-3.5 w-3.5 shrink-0 opacity-80" />
+        <span>Education</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          resetNewsForm();
+          setNewsData((prev) => ({ ...prev, category: 'sports' }));
+          setFormType('latest');
+          setIsNewsModalOpen(true);
+        }}
+        className={adminSidebarNewsBtnClass}
+      >
+        <FaTrophy className="h-3.5 w-3.5 shrink-0 opacity-80" />
+        <span>Sports</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          document.getElementById('section-manage-news')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }}
+        className={adminSidebarNewsBtnClass}
+      >
+        <FaNewspaper className="h-3.5 w-3.5 shrink-0 opacity-80" />
+        <span>News list</span>
+      </button>
+    </>
+  );
+
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-50 flex flex-col pt-0"
-    >
-      <div className="flex flex-1 pt-0">
-      {/* Sidebar */}
-      <aside className={`w-64 bg-gray-900 text-white flex flex-col fixed md:relative z-30 h-full transition-transform transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-xl overflow-y-auto scrollbar-hide`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-        <style jsx>{`
-          aside::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
-        <div className="p-6 text-2xl font-bold flex justify-between items-center border-b border-gray-800">
-           <span>Admin Panel</span>
-           <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white">×</button>
-        </div>
-        <nav className="flex-1 p-4 space-y-2 mt-4">
-          <button
-            onClick={() => setIsNewsModalOpen(false)} // Reset to default view if needed
-            className="flex items-center space-x-3 py-3 px-4 rounded-lg bg-gray-800 text-blue-400 border-l-4 border-blue-500"
-          >
-             <FaUserShield />
-             <span>Dashboard</span>
-          </button>
-          <button 
-             onClick={() => { resetNewsForm(); setFormType('live'); setIsNewsModalOpen(true); }}
-             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
-          >
-             <FaNewspaper />
-             <span>Add Live News</span>
-          </button>
-          <button 
-             onClick={() => { resetNewsForm(); setFormType('latest'); setIsNewsModalOpen(true); }}
-             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
-          >
-             <FaBolt />
-             <span>Add Latest News</span>
-          </button>
-          <button 
-             onClick={() => { 
-                resetNewsForm(); 
-                setNewsData(prev => ({ ...prev, category: 'crime' }));
-                setFormType('latest'); 
-                setIsNewsModalOpen(true); 
-             }}
-             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
-          >
-             <FaGavel />
-             <span>Add Crime News</span>
-          </button>
-          <button 
-             onClick={() => { 
-                resetNewsForm(); 
-                setNewsData(prev => ({ ...prev, category: 'jobs' }));
-                setFormType('latest'); 
-                setIsNewsModalOpen(true); 
-             }}
-             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
-          >
-             <FaBriefcase />
-             <span>Add Job News</span>
-          </button>
-          <button 
-             onClick={() => { 
-                resetNewsForm(); 
-                setNewsData(prev => ({ ...prev, category: 'education' }));
-                setFormType('latest'); 
-                setIsNewsModalOpen(true); 
-             }}
-             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
-          >
-             <FaGraduationCap />
-             <span>Add Education News</span>
-          </button>
-          <button 
-             onClick={() => { 
-                resetNewsForm(); 
-                setNewsData(prev => ({ ...prev, category: 'sports' }));
-                setFormType('latest'); 
-                setIsNewsModalOpen(true); 
-             }}
-             className="w-full flex items-center space-x-3 py-2.5 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left text-sm"
-          >
-             <FaTrophy />
-             <span>Add Sports News</span>
-          </button>
-          <button 
-             onClick={() => { 
-                setIsMarketModalOpen(true);
-             }}
-             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
-          >
-             <FaChartLine />
-             <span>Market Trends</span>
-          </button>
-          <button 
-             onClick={() => { 
-                resetAdForm();
-                setIsAdModalOpen(true);
-             }}
-             className="w-full flex items-center space-x-3 py-3 px-4 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-colors text-left"
-          >
-             <FaBullhorn />
-             <span>Manage Ads</span>
-          </button>
-        </nav>
-        <div className="p-4 border-t border-gray-800">
-          <button onClick={handleLogout} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200 shadow-md">
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        <header className="flex justify-between items-center py-4 px-8 bg-white shadow-sm z-10">
-          <div className="flex items-center">
-            <button onClick={() => setIsSidebarOpen(true)} className="text-gray-500 hover:text-gray-700 focus:outline-none md:hidden mr-4">
-              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-          </div>
-          <div className="flex items-center space-x-4">
-             <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold">
-               Admin: {user?.username}
-             </div>
-          </div>
-        </header>
-
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-8">
-          <div className="container mx-auto max-w-6xl">
+    <>
+      <AdminLayoutShell user={user} pageTitle="Dashboard Overview" sidebarExtra={dashboardSidebarExtra}>
+        <div className="container mx-auto max-w-6xl">
             
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 uppercase">Total Users</p>
-                  <p className="text-3xl font-bold text-gray-800">{stats.totalUsers}</p>
-                </div>
-                <div className="p-3 bg-blue-100 rounded-full text-blue-600">
-                  <FaUsers size={24} />
-                </div>
+            {/* Stats — three equal cards so numbers align; link only on pending card */}
+            <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
+              <div className="flex h-full flex-col rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-900/[0.04]">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Total users</p>
+                <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight text-slate-900">{stats.totalUsers}</p>
+                <p className="mt-auto pt-6 text-xs text-slate-400">Registered on site</p>
               </div>
-
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 uppercase">Admins</p>
-                  <p className="text-3xl font-bold text-gray-800">{stats.totalAdmins}</p>
-                </div>
-                <div className="p-3 bg-purple-100 rounded-full text-purple-600">
-                   <FaUserShield size={24} />
-                </div>
+              <div className="flex h-full flex-col rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-900/[0.04]">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Admins</p>
+                <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight text-slate-900">{stats.totalAdmins}</p>
+                <p className="mt-auto pt-6 text-xs text-slate-400">Admin role accounts</p>
               </div>
-
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500 uppercase">Pending Approvals</p>
-                  <p className="text-3xl font-bold text-gray-800">{stats.pendingUsers}</p>
-                </div>
-                <div className="p-3 bg-yellow-100 rounded-full text-yellow-600">
-                   <FaUsers size={24} />
+              <div className="flex h-full flex-col rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm ring-1 ring-slate-900/[0.04]">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Pending</p>
+                <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight text-slate-900">{stats.pendingUsers}</p>
+                <div className="mt-auto pt-4">
+                  <Link
+                    href="/admin/users"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50/80 px-3 py-2 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+                  >
+                    User accounts
+                    <span aria-hidden className="text-base leading-none">
+                      →
+                    </span>
+                  </Link>
+                  <p className="mt-2 text-xs leading-snug text-slate-500">Approve requests or create users</p>
                 </div>
               </div>
             </div>
 
-            {/* Actions and Tables */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Overview</h2>
-              <div className="flex gap-4">
-                  <button 
-                    onClick={() => { resetNewsForm(); setIsNewsModalOpen(true); }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-200 flex items-center"
-                  >
-                    <FaNewspaper className="mr-2" /> Add Live News
-                  </button>
-                  <button 
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-200 flex items-center"
-                  >
-                    <FaPlus className="mr-2" /> Create User
-                  </button>
+            {/* Manage News — 5 per page (section: header + table) */}
+            <section
+              className="mt-10 scroll-mt-24 rounded-2xl border border-slate-200 bg-white shadow-sm ring-1 ring-slate-900/[0.04] overflow-hidden"
+              aria-labelledby="section-manage-news"
+            >
+            <div className="flex flex-col gap-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6 sm:py-6">
+              <div className="min-w-0">
+                <h2 id="section-manage-news" className="text-lg font-semibold text-slate-900">Manage news</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  {newsList.length} article{newsList.length !== 1 ? 's' : ''} · {ADMIN_NEWS_PER_PAGE} per page
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetNewsForm();
+                    setFormType('live');
+                    setIsNewsModalOpen(true);
+                  }}
+                  className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
+                >
+                  <FaNewspaper className="mr-2 shrink-0" /> Add live news
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetNewsForm();
+                    setFormType('latest');
+                    setIsNewsModalOpen(true);
+                  }}
+                  className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-sm hover:bg-slate-50"
+                >
+                  <FaBolt className="mr-2 shrink-0 text-red-600" /> Add latest news
+                </button>
               </div>
             </div>
-            
-            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
-              <table className="min-w-max w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr className="text-gray-600 uppercase text-xs leading-normal font-semibold tracking-wider">
-                    <th className="py-4 px-6 text-left">Username</th>
-                    <th className="py-4 px-6 text-left">Role</th>
-                    <th className="py-4 px-6 text-center">Status</th>
-                    <th className="py-4 px-6 text-center">Actions</th>
+            <div className="overflow-x-auto bg-white">
+              <table className="min-w-full table-auto text-left">
+                <thead className="border-b border-slate-200 bg-slate-50">
+                  <tr className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                    <th className="py-3 px-4">Date</th>
+                    <th className="py-3 px-4">Title</th>
+                    <th className="py-3 px-4 text-center">Category</th>
+                    <th className="py-3 px-4 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="text-gray-600 text-sm font-light">
-                  {users.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="py-8 px-6 text-center text-gray-400 italic">No pending user requests at the moment.</td>
-                    </tr>
-                  ) : (
-                    users.map((u) => (
-                      <tr key={u._id} className="border-b border-gray-100 hover:bg-blue-50 transition duration-150">
-                        <td className="py-4 px-6 text-left whitespace-nowrap">
-                          <div className="flex items-center">
-                            <span className="font-medium text-gray-800">{u.username}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 text-left">
-                          <span className="capitalize bg-gray-200 text-gray-700 py-1 px-3 rounded-full text-xs font-bold">{u.role}</span>
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <span className="bg-yellow-100 text-yellow-700 py-1 px-3 rounded-full text-xs font-bold">Pending</span>
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <button 
-                            onClick={() => handleApprove(u._id)}
-                            className="bg-green-100 hover:bg-green-200 text-green-700 py-1 px-4 rounded-md text-xs font-bold transition duration-200 flex items-center justify-center mx-auto"
-                          >
-                             Approve
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-            
-            {/* Manage News Section */}
-            <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-6">Manage News</h2>
-            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
-              <table className="min-w-max w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr className="text-gray-600 uppercase text-xs leading-normal font-semibold tracking-wider">
-                    <th className="py-4 px-6 text-left">Date</th>
-                    <th className="py-4 px-6 text-left">Title</th>
-
-                    <th className="py-4 px-6 text-center">Category</th>
-                    <th className="py-4 px-6 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-600 text-sm font-light">
+                <tbody className="text-sm text-slate-700">
                     {newsList.length === 0 ? (
-                        <tr><td colSpan="5" className="py-8 text-center bg-gray-50 italic">No news articles found.</td></tr>
+                        <tr><td colSpan={4} className="py-10 text-center text-slate-500 italic">No news articles found.</td></tr>
                     ) : (
-                        newsList.map((item) => (
-                            <tr key={item._id} className="border-b border-gray-100 hover:bg-gray-50">
-                                <td className="py-3 px-6 text-left whitespace-nowrap">
+                        paginatedNews.map((item) => (
+                            <tr key={item._id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/80">
+                                <td className="whitespace-nowrap py-3 px-4 text-slate-600">
                                     {new Date(item.createdAt).toLocaleDateString()}
                                 </td>
-                                <td className="py-3 px-6 text-left">
-                                    <div className="flex items-center">
+                                <td className="py-3 px-4">
+                                    <div className="flex max-w-md items-center gap-3">
                                         {item.image && (
-                                            <img src={item.image} className="w-8 h-8 rounded object-cover mr-3" />
+                                            <img src={item.image} alt="" className="h-9 w-9 shrink-0 object-cover ring-1 ring-slate-200" />
                                         )}
-                                        <span className="font-medium truncate max-w-[200px]" title={typeof item.title === 'string' ? item.title : (item.title?.marathi || item.title?.english || 'Untitled')}>
+                                        <span className="font-medium line-clamp-2" title={typeof item.title === 'string' ? item.title : (item.title?.marathi || item.title?.english || 'Untitled')}>
                                             {typeof item.title === 'string' ? item.title : (item.title?.marathi || item.title?.english || 'Untitled')}
                                         </span>
                                     </div>
                                 </td>
-
-                                <td className="py-3 px-6 text-center capitalize">{item.category}</td>
-                                <td className="py-3 px-6 text-center">
-                                    <div className="flex item-center justify-center">
-                                        <button onClick={() => handleEditNews(item)} className="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <td className="py-3 px-4 text-center capitalize text-slate-600">{item.category}</td>
+                                <td className="py-3 px-4 text-center">
+                                    <div className="flex items-center justify-center gap-3">
+                                        <button type="button" onClick={() => handleEditNews(item)} className="text-slate-500 hover:text-indigo-600" aria-label="Edit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                             </svg>
                                         </button>
-                                        <button onClick={() => handleDeleteNews(item._id)} className="w-4 mr-2 transform hover:text-red-500 hover:scale-110">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <button type="button" onClick={() => handleDeleteNews(item._id)} className="text-slate-500 hover:text-red-600" aria-label="Delete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
@@ -827,101 +597,43 @@ export default function AdminDashboard() {
                     )}
                 </tbody>
               </table>
-            </div>
-            {/* Manage Market Trends */}
-            <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-6">Market Trends (NFT, Gold, etc.)</h2>
-            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100 mb-10">
-              <table className="min-w-max w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr className="text-gray-600 uppercase text-xs leading-normal font-semibold tracking-wider">
-                    <th className="py-4 px-6 text-left">Category</th>
-                    <th className="py-4 px-6 text-left">Label (Marathi)</th>
-                    <th className="py-4 px-6 text-right">Value</th>
-                    <th className="py-4 px-6 text-center">Trend</th>
-                    <th className="py-4 px-6 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-600 text-sm font-light">
-                    {marketList.length === 0 ? (
-                        <tr><td colSpan="5" className="py-8 text-center bg-gray-50 italic">No market trends added.</td></tr>
-                    ) : (
-                        marketList.map((item) => (
-                            <tr key={item._id} className="border-b border-gray-100 hover:bg-gray-50">
-                                <td className="py-3 px-6 text-left capitalize font-bold text-blue-600">{item.category}</td>
-                                <td className="py-3 px-6 text-left">{item.title.marathi}</td>
-                                <td className="py-3 px-6 text-right font-black text-gray-900">{item.value.marathi}</td>
-                                <td className="py-3 px-6 text-center">
-                                  <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${
-                                    item.trend === 'up' ? 'bg-green-100 text-green-700' : 
-                                    item.trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
-                                  }`}>
-                                    {item.trend}
-                                  </span>
-                                </td>
-                                <td className="py-3 px-6 text-center">
-                                    <button onClick={() => handleDeleteMarket(item._id)} className="text-red-400 hover:text-red-600 transform hover:scale-110">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-              </table>
-            </div>
+              </div>
+              {newsList.length > 0 && (
+                <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50/90 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <span className="text-sm text-slate-600">
+                    Showing{' '}
+                    <span className="font-medium tabular-nums text-slate-800">
+                      {newsList.length === 0 ? 0 : newsOffset + 1}–{Math.min(newsOffset + ADMIN_NEWS_PER_PAGE, newsList.length)}
+                    </span>
+                    {' '}of <span className="font-medium tabular-nums text-slate-800">{newsList.length}</span>
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={newsPage <= 1}
+                      onClick={() => setNewsPage((p) => Math.max(1, p - 1))}
+                      className="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Previous
+                    </button>
+                    <span className="px-2 text-sm tabular-nums text-slate-500">
+                      Page {newsPage} / {newsTotalPages}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={newsPage >= newsTotalPages}
+                      onClick={() => setNewsPage((p) => Math.min(newsTotalPages, p + 1))}
+                      className="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
 
-            {/* Manage Ads Section */}
-            <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-6">Manage Ads (Popup & Sidebar)</h2>
-            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100 mb-10">
-              <table className="min-w-max w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr className="text-gray-600 uppercase text-xs leading-normal font-semibold tracking-wider">
-                    <th className="py-4 px-6 text-left">Ad Preview</th>
-                    <th className="py-4 px-6 text-left">Title/Link</th>
-                    <th className="py-4 px-6 text-center">Position</th>
-                    <th className="py-4 px-6 text-center">Status</th>
-                    <th className="py-4 px-6 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-600 text-sm font-light">
-                    {adsList.length === 0 ? (
-                        <tr><td colSpan="5" className="py-8 text-center bg-gray-50 italic">No ads added.</td></tr>
-                    ) : (
-                        adsList.map((ad) => (
-                            <tr key={ad._id} className="border-b border-gray-100 hover:bg-gray-50">
-                                <td className="py-3 px-6 text-left">
-                                    {ad.imageUrl && (
-                                        <img src={ad.imageUrl} className="h-16 w-auto object-contain rounded" alt="ad preview" />
-                                    )}
-                                </td>
-                                <td className="py-3 px-6 text-left">
-                                    <div className="font-bold text-gray-800">{ad.title}</div>
-                                    <a href={ad.link} target="_blank" rel="noreferrer" className="text-blue-500 text-xs hover:underline truncate inline-block max-w-[200px]">{ad.link || 'No Link'}</a>
-                                </td>
-                                <td className="py-3 px-6 text-center capitalize font-semibold">{ad.position}</td>
-                                <td className="py-3 px-6 text-center">
-                                    <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${
-                                        ad.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                    }`}>
-                                        {ad.active ? 'Active' : 'Inactive'}
-                                    </span>
-                                </td>
-                                <td className="py-3 px-6 text-center">
-                                    <button onClick={() => handleEditAd(ad)} className="text-blue-500 hover:text-blue-700 mr-3 transform hover:scale-110">
-                                        Edit
-                                    </button>
-                                    <button onClick={() => handleDeleteAd(ad._id)} className="text-red-400 hover:text-red-600 transform hover:scale-110">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </main>
+        </div>
+      </AdminLayoutShell>
 
         {/* Backdrop for News Drawer */}
         {/* News Drawer with Framer Motion */}
@@ -1275,228 +987,6 @@ export default function AdminDashboard() {
             </>
           )}
         </AnimatePresence>
-
-      {/* Create User/Admin Modal (Centered - kept as is) */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-8 relative">
-             <button 
-               onClick={() => setIsCreateModalOpen(false)}
-               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-             >
-               ✕
-             </button>
-             
-             <h2 className="text-2xl font-bold mb-6 text-gray-800">Create New Account</h2>
-             
-             {createError && <p className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">{createError}</p>}
-             {createSuccess && <p className="bg-green-50 text-green-600 p-3 rounded mb-4 text-sm">{createSuccess}</p>}
-             
-             <form onSubmit={handleCreateUser} className="space-y-4">
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Username</label>
-                  <input
-                    type="text"
-                    value={newUser.username}
-                    onChange={(e) => setNewUser({...newUser, username: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                  <input
-                    type="password"
-                    value={newUser.password}
-                    onChange={(e) => setNewUser({...newUser, password: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Role</label>
-                  <select 
-                    value={newUser.role}
-                    onChange={(e) => setNewUser({...newUser, role: e.target.value})}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-                
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-200 mt-4"
-                >
-                  Create Account
-                </button>
-             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Market Trend Modal */}
-      {isMarketModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl p-8 relative max-h-[90vh] overflow-y-auto">
-             <button onClick={() => setIsMarketModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
-             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-               <FaChartLine className="text-blue-600" /> Add Market Trend (NFT, Gold, etc.)
-             </h2>
-             
-             <form onSubmit={handleMarketSubmit} className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Category</label>
-                    <select 
-                      value={marketData.category}
-                      onChange={(e) => setMarketData({...marketData, category: e.target.value})}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="gold">Gold</option>
-                      <option value="silver">Silver</option>
-                      <option value="crypto">Crypto</option>
-                      <option value="nft">NFT</option>
-                      <option value="stock">Stock</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Trend</label>
-                    <select 
-                      value={marketData.trend}
-                      onChange={(e) => setMarketData({...marketData, trend: e.target.value})}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="up">Up (Green)</option>
-                      <option value="down">Down (Red)</option>
-                      <option value="neutral">Neutral (Gray)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-bold text-gray-700">Display Labels (Title)</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    <input placeholder="Marathi Label" value={marketData.title.marathi} onChange={(e) => setMarketData({...marketData, title: {...marketData.title, marathi: e.target.value}})} className="px-3 py-2 border rounded" required />
-                    <input placeholder="Hindi Label" value={marketData.title.hindi} onChange={(e) => setMarketData({...marketData, title: {...marketData.title, hindi: e.target.value}})} className="px-3 py-2 border rounded" required />
-                    <input placeholder="English Label" value={marketData.title.english} onChange={(e) => setMarketData({...marketData, title: {...marketData.title, english: e.target.value}})} className="px-3 py-2 border rounded" required />
-                  </div>
-                </div>
-
-                <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-bold text-gray-700">Display Values (Price/Rate)</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    <input placeholder="Marathi Value" value={marketData.value.marathi} onChange={(e) => setMarketData({...marketData, value: {...marketData.value, marathi: e.target.value}})} className="px-3 py-2 border rounded" required />
-                    <input placeholder="Hindi Value" value={marketData.value.hindi} onChange={(e) => setMarketData({...marketData, value: {...marketData.value, hindi: e.target.value}})} className="px-3 py-2 border rounded" required />
-                    <input placeholder="English Value" value={marketData.value.english} onChange={(e) => setMarketData({...marketData, value: {...marketData.value, english: e.target.value}})} className="px-3 py-2 border rounded" required />
-                  </div>
-                </div>
-                
-                <button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className={`w-full ${isSubmitting ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 uppercase tracking-wider flex items-center justify-center`}
-                >
-                  {isSubmitting ? (
-                      <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                          Adding...
-                      </>
-                  ) : 'Add to Live Feed'}
-                </button>
-             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Ad Management Modal */}
-      {isAdModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl p-8 relative max-h-[90vh] overflow-y-auto">
-             <button onClick={() => setIsAdModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
-             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-               <FaBullhorn className="text-purple-600" /> {isEditingAd ? 'Edit Ad' : 'Create New Ad'}
-             </h2>
-             
-             <form onSubmit={handleAdSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Ad Title (For Reference)</label>
-                  <input
-                    type="text"
-                    value={adData.title}
-                    onChange={(e) => setAdData({...adData, title: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Target Link / URL</label>
-                  <input
-                    type="url"
-                    value={adData.link}
-                    onChange={(e) => setAdData({...adData, link: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
-                    placeholder="https://"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Position</label>
-                    <select
-                      value={adData.position}
-                      onChange={(e) => setAdData({...adData, position: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
-                    >
-                      <option value="popup">Home Page Popup</option>
-                      <option value="sidebar">Sidebar Component</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Status</label>
-                    <select
-                      value={adData.active}
-                      onChange={(e) => setAdData({...adData, active: e.target.value === 'true'})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-purple-500"
-                    >
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Ad Image/Banner</label>
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    onChange={(e) => setAdData({...adData, image: e.target.files[0]})}
-                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer"
-                    required={!isEditingAd}
-                  />
-                  {adData.image && typeof adData.image === 'string' && (
-                    <div className="mt-3">
-                      <p className="text-xs text-gray-500 mb-1">Current Image:</p>
-                      <img src={adData.image} alt="current ad" className="h-20 object-contain rounded border" />
-                    </div>
-                  )}
-                  {adData.image && adData.image instanceof File && (
-                    <div className="mt-3">
-                      <p className="text-xs text-gray-500 mb-1">New Image Preview:</p>
-                      <img src={URL.createObjectURL(adData.image)} alt="new ad preview" className="h-20 object-contain rounded border" />
-                    </div>
-                  )}
-                </div>
-                
-                <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded shadow-md transition duration-200 mt-2">
-                  {isEditingAd ? 'Update Ad' : 'Create Ad'}
-                </button>
-             </form>
-          </div>
-        </div>
-      )}
-      </div>
-    </div>
-    </motion.div>
+    </>
   );
 }
