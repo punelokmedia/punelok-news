@@ -35,7 +35,7 @@ export default function LayoutWrapper({ children }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Chat on WhatsApp"
-              className="fixed right-4 bottom-5 z-[5000] w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-105 transition-transform duration-200 flex items-center justify-center"
+              className="fixed right-4 bottom-[78px] lg:bottom-5 z-[7500] w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg hover:scale-105 transition-transform duration-200 flex items-center justify-center"
             >
               <FaWhatsapp size={30} />
             </a>

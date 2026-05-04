@@ -21,7 +21,7 @@
   padding: 8px 0;
   font-size: 14px;
   position: relative;
-  z-index: 5;
+  z-index: 1200;
 }
 
 .top-bar-container {
@@ -172,6 +172,7 @@
   padding: 0;
   min-width: 0;
   /* Important for flex-grow to work without pushing siblings */
+  pointer-events: none;
 }
 
 .market-ticker-track {
@@ -179,6 +180,7 @@
   animation: tickerScroll 240s linear infinite;
   gap: 12px;
   padding: 0 12px;
+  pointer-events: none;
 }
 
 .market-ticker-container:hover .market-ticker-track {
@@ -207,6 +209,7 @@
   overflow: hidden;
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
 }
 
 .ticker-item-square:hover {

@@ -293,6 +293,7 @@ export default function Navbar() {
                 <React.Fragment key={lang.code}>
                   <button
                     type="button"
+                    onPointerDown={() => handleLanguageChange(lang.code)}
                     onClick={() => handleLanguageChange(lang.code)}
                     className={`lang-btn-minimal ${language === lang.code ? 'active' : ''}`}
                     aria-pressed={language === lang.code}

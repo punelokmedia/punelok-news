@@ -226,8 +226,12 @@ html[lang="en"] body {
   }
 
   @media (max-width: 1023px) {
+  .main-with-fixed-nav {
+    padding-bottom: 0;
+  }
+
     .explorer-sidebar {
-      display: flex;
+      display: none !important;
       flex-direction: row !important;
       position: fixed;
       bottom: 0;
@@ -239,7 +243,7 @@ html[lang="en"] body {
       gap: 0 !important;
       border-right: none;
       border-top: 1px solid #990000;
-      z-index: 2000;
+      z-index: 7000;
       background: #C40B0B;
       overflow-x: auto;
       overflow-y: hidden;
