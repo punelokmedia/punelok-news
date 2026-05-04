@@ -25,11 +25,17 @@ export default function CategoryPage() {
             business: 'Business', astro: 'Astro', lifestyle: 'Lifestyle', crime: 'Crime',
             jobs: 'Jobs', education: 'Education', world: 'World', india: 'India',
             'live-tv': 'Live TV', live: 'LIVE', shorts: 'Video Shorts', gallery: 'Photo Gallery', podcast: 'Podcast'
+        },
+        hindi: {
+            maharashtra: 'महाराष्ट्र', politics: 'राजनीति', entertainment: 'मनोरंजन', sports: 'खेल',
+            business: 'बिज़नेस', astro: 'राशिफल', lifestyle: 'लाइफस्टाइल', crime: 'क्राइम',
+            jobs: 'रोजगार', education: 'शिक्षा', world: 'दुनिया', india: 'भारत',
+            'live-tv': 'लाइव टीवी', live: 'लाइव', shorts: 'वीडियो शॉर्ट्स', gallery: 'फोटो गैलरी', podcast: 'पॉडकास्ट'
         }
     };
 
     const getCategoryDisplayName = () => {
-        const lang = language === 'marathi' ? 'marathi' : 'english';
+        const lang = language === 'hindi' ? 'hindi' : language === 'marathi' ? 'marathi' : 'english';
         return categoryNames[lang][slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
     };
 

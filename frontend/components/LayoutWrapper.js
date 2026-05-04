@@ -6,16 +6,18 @@ import Footer from './Footer';
 import ExplorerSidebar from './ExplorerSidebar';
 import AdsPopup from './AdsPopup';
 import { FaWhatsapp } from 'react-icons/fa';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
+  const { language } = useLanguage();
   const isDashboard = pathname?.startsWith('/admin') || pathname?.startsWith('/user');
   const isAuthPage = pathname?.startsWith('/login') || pathname?.startsWith('/register');
   const shouldHideLayout = isDashboard || isAuthPage;
   const whatsappChatLink = "https://wa.me/918956776951?text=Hello%20Punelok%20team%2C%20I%20need%20help.";
 
   return (
-    <div className="overflow-x-hidden w-full max-w-full min-w-0">
+    <div key={language} className="overflow-x-hidden w-full max-w-full min-w-0">
       {!shouldHideLayout && <Navbar />}
       {!shouldHideLayout && <ExplorerSidebar />}
       <main className={`${!shouldHideLayout ? 'main-with-fixed-nav lg:pl-[120px]' : ''} min-h-[50vh] overflow-x-hidden w-full max-w-full min-w-0 relative`}>

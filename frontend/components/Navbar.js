@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useLanguage } from '@/context/LanguageContext';
 import LoginModal from './LoginModal';
 import { 
-  FaXTwitter, 
   FaFacebookF, 
   FaAt, 
   FaYoutube, 
   FaInstagram, 
-  FaTelegram, 
   FaWhatsapp,
   FaBitcoin,
   FaImage,
@@ -25,6 +24,7 @@ import './Navbar.css';
 
 export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -259,6 +259,11 @@ export default function Navbar() {
     }
   };
 
+  const handleLanguageChange = (code) => {
+    setLanguage(code);
+    router.refresh();
+  };
+
   const MarketTickerCategoryIcon = ({ category }) => {
     const sz = 20;
     switch (category) {
@@ -288,8 +293,9 @@ export default function Navbar() {
                 <React.Fragment key={lang.code}>
                   <button
                     type="button"
-                    onClick={() => setLanguage(lang.code)}
+                    onClick={() => handleLanguageChange(lang.code)}
                     className={`lang-btn-minimal ${language === lang.code ? 'active' : ''}`}
+                    aria-pressed={language === lang.code}
                   >
                     {lang.label}
                   </button>
@@ -357,12 +363,10 @@ export default function Navbar() {
             </div>
           )}
           <div className="social-icons">
-             <a href="#" className="social-icon"><FaXTwitter size={14} /></a>
              <a href="#" className="social-icon"><FaFacebookF size={14} /></a>
              <a href="#" className="social-icon"><FaAt size={14} /></a>
              <a href="#" className="social-icon"><FaYoutube size={14} /></a>
              <a href="#" className="social-icon"><FaInstagram size={14} /></a>
-             <a href="#" className="social-icon"><FaTelegram size={14} /></a>
              <a href="#" className="social-icon"><FaWhatsapp size={14} /></a>
           </div>
         </div>

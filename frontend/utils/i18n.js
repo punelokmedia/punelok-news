@@ -9,6 +9,9 @@ export const APP_LANGUAGE_KEYS = ['marathi', 'hindi', 'english'];
 export function normalizeLanguage(code) {
   if (!code || typeof code !== 'string') return 'marathi';
   const key = code.toLowerCase().trim();
+  if (key === 'mr') return 'marathi';
+  if (key === 'hi') return 'hindi';
+  if (key === 'en') return 'english';
   if (APP_LANGUAGE_KEYS.includes(key)) return key;
   return 'marathi';
 }

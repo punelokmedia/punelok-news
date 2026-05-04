@@ -3,9 +3,7 @@
 import { useLanguage } from '@/context/LanguageContext';
 import './Footer.css';
 import { useState } from 'react';
-import { FaTelegramPlane, FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt, FaWhatsapp } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
-import { BsChatDots } from 'react-icons/bs';
+import { FaFacebookF, FaInstagram, FaYoutube, FaChevronDown, FaAt, FaWhatsapp } from 'react-icons/fa';
 
 export default function Footer() {
   const { language, setLanguage, t: bundle } = useLanguage();
@@ -128,7 +126,6 @@ export default function Footer() {
                  <a href="/about">{t.headers?.about}</a>
                  <a href="/feedback">{t.headers?.feedback}</a>
                  <a href="/careers">{t.headers?.careers}</a>
-                 <a href="/advertise">{t.headers?.advertise}</a>
                  <a href="/sitemap">{t.headers?.sitemap}</a>
                  <a href="/disclaimer">{t.headers?.disclaimer}</a>
                  <a href="/privacy">{t.headers?.privacy}</a>
@@ -147,16 +144,10 @@ export default function Footer() {
                  <div className="footer-socials">
                      <span className="follow-text">{t.headers?.follow}</span>
                      <a href={whatsappChatLink} className="social-circle" title="WhatsApp" target="_blank" rel="noopener noreferrer"><FaWhatsapp /></a>
-                     <a href="#" className="social-circle" title="X (Twitter)"><FaXTwitter /></a>
                      <a href="#" className="social-circle" title="Facebook"><FaFacebookF /></a>
                      <a href="#" className="social-circle" title="Email"><FaAt /></a>
                      <a href="#" className="social-circle" title="YouTube"><FaYoutube /></a>
                      <a href="#" className="social-circle" title="Instagram"><FaInstagram /></a>
-                     <a href="#" className="social-circle" title="Telegram"><FaTelegramPlane /></a>
-                     <a href={whatsappChatLink} className="social-circle" title="WhatsApp Chat Bot" target="_blank" rel="noopener noreferrer"><BsChatDots /></a>
-                 </div>
-                 <div className="ad-box">
-                    <a href="/advertise" className="footer-ad-btn">{t.headers?.advertise}</a>
                  </div>
               </div>
           </div>

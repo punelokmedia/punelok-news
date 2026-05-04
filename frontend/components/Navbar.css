@@ -31,6 +31,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 
 .top-left-section {
@@ -38,6 +39,8 @@
   align-items: center;
   gap: 15px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 3;
 }
 
 .language-compact-list {
@@ -47,6 +50,9 @@
   background: rgba(0, 0, 0, 0.2);
   padding: 4px 12px;
   border-radius: 4px;
+  position: relative;
+  z-index: 4;
+  pointer-events: auto;
 }
 
 .lang-btn-minimal {
@@ -59,6 +65,9 @@
   padding: 2px 4px;
   transition: all 0.2s;
   font-family: inherit;
+  position: relative;
+  z-index: 5;
+  pointer-events: auto;
 }
 
 .lang-btn-minimal:hover,
@@ -154,6 +163,7 @@
   flex: 1;
   margin: 0 10px;
   position: relative;
+  z-index: 1;
   height: 44px;
   display: flex;
   align-items: center;
