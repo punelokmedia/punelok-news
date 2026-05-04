@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
-import { FaClock, FaFire, FaRegNewspaper, FaHeadphones, FaThLarge, FaPlay, FaTrophy, FaBriefcase, FaGraduationCap, FaFilm, FaGavel } from 'react-icons/fa';
+import { FaRegNewspaper, FaHeadphones, FaThLarge, FaTrophy, FaBriefcase, FaGraduationCap, FaFilm, FaGavel } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 export default function ExplorerSidebar() {
@@ -13,11 +13,12 @@ export default function ExplorerSidebar() {
     const fl = t.footer.links;
 
     const menuItems = [
-        { id: 1, label: ft.liveTv, icon: <FaPlay />, href: '/live-tv' },
         { id: 2, label: 'LIVE', icon: <div className="w-2 h-2 bg-red-600 rounded-full shadow-[0_0_8px_rgba(220,38,38,0.8)] animate-pulse" />, href: '/live' },
         { id: 3, label: nav.videoShorts, icon: <FaFilm />, href: '/shorts' },
         { id: 5, label: ft.photoGallery, icon: <FaRegNewspaper />, href: '/gallery' },
         { id: 6, label: ft.podcast, icon: <FaHeadphones />, href: '/podcast' },
+        { id: 12, label: nav.astro, icon: <FaFilm />, href: '/category/astro' },
+        { id: 13, label: nav.politics, icon: <FaRegNewspaper />, href: '/politics' },
         { id: 7, label: nav.sports, icon: <FaTrophy />, href: '/category/sports' },
         { id: 8, label: nav.jobs, icon: <FaBriefcase />, href: '/category/jobs' },
         { id: 9, label: fl.education, icon: <FaGraduationCap />, href: '/category/education' },
@@ -70,11 +71,6 @@ export default function ExplorerSidebar() {
                                 <span className="text-[10px] font-medium text-white uppercase tracking-wider text-center px-1 leading-tight group-hover:text-red-100 transition-colors">
                                     {item.label}
                                 </span>
-                                {item.id === 1 && (
-                                    <span className="bg-red-600 border border-white text-white text-[8px] font-bold px-1 rounded absolute top-2 right-2 animate-pulse shadow-[0_0_5px_rgba(220,38,38,0.5)]">
-                                        LIVE
-                                    </span>
-                                )}
                             </Link>
                         </motion.div>
                     );

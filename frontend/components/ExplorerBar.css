@@ -1,8 +1,8 @@
 /* Explorer bar – fixed below navbar; shape: beige left, red right, rounded top-left */
 .explorer-bar-wrap {
   position: fixed;
-  top: 135px;
-  /* Accurate header height (45px top bar + 90px main nav) */
+  top: 152px;
+  /* Below navbar-wrapper (top bar + main nav) */
   left: 0;
   right: 0;
   z-index: 999;
@@ -144,6 +144,12 @@
   flex: 0 0 40%;
   min-width: 120px;
   background: #C40B0B;
+}
+
+@media (min-width: 1024px) {
+  .explorer-bar-wrap {
+    top: 308px;
+  }
 }
 
 @media (max-width: 1023px) {

@@ -70,11 +70,6 @@ export default function Navbar() {
   const [isBusinessHovered, setIsBusinessHovered] = useState(false);
   const businessHoverTimeoutRef = useRef(null);
 
-  // Astro State
-  const [astroNews, setAstroNews] = useState([]);
-  const [isAstroHovered, setIsAstroHovered] = useState(false);
-  const astroHoverTimeoutRef = useRef(null);
-
   // Lifestyle State
   const [lifestyleNews, setLifestyleNews] = useState([]);
   const [isLifestyleHovered, setIsLifestyleHovered] = useState(false);
@@ -145,14 +140,6 @@ export default function Navbar() {
         } catch (err) { console.error("Failed to fetch business news", err); }
     }
 
-    const fetchAstro = async () => {
-        try {
-            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=astro&limit=6&language=${language}`);
-            const items = res.data.filter(item => item.category === 'astro').slice(0, 6);
-            setAstroNews(items);
-        } catch (err) { console.error("Failed to fetch astro news", err); }
-    }
-
     const fetchLifestyle = async () => {
         try {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/news?category=lifestyle&limit=6&language=${language}`);
@@ -176,7 +163,6 @@ export default function Navbar() {
     fetchEntertainment();
     fetchSports();
     fetchBusiness();
-    fetchAstro();
     fetchLifestyle();
     fetchMarket();
   }, [language]);
@@ -245,15 +231,6 @@ export default function Navbar() {
   };
   const handleBusinessMouseLeave = () => {
     businessHoverTimeoutRef.current = setTimeout(() => setIsBusinessHovered(false), 300);
-  };
-
-  // Astro Handlers
-  const handleAstroMouseEnter = () => {
-    if (astroHoverTimeoutRef.current) clearTimeout(astroHoverTimeoutRef.current);
-    setIsAstroHovered(true);
-  };
-  const handleAstroMouseLeave = () => {
-    astroHoverTimeoutRef.current = setTimeout(() => setIsAstroHovered(false), 300);
   };
 
   // Lifestyle Handlers
@@ -571,25 +548,6 @@ export default function Navbar() {
                 )}
             </div>
 
-            {/* Astro with Dropdown */}
-            <div className="nav-item-wrapper" onMouseEnter={handleAstroMouseEnter} onMouseLeave={handleAstroMouseLeave}>
-                <Link href="/category/astro" className="nav-item">{safeT.astro}</Link>
-                {isAstroHovered && astroNews.length > 0 && (
-                    <div className="mega-menu-dropdown">
-                        <div className="mega-menu-container">
-                            {astroNews.map((item) => (
-                                <Link href={`/news/${item._id}`} key={item._id} className="mega-menu-item">
-                                    <div className="mega-menu-header"><span className="mega-menu-category">{item.category || safeT.astro}</span><span className="mega-menu-icon" style={{color: '#FF0100'}}>⚡</span></div>
-                                    <div className="mega-menu-image-container"><img src={item.image || 'https://placehold.co/600x400/png?text=News'} alt={getLocalizedTitle(item)} className="mega-menu-image" onError={(e) => {e.target.onerror = null; e.target.src = "https://placehold.co/600x400/png?text=News"}} /></div>
-                                    <h4 className="mega-menu-title">{getLocalizedTitle(item)}</h4>
-                                </Link>
-                            ))}
-                        </div>
-                        <div className="dropdown-footer"><Link href="/category/astro" className="view-all-link">View All</Link></div>
-                    </div>
-                )}
-            </div>
-
             {/* Lifestyle with Dropdown */}
             <div className="nav-item-wrapper" onMouseEnter={handleLifestyleMouseEnter} onMouseLeave={handleLifestyleMouseLeave}>
                 <Link href="/category/lifestyle" className="nav-item">{safeT.lifestyle}</Link>
@@ -617,20 +575,20 @@ export default function Navbar() {
                         {/* Sidebar Categories */}
                         <div className="sidebar-categories" style={{
                             width: '200px', 
-                            padding: '20px', 
+                            padding: '14px 16px', 
                             borderRight: '1px solid #eee',
                             backgroundColor: '#fff',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '10px'
+                            gap: '4px'
                         }}>
                              {[
                                 { name: safeT.explore, link: '/category/explore' },
-                                { name: ft.liveTv, link: '/live-tv' },
                                 { name: 'LIVE', link: '/live' },
                                 { name: safeT.videoShorts, link: '/shorts' },
                                 { name: ft.photoGallery, link: '/gallery' },
                                 { name: ft.podcast, link: '/podcast' },
+                                { name: safeT.astro, link: '/category/astro' },
                                 { name: safeT.sports, link: '/category/sports' },
                                 { name: safeT.jobs, link: '/category/jobs' },
                                 { name: fl.education, link: '/category/education' },
@@ -642,7 +600,8 @@ export default function Navbar() {
                                      color: '#333',
                                      fontWeight: '600',
                                      fontSize: '14px',
-                                     padding: '8px 10px',
+                                    lineHeight: '1.1',
+                                    padding: '5px 8px',
                                      borderRadius: '4px',
                                      transition: 'background-color 0.2s, color 0.2s'
                                  }}
@@ -680,29 +639,24 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* Right Actions */}
+          {/* Right Actions — Login before search so it stays visible when space is tight */}
           <div className="nav-actions">
-             <button type="button" className="search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)}>
-                {isSearchOpen ? (
-                  <span style={{fontSize: '24px', fontWeight: 'bold'}}>×</span>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                )}
-              </button>
-            
-            <button 
-              type="button"
-              onClick={() => setIsLoginModalOpen(true)}
-              className="login-btn-nav" 
-              style={{ textDecoration: 'none', color: 'inherit', fontWeight: 'bold', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', padding: 0 }}
-            >
-              Login
+            <button type="button" onClick={() => setIsLoginModalOpen(true)} className="login-btn-nav">
+              {safeT.login || 'Login'}
             </button>
 
-            <button 
+            <button type="button" className="search-btn" onClick={() => setIsSearchOpen(!isSearchOpen)} aria-label={safeT.search}>
+              {isSearchOpen ? (
+                <span style={{ fontSize: '24px', fontWeight: 'bold' }}>×</span>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              )}
+            </button>
+
+            <button
               type="button"
               className="mobile-toggle"
               onClick={() => setIsMenuOpen(!isMenuOpen)}

@@ -260,17 +260,16 @@
   color: #aaa;
 }
 
-/* Main Navbar Styling */
+/* Main Navbar Styling — fixed band height (logo may overflow below) */
 .main-navbar {
   background-color: white;
   padding: 0;
-  height: 90px;
-  /* Slightly taller for a more solid feel */
+  height: 104px;
   border-bottom: 2px solid #f0f0f0;
   position: relative;
   z-index: 900;
-  overflow: hidden;
-  /* Let the logo pop out */
+  overflow-x: visible;
+  overflow-y: visible;
 }
 
 .main-navbar-container {
@@ -280,8 +279,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
+  height: 104px;
   position: relative;
+  overflow: visible;
 }
 
 /* Logo */
@@ -292,19 +292,33 @@
   height: 100%;
   position: relative;
   width: auto;
-  min-width: 180px;
+  min-width: 200px;
   flex-shrink: 0;
   z-index: 20;
-  padding: 5px 0;
+  padding: 6px 0;
 }
 
+/* Mobile / tablet: compact logo */
 .navbar-logo-img {
-  height: 260px;
-  /* Strong visibility but within bounds */
+  height: auto;
   width: auto;
+  max-height: 112px;
+  max-width: 100%;
   object-fit: contain;
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+  object-position: left center;
+  transition: transform 0.25s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06));
+}
+
+/* Desktop: original large logo height (same as earlier Punelok CSS) */
+@media (min-width: 769px) {
+  .navbar-logo-img {
+    height: 260px;
+    width: auto;
+    max-height: none;
+    max-width: min(560px, 52vw);
+    object-fit: contain;
+  }
 }
 
 .navbar-logo-img:hover {
@@ -316,8 +330,10 @@
   display: flex;
   gap: 30px;
   align-items: center;
-  margin: 0 40px;
+  margin: 0 24px;
   flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 0;
   justify-content: space-evenly;
   padding: 0;
 }
@@ -359,16 +375,40 @@
   /* Increased from 14px for better legibility */
 }
 
-/* Right Actions */
+/* Right Actions — never shrink away (Login was getting clipped off-screen) */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
   width: auto;
-  /* Remove min-width to fix right space */
+  flex-shrink: 0;
   justify-content: flex-end;
   font-size: 16px;
-  /* Match menu size */
+}
+
+.login-btn-nav {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: 2px solid #ff0100;
+  background: #fff;
+  color: #ff0100 !important;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.login-btn-nav:hover {
+  background: #ff0100;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(255, 1, 0, 0.25);
 }
 
 .search-btn {
@@ -498,10 +538,22 @@
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .nav-menu {
+    gap: 12px;
+    margin: 0 12px;
+  }
+
+  .nav-item,
+  .more-dropdown {
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 1024px) {
   .nav-menu {
-    gap: 10px;
-    font-size: 14px;
+    gap: 8px;
+    font-size: 13px;
   }
 }
 
@@ -575,8 +627,8 @@
 
 .mega-menu-dropdown {
   position: fixed;
-  top: 135px;
-  /* Accurate header height (45px top bar + 90px main nav) */
+  top: 152px;
+  /* Below top bar + fixed 104px main navbar strip */
   left: 0;
   width: 100%;
   max-width: 100%;
@@ -784,7 +836,8 @@
   }
 
   .navbar-logo-img {
-    height: 98px !important;
+    max-height: 112px !important;
+    height: auto !important;
     width: auto;
     max-width: 100%;
     object-fit: contain;
@@ -824,7 +877,8 @@
 
   .login-btn-nav {
     order: 1;
-    font-size: 18px !important;
+    padding: 8px 14px !important;
+    font-size: 14px !important;
     font-weight: 700;
     line-height: 1;
   }

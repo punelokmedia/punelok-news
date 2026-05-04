@@ -77,11 +77,18 @@ html[lang="en"] body {
 
 /* Main content padding when navbar + explorer bar fixed */
 .main-with-fixed-nav {
-  padding-top: 140px;
+  padding-top: 154px;
   position: relative;
   z-index: 30;
   padding-bottom: 70px;
   /* Space for mobile bottom bar */
+}
+
+@media (min-width: 769px) {
+  .main-with-fixed-nav {
+    /* Keep desktop content aligned directly below fixed navbar stack */
+    padding-top: 154px;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -177,12 +184,11 @@ html[lang="en"] body {
   .explorer-sidebar {
     position: fixed;
     left: 0;
-    top: 135px;
-    /* Clear total header height (~45px top bar + 90px main nav) */
+    top: 152px;
     width: 120px;
     height: auto;
     min-height: 0;
-    max-height: calc(100vh - 135px);
+    max-height: calc(100vh - 152px);
     overflow-x: hidden;
     overflow-y: auto;
     /* Enable scrolling */
@@ -214,6 +220,8 @@ html[lang="en"] body {
   @media (min-width: 1024px) {
     .explorer-sidebar {
       display: flex;
+      top: 152px;
+      max-height: calc(100vh - 152px);
     }
   }
 
