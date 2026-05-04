@@ -253,10 +253,10 @@ export default function Navbar() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
-      setIsSearchOpen(false);
-    }
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+    setIsSearchOpen(false);
   };
 
   const handleLanguageChange = (code) => {
@@ -689,6 +689,7 @@ export default function Navbar() {
                  onChange={(e) => setSearchQuery(e.target.value)}
                  autoFocus
                />
+               <button type="submit" className="submit-search-dropdown" aria-label={safeT.search}>Go</button>
                <button type="button" className="close-search-dropdown" onClick={() => setIsSearchOpen(false)}>×</button>
              </form>
           </div>

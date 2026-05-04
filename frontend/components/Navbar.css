@@ -490,8 +490,8 @@
 
 .search-input-dropdown {
   width: 100%;
-  padding: 12px 45px;
-  /* Space for icon and close button */
+  padding: 12px 96px 12px 45px;
+  /* Space for icon + submit + close */
   border: 1px solid #ddd;
   border-radius: 30px;
   /* Pill shape like screenshot */
@@ -505,6 +505,24 @@
   background-color: white;
   border-color: #FF0100;
   box-shadow: 0 0 0 2px rgba(255, 1, 0, 0.1);
+}
+
+.submit-search-dropdown {
+  position: absolute;
+  right: 46px;
+  background: #FF0100;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.submit-search-dropdown:hover {
+  background: #d90404;
 }
 
 .close-search-dropdown {
